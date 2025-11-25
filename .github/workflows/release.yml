@@ -161,6 +161,8 @@ jobs:
           draft: false
           prerelease: true
           generate_release_notes: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
