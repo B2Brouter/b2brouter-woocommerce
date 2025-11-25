@@ -153,7 +153,7 @@ jobs:
 
       - name: Create GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release create v${{ steps.get_version.outputs.VERSION }} \
             --title "B2Brouter for WooCommerce v${{ steps.get_version.outputs.VERSION }}" \
