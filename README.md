@@ -145,7 +145,7 @@ Build distribution package:
 # Output: build/b2brouter-woocommerce-X.X.X.zip
 ```
 
-See [DISTRIBUTION.md](DISTRIBUTION.md) for release procedures.
+See [DISTRIBUTION.md](docs/DISTRIBUTION.md) for release procedures.
 
 ---
 
