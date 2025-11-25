@@ -1,0 +1,118 @@
+/**
+ * B2Brouter Customer Styles
+ *
+ * Styles for customer-facing PDF download features
+ *
+ * @package B2Brouter\WooCommerce
+ * @since 1.0.0
+ */
+
+/* Invoice Section on Thank You Page */
+.b2brouter-invoice-section {
+    margin-top: 2em;
+    padding: 1.5em;
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.b2brouter-invoice-section .woocommerce-order-details__title {
+    margin-top: 0;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.b2brouter-invoice-details {
+    margin-top: 1em;
+}
+
+.b2brouter-invoice-details p {
+    margin-bottom: 0.5em;
+}
+
+/* PDF Download Button */
+.b2brouter-customer-download-pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #2c3e50;
+    color: #ffffff !important;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.b2brouter-customer-download-pdf:hover {
+    background: #34495e;
+    color: #ffffff !important;
+}
+
+.b2brouter-customer-download-pdf:active {
+    background: #1a252f;
+}
+
+.b2brouter-customer-download-pdf.loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.b2brouter-customer-download-pdf .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.b2brouter-customer-download-pdf .dashicons-spin {
+    animation: b2brouter-spin 1s linear infinite;
+}
+
+/* PDF Info */
+.b2brouter-pdf-info {
+    margin-top: 1em;
+    color: #666;
+}
+
+.b2brouter-pdf-info small {
+    font-size: 0.9em;
+}
+
+/* My Account Orders Table */
+.woocommerce-orders-table .b2brouter-customer-download-pdf {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.woocommerce-orders-table .b2brouter-customer-download-pdf .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Animation */
+@keyframes b2brouter-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .b2brouter-customer-download-pdf {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 15px;
+    }
+
+    .b2brouter-invoice-section {
+        padding: 1em;
+    }
+}

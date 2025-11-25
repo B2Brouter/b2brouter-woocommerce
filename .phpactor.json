@@ -1,0 +1,23 @@
+{
+    "language_server_phpstan.enabled": false,
+    "language_server_psalm.enabled": false,
+    "composer.autoloader_path": "vendor/autoload.php",
+    "language_server.diagnostics_on_update": true,
+    "language_server.diagnostics_on_save": true,
+    "indexer.stub_paths": [
+        "%project_root%/vendor/php-stubs/wordpress-stubs",
+        "%project_root%/vendor/php-stubs/woocommerce-stubs"
+    ],
+    "indexer.include_patterns": [
+        "//**/*.php"
+    ],
+    "indexer.exclude_patterns": [
+        "/vendor/**/tests/**/*",
+        "/vendor/**/test/**/*",
+        "/tests/coverage/**/*"
+    ],
+    "language_server_worse_reflection.inlay_hints.enable": true,
+    "language_server_worse_reflection.inlay_hints.types": true,
+    "symfony.enabled": false,
+    "code_transform.refactor.generate_accessor.upper_case_first": true
+}

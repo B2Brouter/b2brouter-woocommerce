@@ -1,0 +1,253 @@
+/**
+ * B2Brouter for WooCommerce - Admin Styles
+ */
+
+/* Welcome Page */
+.b2brouter-welcome {
+    max-width: 900px;
+}
+
+.b2brouter-welcome h1 {
+    font-size: 2.5em;
+    margin-bottom: 1em;
+}
+
+.b2brouter-welcome-content {
+    display: grid;
+    gap: 20px;
+}
+
+.b2brouter-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 30px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.b2brouter-card h2 {
+    margin-top: 0;
+    font-size: 1.8em;
+}
+
+.b2brouter-card h3 {
+    margin-top: 1.5em;
+    font-size: 1.3em;
+    color: #1d2327;
+}
+
+.b2brouter-checklist {
+    list-style: none;
+    padding: 0;
+}
+
+.b2brouter-checklist li {
+    padding: 8px 0;
+    padding-left: 30px;
+    position: relative;
+}
+
+.b2brouter-checklist li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #46b450;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.b2brouter-steps {
+    background: #f6f7f7;
+    border-left: 4px solid #2271b1;
+    padding: 20px 20px 20px 50px;
+    margin: 20px 0;
+}
+
+.b2brouter-steps li {
+    margin-bottom: 12px;
+    font-size: 1.1em;
+}
+
+.b2brouter-actions {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.b2brouter-info {
+    background: #f0f6fc;
+    border-left: 4px solid #2271b1;
+}
+
+/* Settings Page */
+.b2brouter-settings .form-table th {
+    width: 250px;
+}
+
+.b2brouter-settings .form-table input[type="text"].regular-text {
+    width: 400px;
+}
+
+.b2brouter-settings .description {
+    color: #646970;
+    font-size: 13px;
+}
+
+#b2brouter_validation_result {
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+#b2brouter_validation_result.success {
+    color: #46b450;
+}
+
+#b2brouter_validation_result.error {
+    color: #dc3232;
+}
+
+#b2brouter_validation_result .dashicons {
+    vertical-align: text-bottom;
+}
+
+.b2brouter-settings fieldset label {
+    display: block;
+    margin: 10px 0;
+    font-weight: 600;
+}
+
+.b2brouter-settings fieldset label input[type="radio"] {
+    margin-right: 8px;
+}
+
+.b2brouter-settings fieldset .description {
+    margin-left: 28px;
+    margin-top: -5px;
+    margin-bottom: 15px;
+    font-weight: normal;
+}
+
+/* Invoice Meta Box */
+.b2brouter-invoice-meta-box {
+    font-size: 13px;
+}
+
+.b2brouter-invoice-status {
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.b2brouter-invoice-status .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.b2brouter-invoice-meta-box p {
+    margin: 12px 0;
+}
+
+.b2brouter-invoice-meta-box .button {
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Admin Bar Counter */
+#wpadminbar #wp-admin-bar-b2brouter-counter .ab-icon {
+    font-size: 16px;
+    padding-top: 6px;
+}
+
+#wpadminbar #wp-admin-bar-b2brouter-counter .ab-label {
+    font-size: 13px;
+}
+
+/* Orders List Column */
+.widefat .column-b2brouter_invoice {
+    width: 60px;
+    text-align: center;
+}
+
+.widefat .column-b2brouter_invoice .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+/* Loading States */
+.b2brouter-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.b2brouter-loading:after {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+    border: 2px solid #2271b1;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: b2brouter-spin 0.6s linear infinite;
+}
+
+@keyframes b2brouter-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* PDF Download Buttons */
+.b2brouter-download-pdf {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.b2brouter-download-pdf .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.b2brouter-download-pdf.loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.b2brouter-download-pdf .dashicons-spin {
+    animation: b2brouter-spin 1s linear infinite;
+}
+
+/* PDF Cache Status */
+.b2brouter-invoice-meta-box .description .dashicons {
+    vertical-align: middle;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .b2brouter-settings .form-table input[type="text"].regular-text {
+        width: 100%;
+    }
+
+    .b2brouter-actions {
+        flex-direction: column;
+    }
+
+    .b2brouter-actions .button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .b2brouter-download-pdf {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+}

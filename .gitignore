@@ -1,0 +1,36 @@
+# Composer
+/vendor/
+# composer.lock should be committed for WordPress plugins
+# Removed: ensures reproducible builds and consistent dependencies
+
+# WordPress
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+error_log
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build
+/build/
+/dist/
+
+# Test coverage
+tests/coverage/
