@@ -1,0 +1,169 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers on version tags like v1.0.0, v1.2.3, etc.
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: curl, json, mbstring
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Get the version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Verify version in plugin file
+        run: |
+          PLUGIN_VERSION=$(grep -E "^\s*\*\s*Version:" b2brouter-woocommerce.php | awk '{print $3}')
+          echo "Plugin file version: $PLUGIN_VERSION"
+          echo "Tag version: ${{ steps.get_version.outputs.VERSION }}"
+          if [ "$PLUGIN_VERSION" != "${{ steps.get_version.outputs.VERSION }}" ]; then
+            echo "ERROR: Version mismatch!"
+            echo "Plugin file shows: $PLUGIN_VERSION"
+            echo "Git tag shows: v${{ steps.get_version.outputs.VERSION }}"
+            exit 1
+          fi
+
+      - name: Install Composer dependencies (production only)
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Verify B2Brouter SDK is installed
+        run: |
+          if [ ! -d "vendor/b2brouter/b2brouter-php" ]; then
+            echo "ERROR: B2Brouter PHP SDK not found!"
+            exit 1
+          fi
+          echo "✓ B2Brouter PHP SDK verified"
+          composer show b2brouter/b2brouter-php
+
+      - name: Create distribution directory
+        run: |
+          mkdir -p dist
+          mkdir -p build/b2brouter-woocommerce
+
+      - name: Copy plugin files to build directory
+        run: |
+          # Copy main files
+          cp -r includes build/b2brouter-woocommerce/
+          cp -r assets build/b2brouter-woocommerce/
+          cp -r vendor build/b2brouter-woocommerce/
+          cp b2brouter-woocommerce.php build/b2brouter-woocommerce/
+          cp composer.json build/b2brouter-woocommerce/
+          cp LICENSE build/b2brouter-woocommerce/
+          cp README.md build/b2brouter-woocommerce/
+          cp CHANGELOG.md build/b2brouter-woocommerce/
+
+          # Copy documentation if it exists
+          if [ -d "docs" ]; then
+            mkdir -p build/b2brouter-woocommerce/docs
+            cp docs/*.md build/b2brouter-woocommerce/docs/ 2>/dev/null || true
+          fi
+
+      - name: Create release ZIP
+        run: |
+          cd build
+          zip -r ../dist/b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip b2brouter-woocommerce
+          cd ..
+
+          # Verify ZIP was created
+          ls -lh dist/
+
+          # Show ZIP contents (first 20 lines)
+          echo "ZIP contents preview:"
+          unzip -l dist/b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip | head -20
+
+      - name: Verify vendor is in ZIP
+        run: |
+          unzip -l dist/b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip | grep "vendor/b2brouter/b2brouter-php" || {
+            echo "ERROR: B2Brouter SDK not found in ZIP!"
+            exit 1
+          }
+          echo "✓ B2Brouter SDK verified in ZIP"
+
+      - name: Generate SHA256 checksum
+        run: |
+          cd dist
+          sha256sum b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip > b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip.sha256
+          cat b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip.sha256
+
+      - name: Create Release Notes
+        id: release_notes
+        run: |
+          cat > release_notes.md << 'EOF'
+          ## B2Brouter for WooCommerce v${{ steps.get_version.outputs.VERSION }}
+
+          ### Installation
+
+          1. Download `b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip`
+          2. In WordPress Admin, go to **Plugins → Add New → Upload Plugin**
+          3. Choose the downloaded ZIP file
+          4. Click **Install Now** → **Activate Plugin**
+          5. Configure your B2Brouter API key in **B2Brouter → Settings**
+
+          **No Composer required!** The ZIP includes all dependencies.
+
+          ### What's Included
+
+          - ✅ B2Brouter WooCommerce Plugin v${{ steps.get_version.outputs.VERSION }}
+          - ✅ B2Brouter PHP SDK v0.9.0
+          - ✅ All required dependencies
+          - ✅ Optimized for production
+
+          ### Requirements
+
+          - WordPress 5.8 or higher
+          - WooCommerce 5.0 or higher
+          - PHP 7.4 or higher
+          - Active B2Brouter eDocExchange subscription
+
+          ### Verification
+
+          **SHA256 Checksum:**
+          ```
+          $(cat dist/b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip.sha256)
+          ```
+
+          ### Support
+
+          - Documentation: https://github.com/B2Brouter/b2brouter-woocommerce
+          - Issues: https://github.com/B2Brouter/b2brouter-woocommerce/issues
+          - B2Brouter: https://app.b2brouter.net
+          EOF
+
+          echo "Release notes created"
+          cat release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip
+            dist/b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip.sha256
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}
+          path: dist/
+          retention-days: 90
