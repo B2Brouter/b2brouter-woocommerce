@@ -152,15 +152,15 @@ jobs:
           cat release_notes.md
 
       - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create v${{ steps.get_version.outputs.VERSION }} \
-            --title "B2Brouter for WooCommerce v${{ steps.get_version.outputs.VERSION }}" \
-            --notes-file release_notes.md \
-            --prerelease \
-            dist/b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip \
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip
             dist/b2brouter-woocommerce-${{ steps.get_version.outputs.VERSION }}.zip.sha256
+          body_path: release_notes.md
+          draft: false
+          prerelease: true
+          generate_release_notes: true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
