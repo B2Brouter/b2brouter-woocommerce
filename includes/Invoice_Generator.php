@@ -167,11 +167,12 @@ class Invoice_Generator {
             // Prepare invoice data (handles both regular invoices and refunds)
             $invoice_data = $this->prepare_invoice_data($order);
 
-            // Add send_after_import to send invoice immediately after creation
-            $invoice_data['send_after_import'] = true;
-
             // Create and send invoice via B2Brouter API (single call)
-            $invoice = $client->invoices->create($account_id, array('invoice' => $invoice_data));
+            // send_after_import is outside the invoice object to trigger immediate sending
+            $invoice = $client->invoices->create($account_id, array(
+                'invoice' => $invoice_data,
+                'send_after_import' => true
+            ));
 
             // Store invoice ID in order meta
             $order->add_meta_data('_b2brouter_invoice_id', $invoice['id'], true);
