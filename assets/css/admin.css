@@ -251,3 +251,42 @@
         font-size: 14px;
     }
 }
+
+/* Invoice Status Badges */
+.b2brouter-status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.b2brouter-status-badge.status-draft {
+    background: #f0f0f1;
+    color: #50575e;
+}
+
+.b2brouter-status-badge.status-sent,
+.b2brouter-status-badge.status-accepted,
+.b2brouter-status-badge.status-registered,
+.b2brouter-status-badge.status-paid {
+    background: #d7f4e3;
+    color: #00a32a;
+}
+
+.b2brouter-status-badge.status-error {
+    background: #f7dede;
+    color: #d63638;
+}
+
+.b2brouter-status-badge.status-cancelled {
+    background: #f8efd1;
+    color: #dba617;
+}
+
+.b2brouter-status-badge.status-closed {
+    background: #f0f0f1;
+    color: #50575e;
+}

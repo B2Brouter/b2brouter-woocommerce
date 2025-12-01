@@ -57,9 +57,13 @@ class Order_Handler {
         // Add meta box to order admin
         add_action('add_meta_boxes', array($this, 'add_invoice_meta_box'));
 
-        // Add invoice column to orders list
+        // Add invoice column to orders list (legacy and HPOS)
         add_filter('manage_edit-shop_order_columns', array($this, 'add_invoice_column'), 20);
         add_action('manage_shop_order_posts_custom_column', array($this, 'render_invoice_column'), 20, 2);
+
+        // HPOS compatibility
+        add_filter('manage_woocommerce_page_wc-orders_columns', array($this, 'add_invoice_column'), 20);
+        add_action('manage_woocommerce_page_wc-orders_custom_column', array($this, 'render_invoice_column_hpos'), 20, 2);
 
         // Add bulk action for generating invoices
         add_filter('bulk_actions-edit-shop_order', array($this, 'add_bulk_action'));
@@ -275,6 +279,51 @@ class Order_Handler {
                     <br><?php echo esc_html($order->get_meta('_b2brouter_invoice_date')); ?>
                 </p>
 
+                <?php
+                // Display invoice status
+                $status = $order->get_meta('_b2brouter_invoice_status');
+                $status_updated = $order->get_meta('_b2brouter_invoice_status_updated');
+
+                if (!empty($status)):
+                ?>
+                <p>
+                    <strong><?php esc_html_e('Status:', 'b2brouter-woocommerce'); ?></strong>
+                    <br>
+                    <span class="b2brouter-status-badge status-<?php echo esc_attr($status); ?>">
+                        <?php echo esc_html(ucfirst($status)); ?>
+                    </span>
+                    <?php if ($status_updated): ?>
+                        <br>
+                        <small style="color: #666;">
+                            <?php
+                            printf(
+                                esc_html__('Last checked: %s', 'b2brouter-woocommerce'),
+                                esc_html(human_time_diff($status_updated, current_time('timestamp'))) . ' ' . esc_html__('ago', 'b2brouter-woocommerce')
+                            );
+                            ?>
+                        </small>
+                    <?php endif; ?>
+                </p>
+
+                <?php
+                // Show error message if status is error
+                if ($status === 'error'):
+                    $status_error = $order->get_meta('_b2brouter_invoice_status_error');
+                    if (!empty($status_error)):
+                ?>
+                <div class="notice notice-error inline" style="margin: 10px 0; padding: 8px 12px;">
+                    <p style="margin: 0;">
+                        <strong><?php esc_html_e('Error:', 'b2brouter-woocommerce'); ?></strong>
+                        <?php echo esc_html($status_error); ?>
+                    </p>
+                </div>
+                <?php
+                    endif;
+                endif;
+                ?>
+
+                <?php endif; ?>
+
                 <!-- PDF Download Section -->
                 <hr style="margin: 15px 0;">
                 <p>
@@ -424,8 +473,24 @@ class Order_Handler {
             ?>
 
             <p>
-                <a href="https://app.b2brouter.net" target="_blank" class="button button-secondary">
-                    <?php esc_html_e('View in B2Brouter', 'b2brouter-woocommerce'); ?>
+                <?php
+                // Build B2Brouter dashboard URL
+                $dashboard_url = 'https://app.b2brouter.net';
+                if ($has_invoice) {
+                    $invoice_id = $order->get_meta('_b2brouter_invoice_id');
+                    if (!empty($invoice_id)) {
+                        $dashboard_url = 'https://app.b2brouter.net/invoices/' . urlencode($invoice_id);
+                    }
+                }
+
+                // Get status to determine button text
+                $invoice_status = $order->get_meta('_b2brouter_invoice_status');
+                $button_text = ($invoice_status === 'error')
+                    ? __('Manage from B2Brouter', 'b2brouter-woocommerce')
+                    : __('View in B2Brouter', 'b2brouter-woocommerce');
+                ?>
+                <a href="<?php echo esc_url($dashboard_url); ?>" target="_blank" class="button button-secondary">
+                    <?php echo esc_html($button_text); ?>
                 </a>
             </p>
         </div>
@@ -472,13 +537,93 @@ class Order_Handler {
             return;
         }
 
-        $has_invoice = $this->invoice_generator->has_invoice($post_id);
+        $invoice_id = $order->get_meta('_b2brouter_invoice_id');
 
-        if ($has_invoice) {
-            echo '<span class="dashicons dashicons-yes-alt" style="color: #46b450;" title="' . esc_attr__('Invoice generated', 'b2brouter-woocommerce') . '"></span>';
-        } else {
-            echo '<span class="dashicons dashicons-minus" style="color: #ddd;" title="' . esc_attr__('No invoice', 'b2brouter-woocommerce') . '"></span>';
+        if (empty($invoice_id)) {
+            echo '<span style="color: #999;">—</span>';
+            return;
         }
+
+        // Get status from meta
+        $status = $order->get_meta('_b2brouter_invoice_status');
+
+        if (empty($status)) {
+            $status = 'draft'; // Default if not yet synced
+        }
+
+        // Display status badge with color
+        $status_colors = array(
+            'draft' => '#999',
+            'sent' => '#00a32a',
+            'accepted' => '#00a32a',
+            'registered' => '#00a32a',
+            'paid' => '#00a32a',
+            'error' => '#d63638',
+            'cancelled' => '#dba617',
+            'closed' => '#999'
+        );
+
+        $color = isset($status_colors[$status]) ? $status_colors[$status] : '#2271b1';
+
+        printf(
+            '<span style="color: %s; font-weight: 500;" title="%s">%s</span>',
+            esc_attr($color),
+            esc_attr(ucfirst($status)),
+            esc_html(ucfirst($status))
+        );
+    }
+
+    /**
+     * Render invoice column for HPOS orders
+     *
+     * @since 1.0.0
+     * @param string $column Column name
+     * @param \WC_Order $order Order object
+     * @return void
+     */
+    public function render_invoice_column_hpos($column, $order) {
+        if ($column !== 'b2brouter_invoice') {
+            return;
+        }
+
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
+
+        $invoice_id = $order->get_meta('_b2brouter_invoice_id');
+
+        if (empty($invoice_id)) {
+            echo '<span style="color: #999;">—</span>';
+            return;
+        }
+
+        // Get status from meta
+        $status = $order->get_meta('_b2brouter_invoice_status');
+
+        if (empty($status)) {
+            $status = 'draft'; // Default if not yet synced
+        }
+
+        // Display status badge with color
+        $status_colors = array(
+            'draft' => '#999',
+            'sent' => '#00a32a',
+            'accepted' => '#00a32a',
+            'registered' => '#00a32a',
+            'paid' => '#00a32a',
+            'error' => '#d63638',
+            'cancelled' => '#dba617',
+            'closed' => '#999'
+        );
+
+        $color = isset($status_colors[$status]) ? $status_colors[$status] : '#2271b1';
+
+        printf(
+            '<span style="color: %s; font-weight: 500;" title="%s">%s</span>',
+            esc_attr($color),
+            esc_attr(ucfirst($status)),
+            esc_html(ucfirst($status))
+        );
     }
 
     /**

@@ -143,6 +143,7 @@ class B2Brouter_WooCommerce {
         $this->get('order_handler');
         $this->get('customer');
         $this->get('customer_fields');
+        $this->get('status_sync');
     }
 
     /**
@@ -224,6 +225,14 @@ class B2Brouter_WooCommerce {
         $this->container['customer_fields'] = function() {
             return new \B2Brouter\WooCommerce\Customer_Fields();
         };
+
+        // Register Status_Sync (depends on Settings and Invoice_Generator)
+        $this->container['status_sync'] = function() {
+            return new \B2Brouter\WooCommerce\Status_Sync(
+                $this->get('settings'),
+                $this->get('invoice_generator')
+            );
+        };
     }
 
     /**
@@ -275,6 +284,13 @@ class B2Brouter_WooCommerce {
             add_option('b2brouter_transaction_count', 0);
         }
 
+        // Initialize container to access Status_Sync
+        $this->init_container();
+
+        // Activate status sync cron
+        $status_sync = $this->get('status_sync');
+        $status_sync->activate();
+
         // Flush rewrite rules
         flush_rewrite_rules();
     }
@@ -286,6 +302,13 @@ class B2Brouter_WooCommerce {
      * @return void
      */
     public function deactivate() {
+        // Initialize container to access Status_Sync
+        $this->init_container();
+
+        // Deactivate status sync cron
+        $status_sync = $this->get('status_sync');
+        $status_sync->deactivate();
+
         // Clean up if needed
         flush_rewrite_rules();
     }

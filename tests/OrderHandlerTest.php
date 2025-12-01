@@ -298,6 +298,8 @@ class OrderHandlerTest extends TestCase {
         global $wc_mock_orders;
 
         $order = new WC_Order(204);
+        // Set invoice ID meta so render_invoice_column doesn't return early
+        $order->add_meta_data('_b2brouter_invoice_id', 'test-invoice-123', true);
         $wc_mock_orders[204] = $order;
 
         $this->mock_invoice_generator->method('has_invoice')
@@ -307,8 +309,10 @@ class OrderHandlerTest extends TestCase {
         $this->handler->render_invoice_column('b2brouter_invoice', 204);
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('dashicons-yes-alt', $output);
-        $this->assertStringContainsString('Invoice generated', $output);
+        // New implementation shows status text instead of dashicons
+        // Should show "Draft" as default status when no status is set
+        $this->assertStringContainsString('Draft', $output);
+        $this->assertStringContainsString('color:', $output);
 
         unset($wc_mock_orders[204]);
     }
@@ -331,8 +335,9 @@ class OrderHandlerTest extends TestCase {
         $this->handler->render_invoice_column('b2brouter_invoice', 205);
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('dashicons-minus', $output);
-        $this->assertStringContainsString('No invoice', $output);
+        // New implementation shows "—" (em dash) instead of dashicons-minus
+        $this->assertStringContainsString('—', $output);
+        $this->assertStringContainsString('color: #999', $output);
 
         unset($wc_mock_orders[205]);
     }
