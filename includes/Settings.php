@@ -513,7 +513,7 @@ class Settings {
      * @return string
      */
     public function get_custom_numbering_pattern() {
-        return get_option('b2brouter_custom_numbering_pattern', 'INV-{order_id}');
+        return get_option('b2brouter_custom_numbering_pattern', '{order_id}');
     }
 
     /**

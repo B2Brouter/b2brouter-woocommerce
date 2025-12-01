@@ -89,6 +89,17 @@ class Admin {
             56
         );
 
+        // Register Welcome page first
+        add_submenu_page(
+            'b2brouter',
+            __('Welcome', 'b2brouter-woocommerce'),
+            __('Welcome', 'b2brouter-woocommerce'),
+            'manage_options',
+            'b2brouter-welcome',
+            array($this, 'render_welcome_page')
+        );
+
+        // Register Settings page second (renames the default first submenu item)
         add_submenu_page(
             'b2brouter',
             __('Settings', 'b2brouter-woocommerce'),
@@ -98,14 +109,7 @@ class Admin {
             array($this, 'render_settings_page')
         );
 
-        add_submenu_page(
-            'b2brouter',
-            __('Welcome', 'b2brouter-woocommerce'),
-            __('Welcome', 'b2brouter-woocommerce'),
-            'manage_options',
-            'b2brouter-welcome',
-            array($this, 'render_welcome_page')
-        );
+        // List of Invoices page will be added here as third item
     }
 
     /**
@@ -541,7 +545,7 @@ class Admin {
                                    class="regular-text"
                                    placeholder="<?php esc_attr_e('e.g., INV, S01', 'b2brouter-woocommerce'); ?>">
                             <p class="description">
-                                <?php esc_html_e('Series code for regular invoices (e.g., "INV", "S01"). Leave empty to use B2Brouter default.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Define one invoice series code for all invoices. B2Brouter allows one series per invoice type. Leave empty to use B2Brouter default.', 'b2brouter-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
@@ -558,7 +562,7 @@ class Admin {
                                    class="regular-text"
                                    placeholder="<?php esc_attr_e('e.g., CN, R01', 'b2brouter-woocommerce'); ?>">
                             <p class="description">
-                                <?php esc_html_e('Series code for credit notes and rectificative invoices. Leave empty to use the same as regular invoices.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Define one credit note series code for all credit notes. B2Brouter allows one series per type. Leave empty to use the same series as invoices.', 'b2brouter-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
@@ -608,10 +612,10 @@ class Admin {
                                        name="b2brouter_custom_numbering_pattern"
                                        value="<?php echo esc_attr($custom_pattern); ?>"
                                        class="regular-text"
-                                       placeholder="INV-{order_id}"
+                                       placeholder="{order_id}"
                                        style="margin-left: 25px; margin-top: 5px;">
                                 <p class="description" style="margin-left: 25px;">
-                                    <?php esc_html_e('Use placeholders: {order_id}, {order_number}, {year}, {month}, {day}. Example: INV-{year}-{order_id}', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Available placeholders: {order_id}, {order_number}, {year}, {month}, {day}. Note: Series code is defined separately above and will be prefixed automatically.', 'b2brouter-woocommerce'); ?>
                                 </p>
                             </fieldset>
                         </td>

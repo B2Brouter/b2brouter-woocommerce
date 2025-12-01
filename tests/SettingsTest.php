@@ -1032,7 +1032,7 @@ class SettingsTest extends TestCase {
      */
     public function test_get_custom_numbering_pattern_returns_default() {
         $pattern = $this->settings->get_custom_numbering_pattern();
-        $this->assertEquals('INV-{order_id}', $pattern);
+        $this->assertEquals('{order_id}', $pattern);
     }
 
     /**
