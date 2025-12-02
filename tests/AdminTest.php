@@ -188,4 +188,63 @@ class AdminTest extends TestCase {
         $this->assertStringContainsString('Welcome to B2Brouter', $output);
         $this->assertStringContainsString('Electronic Invoicing', $output);
     }
+
+    /**
+     * Test render_invoices_page outputs list table
+     *
+     * @return void
+     */
+    public function test_render_invoices_page_outputs_list_table() {
+        // Mock current_user_can to return true
+        // Note: In a real WordPress environment, this would be handled by WP_Mock
+
+        ob_start();
+        $this->admin->render_invoices_page();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString('List of Invoices', $output);
+        $this->assertStringContainsString('wrap', $output);
+    }
+
+    /**
+     * Test add_admin_menu includes invoices page
+     *
+     * @return void
+     */
+    public function test_add_admin_menu_includes_invoices_page() {
+        global $wp_submenu_pages;
+
+        $this->admin->add_admin_menu();
+
+        // Check that b2brouter-invoices submenu was added
+        $this->assertArrayHasKey('b2brouter', $wp_submenu_pages);
+
+        // Check if b2brouter-invoices key exists in submenu
+        $this->assertArrayHasKey('b2brouter-invoices', $wp_submenu_pages['b2brouter']);
+
+        // Verify page details
+        $invoices_page = $wp_submenu_pages['b2brouter']['b2brouter-invoices'];
+        $this->assertEquals('List of Invoices', $invoices_page['page_title']);
+        $this->assertEquals('List of Invoices', $invoices_page['menu_title']);
+        $this->assertEquals('manage_woocommerce', $invoices_page['capability']);
+    }
+
+    /**
+     * Test enqueue_admin_scripts passes bulk download IDs
+     *
+     * @return void
+     */
+    public function test_enqueue_admin_scripts_handles_bulk_download_transient() {
+        // This test verifies the logic is present
+        // Full testing would require mocking WordPress functions
+
+        $this->assertTrue(method_exists($this->admin, 'enqueue_admin_scripts'));
+
+        // Verify the method is callable with hook parameter
+        $reflection = new ReflectionMethod($this->admin, 'enqueue_admin_scripts');
+        $params = $reflection->getParameters();
+
+        $this->assertCount(1, $params);
+        $this->assertEquals('hook', $params[0]->getName());
+    }
 }

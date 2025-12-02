@@ -109,7 +109,15 @@ class Admin {
             array($this, 'render_settings_page')
         );
 
-        // List of Invoices page will be added here as third item
+        // Register List of Invoices page third
+        add_submenu_page(
+            'b2brouter',
+            __('List of Invoices', 'b2brouter-woocommerce'),
+            __('List of Invoices', 'b2brouter-woocommerce'),
+            'manage_woocommerce',
+            'b2brouter-invoices',
+            array($this, 'render_invoices_page')
+        );
     }
 
     /**
@@ -214,9 +222,16 @@ class Admin {
             true
         );
 
+        // Check for bulk download transient
+        $bulk_download_ids = get_transient('b2brouter_bulk_download_' . get_current_user_id());
+        if ($bulk_download_ids) {
+            delete_transient('b2brouter_bulk_download_' . get_current_user_id());
+        }
+
         wp_localize_script('b2brouter-admin', 'b2brouterAdmin', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('b2brouter_nonce'),
+            'bulk_download_ids' => $bulk_download_ids ? $bulk_download_ids : false,
             'strings' => array(
                 'validating' => __('Validating...', 'b2brouter-woocommerce'),
                 'generating' => __('Generating invoice...', 'b2brouter-woocommerce'),
@@ -782,6 +797,42 @@ class Admin {
                         <?php esc_html_e('Save Settings', 'b2brouter-woocommerce'); ?>
                     </button>
                 </p>
+            </form>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render list of invoices page
+     *
+     * @since 1.0.0
+     * @return void
+     */
+    public function render_invoices_page() {
+        if (!current_user_can('manage_woocommerce')) {
+            wp_die(__('You do not have sufficient permissions to access this page.', 'b2brouter-woocommerce'));
+        }
+
+        ?>
+        <div class="wrap">
+            <h1><?php esc_html_e('List of Invoices', 'b2brouter-woocommerce'); ?></h1>
+
+            <?php
+            // Create an instance of the list table
+            $list_table = new Invoice_List_Table($this->settings, $this->invoice_generator);
+
+            // Display bulk download notice if applicable
+            $list_table->bulk_download_notice();
+
+            // Prepare items
+            $list_table->prepare_items();
+
+            // Display the table
+            ?>
+            <form method="post">
+                <?php
+                $list_table->display();
+                ?>
             </form>
         </div>
         <?php

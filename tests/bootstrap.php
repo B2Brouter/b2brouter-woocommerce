@@ -1119,3 +1119,234 @@ $wp_filter = array();
 // Global mock orders storage for tests
 global $wc_mock_orders;
 $wc_mock_orders = array();
+
+// Mock WP_List_Table class
+if (!class_exists('WP_List_Table')) {
+    /**
+     * Mock WP_List_Table class
+     */
+    class WP_List_Table {
+        protected $_args;
+        protected $_column_headers;
+        protected $items;
+
+        public function __construct($args = array()) {
+            $this->_args = $args;
+        }
+
+        public function get_columns() {
+            return array();
+        }
+
+        public function get_sortable_columns() {
+            return array();
+        }
+
+        public function get_bulk_actions() {
+            return array();
+        }
+
+        public function prepare_items() {
+            // Mock implementation
+        }
+
+        public function display() {
+            echo '<table class="wp-list-table">';
+            echo '<tr><td>Mock List Table</td></tr>';
+            echo '</table>';
+        }
+
+        public function set_pagination_args($args) {
+            // Mock implementation
+        }
+
+        public function get_pagenum() {
+            return isset($_REQUEST['paged']) ? absint($_REQUEST['paged']) : 1;
+        }
+
+        public function current_action() {
+            if (isset($_REQUEST['action']) && -1 != $_REQUEST['action']) {
+                return sanitize_text_field($_REQUEST['action']);
+            }
+            if (isset($_REQUEST['action2']) && -1 != $_REQUEST['action2']) {
+                return sanitize_text_field($_REQUEST['action2']);
+            }
+            return false;
+        }
+
+        protected function column_default($item, $column_name) {
+            return '';
+        }
+
+        protected function column_cb($item) {
+            return '';
+        }
+
+        public function no_items() {
+            echo 'No items found.';
+        }
+    }
+}
+
+// Mock get_edit_post_link function
+if (!function_exists('get_edit_post_link')) {
+    /**
+     * Mock get_edit_post_link function
+     *
+     * @param int $post_id Post ID
+     * @return string Edit link
+     */
+    function get_edit_post_link($post_id) {
+        return admin_url('post.php?post=' . $post_id . '&action=edit');
+    }
+}
+
+// Mock wc_get_orders function
+if (!function_exists('wc_get_orders')) {
+    /**
+     * Mock wc_get_orders function
+     *
+     * @param array $args Query arguments
+     * @return array Orders
+     */
+    function wc_get_orders($args = array()) {
+        // Return empty array for tests
+        return array();
+    }
+}
+
+// Mock wc_price function
+if (!function_exists('wc_price')) {
+    /**
+     * Mock wc_price function
+     *
+     * @param float $price Price
+     * @return string Formatted price
+     */
+    function wc_price($price) {
+        return '$' . number_format($price, 2);
+    }
+}
+
+// Mock get_transient function
+if (!function_exists('get_transient')) {
+    global $wp_transients;
+    $wp_transients = array();
+
+    /**
+     * Mock get_transient function
+     *
+     * @param string $transient Transient name
+     * @return mixed Transient value or false
+     */
+    function get_transient($transient) {
+        global $wp_transients;
+        return isset($wp_transients[$transient]) ? $wp_transients[$transient] : false;
+    }
+}
+
+// Mock set_transient function
+if (!function_exists('set_transient')) {
+    /**
+     * Mock set_transient function
+     *
+     * @param string $transient Transient name
+     * @param mixed $value Transient value
+     * @param int $expiration Expiration time
+     * @return bool Success
+     */
+    function set_transient($transient, $value, $expiration = 0) {
+        global $wp_transients;
+        $wp_transients[$transient] = $value;
+        return true;
+    }
+}
+
+// Mock delete_transient function
+if (!function_exists('delete_transient')) {
+    /**
+     * Mock delete_transient function
+     *
+     * @param string $transient Transient name
+     * @return bool Success
+     */
+    function delete_transient($transient) {
+        global $wp_transients;
+        if (isset($wp_transients[$transient])) {
+            unset($wp_transients[$transient]);
+            return true;
+        }
+        return false;
+    }
+}
+
+// Mock wp_safe_redirect function
+if (!function_exists('wp_safe_redirect')) {
+    /**
+     * Mock wp_safe_redirect function
+     *
+     * @param string $location Redirect location
+     * @return bool Success
+     */
+    function wp_safe_redirect($location) {
+        return true;
+    }
+}
+
+// Mock get_current_user_id function
+if (!function_exists('get_current_user_id')) {
+    /**
+     * Mock get_current_user_id function
+     *
+     * @return int User ID
+     */
+    function get_current_user_id() {
+        return 1;
+    }
+}
+
+// Mock human_time_diff function
+if (!function_exists('human_time_diff')) {
+    /**
+     * Mock human_time_diff function
+     *
+     * @param int $from From timestamp
+     * @param int $to To timestamp
+     * @return string Time difference
+     */
+    function human_time_diff($from, $to = 0) {
+        if (empty($to)) {
+            $to = time();
+        }
+        $diff = abs($to - $from);
+        if ($diff < HOUR_IN_SECONDS) {
+            return ceil($diff / MINUTE_IN_SECONDS) . ' mins';
+        }
+        if ($diff < DAY_IN_SECONDS) {
+            return ceil($diff / HOUR_IN_SECONDS) . ' hours';
+        }
+        return ceil($diff / DAY_IN_SECONDS) . ' days';
+    }
+}
+
+// Define time constants
+if (!defined('MINUTE_IN_SECONDS')) {
+    define('MINUTE_IN_SECONDS', 60);
+}
+if (!defined('HOUR_IN_SECONDS')) {
+    define('HOUR_IN_SECONDS', 3600);
+}
+
+// Mock wp_verify_nonce function
+if (!function_exists('wp_verify_nonce')) {
+    /**
+     * Mock wp_verify_nonce function
+     *
+     * @param string $nonce Nonce
+     * @param string $action Action
+     * @return bool Success
+     */
+    function wp_verify_nonce($nonce, $action = -1) {
+        return true;
+    }
+}

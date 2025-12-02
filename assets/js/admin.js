@@ -6,6 +6,76 @@
     'use strict';
 
     /**
+     * Handle bulk PDF downloads on list page
+     */
+    function handleBulkDownload() {
+        // Check if we're on the invoices list page with bulk_download parameter
+        var urlParams = new URLSearchParams(window.location.search);
+        var bulkCount = urlParams.get('bulk_download');
+
+        if (!bulkCount || !b2brouterAdmin.bulk_download_ids) {
+            return;
+        }
+
+        var orderIds = b2brouterAdmin.bulk_download_ids;
+        var delay = 500; // 500ms delay between downloads
+
+        // Download each PDF sequentially
+        orderIds.forEach(function(orderId, index) {
+            setTimeout(function() {
+                // Create a hidden iframe for each download to avoid popup blockers
+                var iframe = $('<iframe>', {
+                    style: 'display:none;',
+                    name: 'b2brouter-download-frame-' + orderId
+                });
+                $('body').append(iframe);
+
+                var form = $('<form>', {
+                    method: 'POST',
+                    action: b2brouterAdmin.ajax_url,
+                    target: 'b2brouter-download-frame-' + orderId
+                });
+
+                form.append($('<input>', {
+                    name: 'action',
+                    value: 'b2brouter_download_pdf',
+                    type: 'hidden'
+                }));
+
+                form.append($('<input>', {
+                    name: 'nonce',
+                    value: b2brouterAdmin.nonce,
+                    type: 'hidden'
+                }));
+
+                form.append($('<input>', {
+                    name: 'order_id',
+                    value: orderId,
+                    type: 'hidden'
+                }));
+
+                form.append($('<input>', {
+                    name: 'download',
+                    value: 'download',
+                    type: 'hidden'
+                }));
+
+                $('body').append(form);
+                form.submit();
+
+                // Clean up after download
+                setTimeout(function() {
+                    form.remove();
+                    iframe.remove();
+                }, 5000);
+            }, index * delay);
+        });
+
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname + '?page=b2brouter-invoices');
+    }
+
+    /**
      * Validate API Key
      */
     function validateApiKey() {
@@ -131,6 +201,8 @@
      * Document Ready
      */
     $(document).ready(function() {
+        // Handle bulk downloads
+        handleBulkDownload();
 
         // Validate API key button
         $('#b2brouter_validate_key').on('click', function(e) {
@@ -206,6 +278,114 @@
             setTimeout(function() {
                 form.remove();
                 $button.prop('disabled', false).html(originalText);
+            }, 2000);
+        });
+
+        // List table View PDF button
+        $(document).on('click', '.b2brouter-list-view-pdf', function(e) {
+            e.preventDefault();
+
+            var $button = $(this);
+            var orderId = $button.data('order-id');
+
+            // Disable button and show loading
+            var originalHtml = $button.html();
+            $button.prop('disabled', true)
+                   .html('<span class="dashicons dashicons-update dashicons-spin" style="line-height: 1.4;"></span> Loading...');
+
+            // Create form and submit to new tab
+            var form = $('<form>', {
+                method: 'POST',
+                action: b2brouterAdmin.ajax_url,
+                target: '_blank'
+            });
+
+            form.append($('<input>', {
+                name: 'action',
+                value: 'b2brouter_download_pdf',
+                type: 'hidden'
+            }));
+
+            form.append($('<input>', {
+                name: 'nonce',
+                value: b2brouterAdmin.nonce,
+                type: 'hidden'
+            }));
+
+            form.append($('<input>', {
+                name: 'order_id',
+                value: orderId,
+                type: 'hidden'
+            }));
+
+            form.append($('<input>', {
+                name: 'download',
+                value: 'view',
+                type: 'hidden'
+            }));
+
+            // Add to body and submit
+            $('body').append(form);
+            form.submit();
+
+            // Clean up and restore button after delay
+            setTimeout(function() {
+                form.remove();
+                $button.prop('disabled', false).html(originalHtml);
+            }, 2000);
+        });
+
+        // List table Download PDF button
+        $(document).on('click', '.b2brouter-list-download-pdf', function(e) {
+            e.preventDefault();
+
+            var $button = $(this);
+            var orderId = $button.data('order-id');
+
+            // Disable button and show loading
+            var originalHtml = $button.html();
+            $button.prop('disabled', true)
+                   .html('<span class="dashicons dashicons-update dashicons-spin" style="line-height: 1.4;"></span> Downloading...');
+
+            // Create form and submit
+            var form = $('<form>', {
+                method: 'POST',
+                action: b2brouterAdmin.ajax_url,
+                target: '_self'
+            });
+
+            form.append($('<input>', {
+                name: 'action',
+                value: 'b2brouter_download_pdf',
+                type: 'hidden'
+            }));
+
+            form.append($('<input>', {
+                name: 'nonce',
+                value: b2brouterAdmin.nonce,
+                type: 'hidden'
+            }));
+
+            form.append($('<input>', {
+                name: 'order_id',
+                value: orderId,
+                type: 'hidden'
+            }));
+
+            form.append($('<input>', {
+                name: 'download',
+                value: 'download',
+                type: 'hidden'
+            }));
+
+            // Add to body and submit
+            $('body').append(form);
+            form.submit();
+
+            // Clean up and restore button after delay
+            setTimeout(function() {
+                form.remove();
+                $button.prop('disabled', false).html(originalHtml);
             }, 2000);
         });
 
