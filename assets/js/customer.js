@@ -15,8 +15,9 @@
         /**
          * Handle PDF download button clicks
          * Target both class names (WooCommerce uses action key as class)
+         * Use attribute selector for credit notes since they have refund ID appended
          */
-        $(document).on('click', '.b2brouter-customer-download-pdf, .download_invoice_pdf', function(e) {
+        $(document).on('click', '.b2brouter-customer-download-pdf, .download_invoice_pdf, .b2brouter_download_invoice, [class*="b2brouter_download_credit_note"]', function(e) {
             e.preventDefault();
 
             var $button = $(this);
@@ -26,6 +27,18 @@
             // Prevent multiple clicks
             if ($button.hasClass('loading')) {
                 return;
+            }
+
+            // Check if this is a refund download (URL contains #refund-{id})
+            var href = $button.attr('href');
+            if (href && href.indexOf('#refund-') === 0) {
+                var refundMatch = href.match(/#refund-(\d+)/);
+                if (refundMatch && refundMatch[1]) {
+                    orderId = refundMatch[1];
+                    if (b2brouterCustomer.debug) {
+                        console.log('Extracted refund ID from href:', orderId);
+                    }
+                }
             }
 
             // Get order ID from My Account table if not set
@@ -152,7 +165,7 @@
          * Handle My Account orders table - add data attributes to buttons
          * This runs on page load to pre-populate data attributes
          */
-        $('.b2brouter-customer-download-pdf, .download_invoice_pdf').each(function() {
+        $('.b2brouter-customer-download-pdf, .download_invoice_pdf, .b2brouter_download_invoice, [class*="b2brouter_download_credit_note"]').each(function() {
             var $button = $(this);
 
             // Try to extract from aria-label first
@@ -208,10 +221,156 @@
             }
         });
 
+        /**
+         * Handle generate invoice button clicks
+         */
+        $(document).on('click', '.b2brouter_generate_invoice', function(e) {
+            e.preventDefault();
+
+            var $button = $(this);
+            var orderId = $button.data('order-id');
+
+            // Prevent multiple clicks
+            if ($button.hasClass('loading')) {
+                return;
+            }
+
+            // Get order ID from My Account table if not set
+            if (!orderId) {
+                // Try to extract from aria-label first
+                var ariaLabel = $button.attr('aria-label');
+                if (ariaLabel) {
+                    var ariaMatch = ariaLabel.match(/order\s+number\s+(\d+)/i);
+                    if (ariaMatch && ariaMatch[1]) {
+                        orderId = ariaMatch[1];
+                        if (b2brouterCustomer.debug) {
+                            console.log('Extracted order ID from aria-label:', orderId);
+                        }
+                    }
+                }
+
+                // If still not found, try from table row
+                if (!orderId) {
+                    var $row = $button.closest('tr');
+                    var $orderLink = $row.find('.woocommerce-orders-table__cell-order-number a, td.order-number a, .order-number a');
+                    var orderUrl = $orderLink.attr('href');
+
+                    if (b2brouterCustomer.debug) {
+                        console.log('Order link found:', $orderLink.length);
+                        console.log('Order URL:', orderUrl);
+                    }
+
+                    if (orderUrl) {
+                        var matches = orderUrl.match(/[?&]order(?:-id)?[=\/](\d+)/i) ||
+                                      orderUrl.match(/\/order\/(\d+)/i) ||
+                                      orderUrl.match(/view-order\/(\d+)/i);
+
+                        if (matches && matches[1]) {
+                            orderId = matches[1];
+                            if (b2brouterCustomer.debug) {
+                                console.log('Extracted order ID from URL:', orderId);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!orderId) {
+                if (b2brouterCustomer.debug) {
+                    console.error('Could not find order ID for invoice generation');
+                }
+                alert(b2brouterCustomer.strings.error);
+                return;
+            }
+
+            // Show loading state
+            var originalHtml = $button.html();
+            $button.addClass('loading')
+                   .prop('disabled', true)
+                   .html('<span class="dashicons dashicons-update dashicons-spin"></span> ' +
+                         b2brouterCustomer.strings.generating);
+
+            // Make AJAX request to generate invoice
+            $.ajax({
+                url: b2brouterCustomer.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'b2brouter_customer_generate_invoice',
+                    nonce: b2brouterCustomer.nonce,
+                    order_id: orderId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Reload page to show download button
+                        window.location.reload();
+                    } else {
+                        alert(response.data.message || b2brouterCustomer.strings.error);
+                        $button.removeClass('loading')
+                               .prop('disabled', false)
+                               .html(originalHtml);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    if (b2brouterCustomer.debug) {
+                        console.error('AJAX error:', status, error);
+                    }
+                    alert(b2brouterCustomer.strings.error);
+                    $button.removeClass('loading')
+                           .prop('disabled', false)
+                           .html(originalHtml);
+                }
+            });
+        });
+
+        /**
+         * Pre-populate data attributes for generate invoice buttons
+         */
+        $('.b2brouter_generate_invoice').each(function() {
+            var $button = $(this);
+
+            // Try to extract from aria-label first
+            var ariaLabel = $button.attr('aria-label');
+            if (ariaLabel) {
+                var ariaMatch = ariaLabel.match(/order\s+number\s+(\d+)/i);
+                if (ariaMatch && ariaMatch[1]) {
+                    $button.attr('data-order-id', ariaMatch[1]);
+                    if (b2brouterCustomer.debug) {
+                        console.log('Set order ID from aria-label:', ariaMatch[1]);
+                    }
+                }
+            }
+
+            var $row = $button.closest('tr');
+
+            if ($row.length === 0) {
+                return;
+            }
+
+            // If no order ID yet, get from order number link
+            if (!$button.attr('data-order-id')) {
+                var $orderLink = $row.find('.woocommerce-orders-table__cell-order-number a, td.order-number a, .order-number a');
+                var orderUrl = $orderLink.attr('href');
+
+                if (orderUrl) {
+                    var matches = orderUrl.match(/[?&]order(?:-id)?[=\/](\d+)/i) ||
+                                  orderUrl.match(/\/order\/(\d+)/i) ||
+                                  orderUrl.match(/view-order\/(\d+)/i);
+
+                    if (matches && matches[1]) {
+                        $button.attr('data-order-id', matches[1]);
+                        if (b2brouterCustomer.debug) {
+                            console.log('Set order ID from URL for generate button:', matches[1]);
+                        }
+                    }
+                }
+            }
+        });
+
         // Debug: Log if scripts loaded
         if (b2brouterCustomer.debug) {
             console.log('B2Brouter customer scripts loaded');
-            console.log('Found buttons:', $('.b2brouter-customer-download-pdf, .download_invoice_pdf').length);
+            console.log('Found download buttons:', $('.b2brouter-customer-download-pdf, .download_invoice_pdf, .b2brouter_download_invoice, [class*="b2brouter_download_credit_note"]').length);
+            console.log('Found generate buttons:', $('.b2brouter_generate_invoice').length);
         }
 
     });

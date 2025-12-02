@@ -51,8 +51,8 @@ class Order_Handler {
         // Automatic invoice generation on order completed (priority 1 to run before emails at priority 10)
         add_action('woocommerce_order_status_completed', array($this, 'maybe_generate_invoice_automatic'), 1);
 
-        // Automatic credit note generation on refund created (priority 1 to run before emails at priority 10)
-        add_action('woocommerce_order_refunded', array($this, 'maybe_generate_refund_invoice_automatic'), 1, 2);
+        // Note: Credit notes are generated on-demand when accessed (email, download, etc.)
+        // if parent invoice exists, for accounting compliance
 
         // Add meta box to order admin
         add_action('add_meta_boxes', array($this, 'add_invoice_meta_box'));
@@ -105,39 +105,6 @@ class Order_Handler {
 
         // Generate invoice
         $this->invoice_generator->generate_invoice($order_id);
-    }
-
-    /**
-     * Maybe generate credit note automatically when refund is created
-     *
-     * @since 1.0.0
-     * @param int $order_id The parent order ID
-     * @param int $refund_id The refund ID
-     * @return void
-     */
-    public function maybe_generate_refund_invoice_automatic($order_id, $refund_id) {
-        // Check if automatic mode is enabled
-        if ($this->settings->get_invoice_mode() !== 'automatic') {
-            return;
-        }
-
-        // Check if API key is configured
-        if (!$this->settings->is_api_key_configured()) {
-            return;
-        }
-
-        // Check if parent order has invoice
-        if (!$this->invoice_generator->has_invoice($order_id)) {
-            return;
-        }
-
-        // Check if refund already has invoice
-        if ($this->invoice_generator->has_invoice($refund_id)) {
-            return;
-        }
-
-        // Generate credit note for refund
-        $this->invoice_generator->generate_invoice($refund_id);
     }
 
     /**

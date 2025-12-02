@@ -70,6 +70,9 @@ class Customer {
         add_action('wp_ajax_b2brouter_customer_download_pdf', array($this, 'ajax_customer_download_pdf'));
         add_action('wp_ajax_nopriv_b2brouter_customer_download_pdf', array($this, 'ajax_customer_download_pdf'));
 
+        // Handle customer invoice generation requests
+        add_action('wp_ajax_b2brouter_customer_generate_invoice', array($this, 'ajax_customer_generate_invoice'));
+
         // Enqueue frontend scripts and styles
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
@@ -107,6 +110,8 @@ class Customer {
             'strings' => array(
                 'downloading' => __('Downloading...', 'b2brouter-woocommerce'),
                 'error' => __('Error downloading PDF', 'b2brouter-woocommerce'),
+                'generating' => __('Generating...', 'b2brouter-woocommerce'),
+                'generateInvoice' => __('Generate Invoice', 'b2brouter-woocommerce'),
             ),
             'debug' => defined('WP_DEBUG') && WP_DEBUG,
         ));
@@ -121,20 +126,38 @@ class Customer {
      * @return array Modified actions
      */
     public function add_pdf_download_to_my_account($actions, $order) {
-        // Check if order has an invoice
         $invoice_id = $order->get_meta('_b2brouter_invoice_id');
 
-        if (empty($invoice_id)) {
-            return $actions;
+        // If invoice exists, show download button
+        if (!empty($invoice_id)) {
+            $actions['b2brouter_download_invoice'] = array(
+                'url' => 'javascript:void(0);',
+                'name' => __('Download Invoice', 'b2brouter-woocommerce'),
+            );
+        }
+        // If manual mode and no invoice, show generate button
+        elseif ($this->settings->get_invoice_mode() === 'manual' &&
+                in_array($order->get_status(), array('completed', 'processing'), true)) {
+            $actions['b2brouter_generate_invoice'] = array(
+                'url' => '#',
+                'name' => __('Generate Invoice', 'b2brouter-woocommerce'),
+            );
         }
 
-        // Add PDF download action
-        // Note: We use javascript:void(0) to prevent page jump, and add data attributes
-        $actions['download_invoice_pdf'] = array(
-            'url' => 'javascript:void(0);',
-            'name' => __('Download Invoice PDF', 'b2brouter-woocommerce'),
-            'class' => 'b2brouter-customer-download-pdf',
-        );
+        // Add credit note downloads for refunds
+        $refunds = $order->get_refunds();
+        if (!empty($refunds)) {
+            foreach ($refunds as $index => $refund) {
+                $refund_invoice_id = $refund->get_meta('_b2brouter_invoice_id');
+                if (!empty($refund_invoice_id)) {
+                    // Encode refund ID in URL fragment for JavaScript extraction
+                    $actions['b2brouter_download_credit_note_' . $refund->get_id()] = array(
+                        'url' => '#refund-' . $refund->get_id(),
+                        'name' => __('Download Credit Note', 'b2brouter-woocommerce') . ' #' . ($index + 1),
+                    );
+                }
+            }
+        }
 
         return $actions;
     }
@@ -258,13 +281,96 @@ class Customer {
     }
 
     /**
+     * AJAX: Customer generate invoice
+     *
+     * @since 1.0.0
+     * @return void
+     */
+    public function ajax_customer_generate_invoice() {
+        // Verify nonce
+        check_ajax_referer('b2brouter_customer_nonce', 'nonce');
+
+        // Get order ID
+        $order_id = isset($_POST['order_id']) ? intval($_POST['order_id']) : 0;
+
+        if (!$order_id) {
+            wp_send_json_error(array(
+                'message' => __('Invalid order ID', 'b2brouter-woocommerce')
+            ));
+        }
+
+        // Get order
+        $order = wc_get_order($order_id);
+
+        if (!$order) {
+            wp_send_json_error(array(
+                'message' => __('Order not found', 'b2brouter-woocommerce')
+            ));
+        }
+
+        // Check customer permissions
+        if (!$this->can_customer_access_order($order)) {
+            wp_send_json_error(array(
+                'message' => __('You do not have permission to access this order', 'b2brouter-woocommerce')
+            ));
+        }
+
+        // Check if in manual mode
+        if ($this->settings->get_invoice_mode() !== 'manual') {
+            wp_send_json_error(array(
+                'message' => __('Invoice generation is not available in automatic mode', 'b2brouter-woocommerce')
+            ));
+        }
+
+        // Check order status (only completed/processing)
+        if (!in_array($order->get_status(), array('completed', 'processing'), true)) {
+            wp_send_json_error(array(
+                'message' => __('Invoice can only be generated for completed or processing orders', 'b2brouter-woocommerce')
+            ));
+        }
+
+        // Check if invoice already exists
+        if ($order->get_meta('_b2brouter_invoice_id')) {
+            wp_send_json_error(array(
+                'message' => __('Invoice already exists for this order', 'b2brouter-woocommerce')
+            ));
+        }
+
+        // Generate invoice
+        $result = $this->invoice_generator->generate_invoice($order_id);
+
+        if ($result['success']) {
+            wp_send_json_success(array(
+                'message' => $result['message'],
+                'invoice_id' => $order->get_meta('_b2brouter_invoice_id')
+            ));
+        } else {
+            wp_send_json_error(array(
+                'message' => $result['message']
+            ));
+        }
+    }
+
+    /**
      * Check if customer can access order
      *
      * @since 1.0.0
-     * @param \WC_Order $order The order object
+     * @param \WC_Order $order The order object (or refund)
      * @return bool True if customer has access
      */
     private function can_customer_access_order($order) {
+        // If this is a refund, get the parent order
+        if ($order->get_type() === 'shop_order_refund') {
+            $parent_id = $order->get_parent_id();
+            if (!$parent_id) {
+                return false;
+            }
+            $order = wc_get_order($parent_id);
+            if (!$order) {
+                return false;
+            }
+        }
+
         // Check if current user is the order customer
         $user_id = get_current_user_id();
         if ($user_id > 0 && (int) $order->get_customer_id() === $user_id) {

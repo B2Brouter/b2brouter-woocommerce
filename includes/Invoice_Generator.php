@@ -882,6 +882,20 @@ class Invoice_Generator {
             // Get invoice ID
             $invoice_id = $order->get_meta('_b2brouter_invoice_id');
 
+            // If this is a refund with no invoice, but parent has invoice, generate it on-demand
+            if (empty($invoice_id) && $order->get_type() === 'shop_order_refund') {
+                $parent_id = $order->get_parent_id();
+                if ($parent_id && $this->has_invoice($parent_id)) {
+                    // Generate credit note on-demand for accounting compliance
+                    $result = $this->generate_invoice($order_id);
+                    if ($result['success']) {
+                        // Refresh to get the new invoice ID
+                        $order = wc_get_order($order_id);
+                        $invoice_id = $order->get_meta('_b2brouter_invoice_id');
+                    }
+                }
+            }
+
             if (empty($invoice_id)) {
                 wp_die(
                     esc_html__('No invoice found for this order', 'b2brouter-woocommerce'),
@@ -960,14 +974,27 @@ class Invoice_Generator {
             return true;
         }
 
+        // If this is a refund, get the parent order
+        $check_order = $order;
+        if ($order->get_type() === 'shop_order_refund') {
+            $parent_id = $order->get_parent_id();
+            if (!$parent_id) {
+                return false;
+            }
+            $check_order = wc_get_order($parent_id);
+            if (!$check_order) {
+                return false;
+            }
+        }
+
         // Check if current user is the order customer
         $user_id = get_current_user_id();
-        if ($user_id > 0 && (int) $order->get_customer_id() === $user_id) {
+        if ($user_id > 0 && (int) $check_order->get_customer_id() === $user_id) {
             return true;
         }
 
         // Check for guest access with order key
-        if (isset($_GET['key']) && $order->get_order_key() === $_GET['key']) {
+        if (isset($_GET['key']) && $check_order->get_order_key() === $_GET['key']) {
             return true;
         }
 
@@ -1065,7 +1092,8 @@ class Invoice_Generator {
 
                 $refund_invoice_id = $refund->get_meta('_b2brouter_invoice_id');
 
-                // If refund has no invoice yet, generate it now (on-demand)
+                // If refund has no invoice yet, generate it on-demand
+                // Credit notes auto-generate when parent invoice exists, for accounting compliance
                 if (empty($refund_invoice_id)) {
                     $result = $this->generate_invoice($refund->get_id());
                     if ($result['success']) {
