@@ -70,7 +70,10 @@ class Status_Sync {
     public function activate() {
         // Schedule cron if not already scheduled
         if (!wp_next_scheduled('b2brouter_sync_invoice_status')) {
-            wp_schedule_event(time(), 'hourly', 'b2brouter_sync_invoice_status');
+            // Randomize the minute within the next hour to distribute API load
+            $random_minutes = wp_rand(0, 59);
+            $first_run = strtotime('+' . $random_minutes . ' minutes', time());
+            wp_schedule_event($first_run, 'hourly', 'b2brouter_sync_invoice_status');
         }
     }
 
