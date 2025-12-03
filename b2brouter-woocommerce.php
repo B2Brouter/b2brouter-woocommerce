@@ -3,7 +3,7 @@
  * Plugin Name: B2Brouter for WooCommerce
  * Plugin URI: https://b2brouter.net
  * Description: Generate and send electronic invoices from WooCommerce orders using B2Brouter
- * Version: 0.9.0
+ * Version: 0.9.1
  * Author: B2Brouter
  * Author URI: https://b2brouter.net
  * License: MIT
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('B2BROUTER_WC_VERSION', '0.9.0');
+define('B2BROUTER_WC_VERSION', '0.9.1');
 define('B2BROUTER_WC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('B2BROUTER_WC_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('B2BROUTER_WC_PLUGIN_BASENAME', plugin_basename(__FILE__));

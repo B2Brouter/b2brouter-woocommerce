@@ -2,19 +2,6 @@
 
 This document outlines the automated release process for B2Brouter for WooCommerce.
 
-## ⚠️ Known Issue: GitHub Actions Release Bug
-
-**Status:** GitHub has a known bug affecting organization repositories where `GITHUB_TOKEN` incorrectly reports insufficient permissions for creating releases, even with correct configuration.
-
-**References:**
-- https://github.com/softprops/action-gh-release/issues/695
-- https://github.com/orgs/community/discussions/180355
-- https://github.com/ncipollo/release-action/issues/570
-
-**Temporary Workaround:** Use `build-release.sh` locally to generate distribution packages until GitHub resolves this platform issue.
-
-**Tracking:** The automated workflow is configured and ready - it will work once GitHub fixes the bug.
-
 ## Prerequisites
 
 - Write access to the repository

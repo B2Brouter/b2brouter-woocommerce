@@ -5,6 +5,72 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.1] - 2025-12-03
+
+### Added
+
+#### Invoice Management
+- **List of Invoices Page**: New admin page showing all generated invoices with pagination, sorting, and bulk download functionality
+- **Invoice Status Sync System**: Automatic synchronization of invoice status from B2Brouter API with hourly cron job
+  - Status badges in orders list showing current invoice state (draft, sent, accepted, paid, error, etc.)
+  - Final states detection to avoid unnecessary API calls
+  - Batch processing (50 invoices per run) for performance
+  - Status display in order meta box with last checked timestamp
+- **Menu Reordering**: Improved admin menu structure (Welcome → Settings → List of Invoices)
+
+#### Customer Features
+- **Customer Invoice Generation**: Customers can generate invoices from My Account page in manual mode
+  - "Generate Invoice" button for completed/processing orders without invoices
+  - Full security validation (nonce, ownership, order status checks)
+  - AJAX-based generation with loading states
+- **Credit Note Downloads**: Customers can download credit notes directly from My Account
+  - "Download Credit Note" buttons for orders with refunds
+  - Support for multiple credit notes per order
+  - Automatic refund ID handling
+
+#### Settings Improvements
+- **Series Code Clarity**: Enhanced help text explaining one series code per invoice type
+- **Custom Pattern Guidance**: Improved documentation that series code is separate from custom pattern
+- **Status Display in Meta Box**: Invoice status shown in order admin with color-coded badges
+  - "Manage from B2Brouter" link for invoices with errors
+  - Last status update timestamp display
+
+### Changed
+
+#### Credit Note Generation
+- **Consolidated On-Demand Generation**: Simplified credit note generation to single pattern
+  - Removed automatic generation hook on refund creation
+  - Credit notes now generate on-demand when accessed (email, download, view)
+  - Only generates if parent invoice exists (accounting compliance)
+  - Better maintainability with single code path
+
+### Fixed
+- **Refund Access Control**: Fixed customer access validation for refund invoices (credit notes)
+  - Properly checks parent order customer for refund access
+  - Applied in both Customer.php and Invoice_Generator.php
+
+### Technical
+- **API Retry Strategy**: Implemented exponential backoff for PDF downloads
+  - Replaced fixed 2-second sleep with adaptive retry logic (up to 5 attempts: 1s, 2s, 4s, 8s)
+  - New `API_Retry` helper class for robust error handling
+  - Retries on `ResourceNotFoundException` (PDF not ready yet)
+  - Non-retryable errors (auth, permission) fail immediately
+  - PDF download failures don't fail invoice creation
+  - 13 comprehensive unit tests with 91% code coverage
+- **Cron Job Optimization**: Randomized invoice status sync timing
+  - Each installation runs at a different minute (0-59) of the hour
+  - Distributes B2Brouter API load across all installations
+  - Prevents simultaneous API hits from multiple sites
+- **JavaScript Improvements**:
+  - Support for WooCommerce action key classes (underscores vs hyphens)
+  - Order ID extraction from table structure and aria-labels
+  - Refund ID extraction from URL fragments
+  - Proper event delegation for dynamic content
+- **Code Quality**: Maintained 247 passing PHPUnit tests across all changes (31x faster test suite: 24s → 0.8s)
+- **Documentation**: Updated inline code comments for clarity on credit note behavior and retry logic
+
+---
+
 ## [0.9.0] - 2025-11-25 (Beta Release)
 
 ### Added
