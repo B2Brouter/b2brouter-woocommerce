@@ -4,7 +4,7 @@
 
 B2Brouter for WooCommerce integrates your WooCommerce store with B2Brouter's electronic invoicing platform, providing structured data exchange, multi-country tax compliance, and API-driven invoice delivery for B2B and B2C eCommerce.
 
-[![Version](https://img.shields.io/badge/version-0.9.0-blue.svg)](https://github.com/B2Brouter/b2brouter-woocommerce/releases)
+[![Version](https://img.shields.io/badge/version-0.9.1-blue.svg)](https://github.com/B2Brouter/b2brouter-woocommerce/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-blue.svg)](https://wordpress.org)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-5.0%2B-purple.svg)](https://woocommerce.com)
@@ -20,10 +20,17 @@ B2Brouter for WooCommerce integrates your WooCommerce store with B2Brouter's ele
 - **Multiple Invoice Types**:
   - **Standard Invoice (IssuedInvoice)**: For B2B transactions with customer TIN provided
   - **Simplified Invoice (IssuedSimplifiedInvoice)**: For B2C transactions without TIN
-  - **Credit Notes**: Automatically generated for WooCommerce refunds, with support for country-specific formats (e.g., Spanish Rectificative Invoices)
+  - **Credit Notes**: On-demand generation for WooCommerce refunds when parent invoice exists
+    - Generated automatically when accessed (email, download, view)
+    - Support for country-specific formats (e.g., Spanish Rectificative Invoices)
+    - Ensures accounting compliance
 - **PDF Export**: Automatic generation and download of PDF invoices from B2Brouter
 - **Email Integration**: Attach PDF invoices to WooCommerce order completion and customer invoice emails
-- **Customer Downloads**: Customers can view and download invoices from their order pages
+- **Customer Downloads**: Customers can view and download invoices and credit notes from their My Account page
+- **Customer Invoice Generation** (Manual Mode): Customers can generate invoices themselves for completed orders
+  - Security validation (ownership, order status, mode checks)
+  - AJAX-based with loading states
+  - Automatic page refresh on success
 
 ### Tax Compliance
 
@@ -74,7 +81,17 @@ B2Brouter for WooCommerce integrates your WooCommerce store with B2Brouter's ele
 
 - **Settings Panel**: Dedicated settings page under B2Brouter menu with API key validation
 - **Order Meta Box**: Invoice status and generation controls in WooCommerce order edit page
-- **Invoice Column**: Visual invoice status indicator in WooCommerce orders list
+  - Real-time status display with color-coded badges
+  - Last status update timestamp
+  - "Manage from B2Brouter" link for error states
+- **Invoice Column**: Visual invoice status indicator in WooCommerce orders list with automatic status sync
+- **List of Invoices Page**: Dedicated admin page showing all generated invoices
+  - Pagination and sorting capabilities
+  - Bulk PDF download functionality
+  - View/Download buttons for individual invoices
+- **Invoice Status Sync**: Automatic hourly synchronization of invoice status from B2Brouter API
+  - Batch processing for performance (50 invoices per run)
+  - Smart detection of final states to avoid unnecessary API calls
 - **Bulk Actions**: Invoice generation available in WooCommerce orders bulk actions menu
 - **Admin Bar Counter**: Transaction count displayed in WordPress admin bar
 - **Order Notes**: Automatic order notes added on invoice generation success/failure
