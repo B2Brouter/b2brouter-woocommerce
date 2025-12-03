@@ -213,17 +213,29 @@ class Invoice_Generator {
 
             // Auto-save PDF if enabled
             if ($this->settings->get_auto_save_pdf()) {
-                // Wait a moment for B2Brouter to process the invoice
-                sleep(2);
+                try {
+                    // Retry PDF download with exponential backoff
+                    // PDF generation is asynchronous, so we use polling with retries
+                    $pdf_result = API_Retry::execute(function() use ($order_id) {
+                        return $this->save_invoice_pdf($order_id, false);
+                    }, array(
+                        'max_attempts' => 5,
+                        'initial_delay' => 1,
+                        'retryable_exceptions' => array(
+                            'B2BRouter\Exception\ResourceNotFoundException',
+                        ),
+                    ));
 
-                // Try to download and save PDF
-                $pdf_result = $this->save_invoice_pdf($order_id, false);
-
-                if ($pdf_result['success']) {
-                    $pdf_note = $is_refund
-                        ? __('Credit note PDF automatically downloaded and cached locally', 'b2brouter-woocommerce')
-                        : __('Invoice PDF automatically downloaded and cached locally', 'b2brouter-woocommerce');
-                    $note_target->add_order_note($pdf_note);
+                    if ($pdf_result['success']) {
+                        $pdf_note = $is_refund
+                            ? __('Credit note PDF automatically downloaded and cached locally', 'b2brouter-woocommerce')
+                            : __('Invoice PDF automatically downloaded and cached locally', 'b2brouter-woocommerce');
+                        $note_target->add_order_note($pdf_note);
+                    }
+                } catch (\Exception $e) {
+                    // PDF download failed after retries, but invoice was created successfully
+                    // Log the error but don't fail the entire operation
+                    error_log('B2Brouter auto-save PDF failed after retries: ' . $e->getMessage());
                 }
             }
 
