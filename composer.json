@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=7.4",
-        "b2brouter/b2brouter-php": "^0.9.0"
+        "b2brouter/b2brouter-php": "^1.0.0"
     },
     "autoload": {
         "psr-4": {

@@ -5,6 +5,37 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.2] - 2025-12-05
+
+### Changed
+- **SDK Update**: Upgraded to B2Brouter PHP SDK v1.0.0
+  - Updated from v0.9.1 to stable v1.0.0 release
+  - All 247 tests pass with new SDK version
+  - No breaking changes detected
+
+### Fixed
+- **Credit Note Number Collision**: Fixed "Number has already been taken" error for credit notes
+  - Credit notes (refunds) now use refund ID instead of parent order number for uniqueness
+  - Applies to 'woocommerce' numbering pattern (default)
+  - Sequential and automatic numbering patterns already handled uniqueness correctly
+- **WordPress 6.7.0 Compatibility**: Fixed translation loading timing
+  - Resolved incorrect timing of translation loading to comply with WordPress 6.7.0 requirements
+  - WordPress 6.7.0 introduced stricter checks requiring translations to be loaded at the 'init' action or later
+- **Refund Invoice Generation**: Fixed "Call to undefined method OrderRefund::get_order_number()" error
+  - Fixed error that occurred when generating credit notes for refunds in WooCommerce HPOS mode
+- **Invoice Status Sync UX**: Enhanced status synchronization display
+  - Display actual invoice status immediately upon creation instead of generic "draft" placeholder
+  - Store initial invoice status from API response on creation
+  - Schedule single status check 10 seconds after invoice generation
+  - Replace 'draft' default with 'pending' for unfetched statuses
+- **Invoice List Display**: Fixed refund display issues
+  - Handle OrderRefund objects that lack get_order_number() and billing methods
+  - Retrieve customer information from parent order for refunds
+  - Link refund rows to parent order edit page instead of empty href
+  - Use environment-aware B2Brouter web app URLs (staging vs production)
+
+---
+
 ## [0.9.1] - 2025-12-03
 
 ### Added
@@ -188,4 +219,6 @@ We welcome feedback on all aspects of the plugin. Please test in a staging envir
 
 ---
 
+[0.9.2]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.2
+[0.9.1]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.1
 [0.9.0]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.0
