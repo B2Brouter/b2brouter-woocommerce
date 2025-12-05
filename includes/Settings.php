@@ -131,6 +131,22 @@ class Settings {
     }
 
     /**
+     * Get web app base URL for current environment
+     *
+     * @since 1.0.0
+     * @return string The web app base URL
+     */
+    public function get_web_app_base_url() {
+        $environment = $this->get_environment();
+
+        if ($environment === 'production') {
+            return 'https://app.b2brouter.net';
+        }
+
+        return 'https://app-staging.b2brouter.net';
+    }
+
+    /**
      * Get invoice mode (automatic or manual)
      *
      * @since 1.0.0

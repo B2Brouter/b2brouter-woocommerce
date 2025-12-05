@@ -242,6 +242,10 @@ class InvoiceListTableTest extends TestCase {
      * @return void
      */
     public function test_column_invoice_number_with_invoice() {
+        // Configure mock settings to return web app base URL
+        $this->mock_settings->method('get_web_app_base_url')
+            ->willReturn('https://app.b2brouter.net');
+
         // Create real WC_Order instance with invoice ID set
         $mock_order = new WC_Order(123);
         $mock_order->update_meta_data('_b2brouter_invoice_id', 'inv_123abc');
@@ -254,7 +258,7 @@ class InvoiceListTableTest extends TestCase {
         $result = $method->invoke($this->list_table, $mock_order);
 
         $this->assertStringContainsString('inv_123abc', $result);
-        $this->assertStringContainsString('app.b2brouter.com', $result);
+        $this->assertStringContainsString('app.b2brouter.net', $result);
         $this->assertStringContainsString('target="_blank"', $result);
         $this->assertStringContainsString('dashicons-external', $result);
     }
@@ -275,7 +279,7 @@ class InvoiceListTableTest extends TestCase {
         $result = $method->invoke($this->list_table, $mock_order);
 
         $this->assertStringContainsString('—', $result);
-        $this->assertStringNotContainsString('app.b2brouter.com', $result);
+        $this->assertStringNotContainsString('app.b2brouter.net', $result);
     }
 
     /**

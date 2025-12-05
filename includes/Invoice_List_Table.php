@@ -213,17 +213,15 @@ class Invoice_List_Table extends \WP_List_Table {
      */
     protected function column_order_number($order) {
         $order_id = $order->get_id();
-        $order_number = $order->get_order_number();
-        $edit_url = get_edit_post_link($order_id);
-
         $is_refund = $order->get_type() === 'shop_order_refund';
 
         if ($is_refund) {
             $parent_order = wc_get_order($order->get_parent_id());
             if ($parent_order) {
+                $parent_edit_url = get_edit_post_link($parent_order->get_id());
                 return sprintf(
                     '<a href="%s"><strong>%s</strong></a><br><small>%s #%s</small>',
-                    esc_url($edit_url),
+                    esc_url($parent_edit_url),
                     esc_html__('Refund', 'b2brouter-woocommerce'),
                     esc_html__('for Order', 'b2brouter-woocommerce'),
                     esc_html($parent_order->get_order_number())
@@ -231,6 +229,8 @@ class Invoice_List_Table extends \WP_List_Table {
             }
         }
 
+        $edit_url = get_edit_post_link($order_id);
+        $order_number = $order->get_order_number();
         return sprintf(
             '<a href="%s"><strong>#%s</strong></a>',
             esc_url($edit_url),
@@ -246,6 +246,14 @@ class Invoice_List_Table extends \WP_List_Table {
      * @return string Customer name and email
      */
     protected function column_customer($order) {
+        // For refunds, get customer info from parent order
+        if ($order->get_type() === 'shop_order_refund') {
+            $parent_order = wc_get_order($order->get_parent_id());
+            if ($parent_order) {
+                $order = $parent_order;
+            }
+        }
+
         $customer_name = '';
 
         if ($order->get_billing_first_name() || $order->get_billing_last_name()) {
@@ -289,7 +297,8 @@ class Invoice_List_Table extends \WP_List_Table {
             return '<span style="color: #999;">—</span>';
         }
 
-        $b2brouter_url = 'https://app.b2brouter.com/invoices/' . esc_attr($invoice_id);
+        $web_app_base_url = $this->settings->get_web_app_base_url();
+        $b2brouter_url = $web_app_base_url . '/invoices/' . esc_attr($invoice_id);
 
         return sprintf(
             '<a href="%s" target="_blank" title="%s">%s <span class="dashicons dashicons-external" style="font-size: 12px; text-decoration: none;"></span></a>',
