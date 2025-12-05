@@ -29,16 +29,6 @@ define('B2BROUTER_WC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('B2BROUTER_WC_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('B2BROUTER_WC_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
-// Check if WooCommerce is active
-if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-    add_action('admin_notices', function() {
-        echo '<div class="notice notice-error"><p>';
-        echo esc_html__('B2Brouter for WooCommerce requires WooCommerce to be installed and active.', 'b2brouter-woocommerce');
-        echo '</p></div>';
-    });
-    return;
-}
-
 // Load Composer autoloader
 if (file_exists(B2BROUTER_WC_PLUGIN_DIR . 'vendor/autoload.php')) {
     require_once B2BROUTER_WC_PLUGIN_DIR . 'vendor/autoload.php';
@@ -106,9 +96,12 @@ class B2Brouter_WooCommerce {
         // Declare WooCommerce HPOS compatibility
         add_action('before_woocommerce_init', array($this, 'declare_hpos_compatibility'));
 
-        // Initialize hooks
-        add_action('plugins_loaded', array($this, 'load_textdomain'));
-        add_action('init', array($this, 'init_plugin'));
+        // Load translations on init (WordPress 6.7+ recommendation)
+        add_action('init', array($this, 'load_textdomain'), 5);
+
+        // Check WooCommerce dependency and initialize plugin
+        // Use plugins_loaded with priority 20 (after WooCommerce loads at priority 10)
+        add_action('plugins_loaded', array($this, 'check_dependencies_and_init'), 20);
     }
 
     /**
@@ -128,12 +121,51 @@ class B2Brouter_WooCommerce {
     }
 
     /**
+     * Check dependencies and initialize plugin
+     *
+     * @since 1.0.0
+     * @return void
+     */
+    public function check_dependencies_and_init() {
+        // Check if WooCommerce is active
+        if (!$this->is_woocommerce_active()) {
+            add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
+            return;
+        }
+
+        // Initialize plugin
+        $this->init_plugin();
+    }
+
+    /**
+     * Check if WooCommerce is active
+     *
+     * @since 1.0.0
+     * @return bool True if WooCommerce is active
+     */
+    private function is_woocommerce_active() {
+        return class_exists('WooCommerce') || in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')));
+    }
+
+    /**
+     * Display admin notice when WooCommerce is missing
+     *
+     * @since 1.0.0
+     * @return void
+     */
+    public function woocommerce_missing_notice() {
+        echo '<div class="notice notice-error"><p>';
+        echo esc_html__('B2Brouter for WooCommerce requires WooCommerce to be installed and active.', 'b2brouter-woocommerce');
+        echo '</p></div>';
+    }
+
+    /**
      * Initialize plugin dependencies and classes
      *
      * @since 1.0.0
      * @return void
      */
-    public function init_plugin() {
+    private function init_plugin() {
         // Initialize dependency container
         $this->init_container();
 
