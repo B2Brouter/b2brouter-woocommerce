@@ -1311,10 +1311,9 @@ class Invoice_Generator {
 
             case 'woocommerce':
                 // Use WooCommerce order number
-                // For refunds, get the parent order number
-                if ($this->is_refund($order)) {
-                    $parent_order = wc_get_order($order->get_parent_id());
-                    return $parent_order ? $parent_order->get_order_number() : $order->get_id();
+                // For credit notes (refunds), use the refund ID to ensure uniqueness
+                if ($is_credit_note) {
+                    return (string) $order->get_id();
                 }
                 return $order->get_order_number();
 
@@ -1329,10 +1328,9 @@ class Invoice_Generator {
 
             default:
                 // Default to WooCommerce order number
-                // For refunds, get the parent order number
-                if ($this->is_refund($order)) {
-                    $parent_order = wc_get_order($order->get_parent_id());
-                    return $parent_order ? $parent_order->get_order_number() : $order->get_id();
+                // For credit notes (refunds), use the refund ID to ensure uniqueness
+                if ($is_credit_note) {
+                    return (string) $order->get_id();
                 }
                 return $order->get_order_number();
         }
