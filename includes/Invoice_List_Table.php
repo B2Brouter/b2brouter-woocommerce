@@ -340,7 +340,7 @@ class Invoice_List_Table extends \WP_List_Table {
         $status = $order->get_meta('_b2brouter_invoice_status');
 
         if (empty($status)) {
-            $status = 'draft';
+            $status = 'pending';
         }
 
         return sprintf(

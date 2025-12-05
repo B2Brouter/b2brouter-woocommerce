@@ -310,8 +310,8 @@ class OrderHandlerTest extends TestCase {
         $output = ob_get_clean();
 
         // New implementation shows status text instead of dashicons
-        // Should show "Draft" as default status when no status is set
-        $this->assertStringContainsString('Draft', $output);
+        // Should show "Pending" as default status when no status is set
+        $this->assertStringContainsString('Pending', $output);
         $this->assertStringContainsString('color:', $output);
 
         unset($wc_mock_orders[204]);

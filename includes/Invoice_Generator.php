@@ -180,7 +180,18 @@ class Invoice_Generator {
             // Store the series_code we sent to the API (from invoice_data, not from response)
             $order->add_meta_data('_b2brouter_invoice_series_code', $invoice_data['series_code'] ?? '', true);
             $order->add_meta_data('_b2brouter_invoice_date', current_time('mysql'), true);
+
+            // Store initial status from API response
+            if (isset($invoice['state'])) {
+                $initial_status = strtolower($invoice['state']);
+                $order->add_meta_data('_b2brouter_invoice_status', $initial_status, true);
+                $order->add_meta_data('_b2brouter_invoice_status_updated', time(), true);
+            }
+
             $order->save();
+
+            // Schedule a single status check 10 seconds in the future
+            wp_schedule_single_event(time() + 10, 'b2brouter_sync_single_invoice', array($order_id));
 
             // Add order note with context-aware message
             // For refunds, add note to parent order instead of refund itself

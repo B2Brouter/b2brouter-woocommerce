@@ -306,7 +306,7 @@ class InvoiceListTableTest extends TestCase {
     }
 
     /**
-     * Test column_status defaults to draft
+     * Test column_status defaults to pending
      *
      * @return void
      */
@@ -323,8 +323,8 @@ class InvoiceListTableTest extends TestCase {
 
         $result = $method->invoke($this->list_table, $mock_order);
 
-        $this->assertStringContainsString('status-draft', $result);
-        $this->assertStringContainsString('Draft', $result);
+        $this->assertStringContainsString('status-pending', $result);
+        $this->assertStringContainsString('Pending', $result);
     }
 
     /**

@@ -612,6 +612,25 @@ if (!function_exists('wp_schedule_event')) {
     }
 }
 
+if (!function_exists('wp_schedule_single_event')) {
+    /**
+     * Mock wp_schedule_single_event function
+     *
+     * @param int $timestamp Timestamp
+     * @param string $hook Hook name
+     * @param array $args Arguments
+     * @return bool Success
+     */
+    function wp_schedule_single_event($timestamp, $hook, $args = array()) {
+        global $wp_cron_events;
+        $wp_cron_events[$hook] = array(
+            'timestamp' => $timestamp,
+            'args' => $args
+        );
+        return true;
+    }
+}
+
 if (!function_exists('wp_upload_dir')) {
     /**
      * Mock wp_upload_dir function

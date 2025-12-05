@@ -515,11 +515,12 @@ class Order_Handler {
         $status = $order->get_meta('_b2brouter_invoice_status');
 
         if (empty($status)) {
-            $status = 'draft'; // Default if not yet synced
+            $status = 'pending'; // Status not yet fetched
         }
 
         // Display status badge with color
         $status_colors = array(
+            'pending' => '#999',
             'draft' => '#999',
             'sent' => '#00a32a',
             'accepted' => '#00a32a',
@@ -568,11 +569,12 @@ class Order_Handler {
         $status = $order->get_meta('_b2brouter_invoice_status');
 
         if (empty($status)) {
-            $status = 'draft'; // Default if not yet synced
+            $status = 'pending'; // Status not yet fetched
         }
 
         // Display status badge with color
         $status_colors = array(
+            'pending' => '#999',
             'draft' => '#999',
             'sent' => '#00a32a',
             'accepted' => '#00a32a',

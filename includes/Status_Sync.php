@@ -58,6 +58,7 @@ class Status_Sync {
 
         // Register cron hooks
         add_action('b2brouter_sync_invoice_status', array($this, 'sync_batch'));
+        add_action('b2brouter_sync_single_invoice', array($this, 'sync_single_invoice_scheduled'));
         add_filter('cron_schedules', array($this, 'add_custom_schedules'));
     }
 
@@ -346,6 +347,17 @@ class Status_Sync {
 
         $options = array('api_base' => $this->settings->get_api_base_url());
         return new \B2BRouter\B2BRouterClient($api_key, $options);
+    }
+
+    /**
+     * Scheduled single invoice sync (called by wp-cron)
+     *
+     * @since 1.0.0
+     * @param int $order_id Order ID to sync
+     * @return void
+     */
+    public function sync_single_invoice_scheduled($order_id) {
+        $this->sync_single_invoice($order_id);
     }
 
     /**
