@@ -79,13 +79,24 @@ class Admin {
      * @return void
      */
     public function add_admin_menu() {
+      $icon_data = 'dashicons-media-document';
+
+      $icon_path = dirname( __DIR__ ) . '/assets/img/b2b-icon-logo.svg';
+
+      if ( file_exists( $icon_path ) ) {
+          $icon_svg = file_get_contents( $icon_path );
+          if ( $icon_svg !== false ) {
+              $icon_data = 'data:image/svg+xml;base64,' . base64_encode( $icon_svg );
+          }
+      }
+
         add_menu_page(
             __('B2Brouter', 'b2brouter-woocommerce'),
             __('B2Brouter', 'b2brouter-woocommerce'),
             'manage_options',
             'b2brouter',
             array($this, 'render_settings_page'),
-            'dashicons-media-document',
+            $icon_data,
             56
         );
 
