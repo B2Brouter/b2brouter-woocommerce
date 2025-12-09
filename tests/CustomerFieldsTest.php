@@ -285,6 +285,177 @@ class CustomerFieldsTest extends TestCase {
     }
 
     /**
+     * Test TIN is saved from classic checkout (HPOS compatible)
+     *
+     * @return void
+     */
+    public function test_save_tin_to_order_meta() {
+        global $wc_mock_orders;
+
+        // Create mock order using the real WC_Order class from bootstrap
+        $mock_order = new \WC_Order(123);
+
+        // Set up global $_POST
+        $_POST['billing_tin'] = 'ES12345678Z';
+
+        // Mock the order ID
+        $order_id = 123;
+
+        // Register mock order so wc_get_order() can find it
+        $wc_mock_orders[$order_id] = $mock_order;
+
+        // Call the method
+        $this->customer_fields->save_tin_to_order_meta($order_id);
+
+        // Verify TIN was saved
+        $this->assertEquals('ES12345678Z', $mock_order->get_meta('_billing_tin'));
+
+        // Clean up
+        unset($_POST['billing_tin']);
+        unset($wc_mock_orders[$order_id]);
+    }
+
+    /**
+     * Test TIN is not saved from classic checkout when value is empty
+     *
+     * @return void
+     */
+    public function test_save_tin_to_order_meta_empty_value() {
+        global $wc_mock_orders;
+
+        // Create mock order
+        $mock_order = new \WC_Order(124);
+        $order_id = 124;
+        $wc_mock_orders[$order_id] = $mock_order;
+
+        // Set up global $_POST with empty TIN
+        $_POST['billing_tin'] = '';
+
+        // Call the method
+        $this->customer_fields->save_tin_to_order_meta($order_id);
+
+        // Verify TIN was not saved
+        $this->assertEquals('', $mock_order->get_meta('_billing_tin'));
+
+        // Clean up
+        unset($_POST['billing_tin']);
+        unset($wc_mock_orders[$order_id]);
+    }
+
+    /**
+     * Test TIN is not saved from classic checkout when POST field is missing
+     *
+     * @return void
+     */
+    public function test_save_tin_to_order_meta_no_post_data() {
+        global $wc_mock_orders;
+
+        // Create mock order
+        $mock_order = new \WC_Order(125);
+        $order_id = 125;
+        $wc_mock_orders[$order_id] = $mock_order;
+
+        // Ensure $_POST has no billing_tin
+        unset($_POST['billing_tin']);
+
+        // Call the method
+        $this->customer_fields->save_tin_to_order_meta($order_id);
+
+        // Verify TIN was not saved
+        $this->assertEquals('', $mock_order->get_meta('_billing_tin'));
+
+        // Clean up
+        unset($wc_mock_orders[$order_id]);
+    }
+
+    /**
+     * Test TIN is saved from admin order editing (HPOS compatible)
+     *
+     * @return void
+     */
+    public function test_save_tin_from_admin_order() {
+        global $wc_mock_orders;
+
+        // Create mock order
+        $mock_order = new \WC_Order(456);
+
+        // Set up global $_POST
+        $_POST['_billing_tin'] = 'FR12345678901';
+
+        // Mock the order ID
+        $order_id = 456;
+
+        // Register mock order so wc_get_order() can find it
+        $wc_mock_orders[$order_id] = $mock_order;
+
+        // Create empty post object (not actually used by the method)
+        $mock_post = (object) array('ID' => $order_id);
+
+        // Call the method
+        $this->customer_fields->save_tin_from_admin_order($order_id, $mock_post);
+
+        // Verify TIN was saved
+        $this->assertEquals('FR12345678901', $mock_order->get_meta('_billing_tin'));
+
+        // Clean up
+        unset($_POST['_billing_tin']);
+        unset($wc_mock_orders[$order_id]);
+    }
+
+    /**
+     * Test TIN is not saved from admin order editing when POST field is missing
+     *
+     * @return void
+     */
+    public function test_save_tin_from_admin_order_no_post_data() {
+        global $wc_mock_orders;
+
+        // Create mock order
+        $mock_order = new \WC_Order(457);
+        $order_id = 457;
+        $wc_mock_orders[$order_id] = $mock_order;
+
+        // Ensure $_POST has no _billing_tin
+        unset($_POST['_billing_tin']);
+
+        // Create empty post object
+        $mock_post = (object) array('ID' => $order_id);
+
+        // Call the method
+        $this->customer_fields->save_tin_from_admin_order($order_id, $mock_post);
+
+        // Verify TIN was not saved
+        $this->assertEquals('', $mock_order->get_meta('_billing_tin'));
+
+        // Clean up
+        unset($wc_mock_orders[$order_id]);
+    }
+
+    /**
+     * Test TIN saving handles invalid order gracefully
+     *
+     * @return void
+     */
+    public function test_save_tin_to_order_meta_invalid_order() {
+        global $wc_mock_orders;
+
+        // Set up global $_POST
+        $_POST['billing_tin'] = 'ES12345678Z';
+
+        // Mock the order ID (not in $wc_mock_orders, so wc_get_order returns null)
+        $order_id = 999;
+
+        // Call the method - should not throw exception
+        $this->customer_fields->save_tin_to_order_meta($order_id);
+
+        // Clean up
+        unset($_POST['billing_tin']);
+
+        // Test passes if no exception is thrown
+        $this->assertTrue(true);
+    }
+
+    /**
      * Test hooks are registered
      *
      * @return void

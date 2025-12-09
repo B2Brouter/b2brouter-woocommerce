@@ -186,8 +186,12 @@ class Customer_Fields {
      */
     public function save_tin_to_order_meta($order_id) {
         if (isset($_POST[self::TIN_FIELD_KEY]) && !empty($_POST[self::TIN_FIELD_KEY])) {
-            $tin = sanitize_text_field($_POST[self::TIN_FIELD_KEY]);
-            update_post_meta($order_id, self::TIN_META_KEY, $tin);
+            $order = wc_get_order($order_id);
+            if ($order) {
+                $tin = sanitize_text_field($_POST[self::TIN_FIELD_KEY]);
+                $order->update_meta_data(self::TIN_META_KEY, $tin);
+                $order->save();
+            }
         }
     }
 
@@ -227,8 +231,12 @@ class Customer_Fields {
      */
     public function save_tin_from_admin_order($order_id, $post) {
         if (isset($_POST['_billing_tin'])) {
-            $tin = sanitize_text_field($_POST['_billing_tin']);
-            update_post_meta($order_id, self::TIN_META_KEY, $tin);
+            $order = wc_get_order($order_id);
+            if ($order) {
+                $tin = sanitize_text_field($_POST['_billing_tin']);
+                $order->update_meta_data(self::TIN_META_KEY, $tin);
+                $order->save();
+            }
         }
     }
 
