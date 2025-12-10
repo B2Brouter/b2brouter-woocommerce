@@ -71,10 +71,23 @@ class Status_Sync {
     public function activate() {
         // Schedule cron if not already scheduled
         if (!wp_next_scheduled('b2brouter_sync_invoice_status')) {
+            // Determine schedule based on webhook settings
+            $schedule = 'hourly';
+
+            if ($this->settings->get_webhook_enabled()) {
+                // If webhooks are enabled, reduce polling frequency
+                if ($this->settings->get_webhook_fallback_polling()) {
+                    $schedule = 'six_hourly'; // Fallback polling every 6 hours
+                } else {
+                    // Webhooks enabled, no fallback - don't schedule polling
+                    return;
+                }
+            }
+
             // Randomize the minute within the next hour to distribute API load
             $random_minutes = wp_rand(0, 59);
             $first_run = strtotime('+' . $random_minutes . ' minutes', time());
-            wp_schedule_event($first_run, 'hourly', 'b2brouter_sync_invoice_status');
+            wp_schedule_event($first_run, $schedule, 'b2brouter_sync_invoice_status');
         }
     }
 
@@ -93,6 +106,38 @@ class Status_Sync {
     }
 
     /**
+     * Reschedule cron based on current webhook settings
+     *
+     * @since 1.0.0
+     * @return void
+     */
+    public function reschedule_cron() {
+        // Clear existing schedule
+        $timestamp = wp_next_scheduled('b2brouter_sync_invoice_status');
+        if ($timestamp) {
+            wp_unschedule_event($timestamp, 'b2brouter_sync_invoice_status');
+        }
+
+        // Determine new schedule based on webhook settings
+        $schedule = 'hourly';
+
+        if ($this->settings->get_webhook_enabled()) {
+            // If webhooks are enabled, reduce polling frequency
+            if ($this->settings->get_webhook_fallback_polling()) {
+                $schedule = 'six_hourly'; // Fallback polling every 6 hours
+            } else {
+                // Webhooks enabled, no fallback - don't schedule polling
+                return;
+            }
+        }
+
+        // Schedule with randomized start time
+        $random_minutes = wp_rand(0, 59);
+        $first_run = strtotime('+' . $random_minutes . ' minutes', time());
+        wp_schedule_event($first_run, $schedule, 'b2brouter_sync_invoice_status');
+    }
+
+    /**
      * Add custom cron schedules
      *
      * @since 1.0.0
@@ -100,7 +145,12 @@ class Status_Sync {
      * @return array Modified schedules
      */
     public function add_custom_schedules($schedules) {
-        // Add custom schedules if needed in the future
+        // Add 6-hourly schedule for webhook fallback polling
+        $schedules['six_hourly'] = array(
+            'interval' => 21600, // 6 hours in seconds
+            'display' => __('Every 6 Hours', 'b2brouter-woocommerce')
+        );
+
         return $schedules;
     }
 
@@ -179,6 +229,7 @@ class Status_Sync {
         }
 
         $one_hour_ago = time() - HOUR_IN_SECONDS;
+        $webhook_cutoff = time() - (6 * HOUR_IN_SECONDS); // 6 hours
         $orders_needing_sync = array();
 
         foreach ($order_ids as $order_id) {
@@ -193,6 +244,14 @@ class Status_Sync {
 
             $status = $order->get_meta('_b2brouter_invoice_status');
             $status_updated = $order->get_meta('_b2brouter_invoice_status_updated');
+
+            // Skip if recently updated via webhook
+            if ($this->settings->get_webhook_enabled()) {
+                $last_webhook = $order->get_meta('_b2brouter_last_webhook_received');
+                if (!empty($last_webhook) && $last_webhook > $webhook_cutoff) {
+                    continue; // Skip - webhook is working
+                }
+            }
 
             // Include if:
             // - No status set yet

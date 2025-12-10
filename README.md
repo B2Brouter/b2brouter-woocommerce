@@ -77,6 +77,23 @@ B2Brouter for WooCommerce integrates your WooCommerce store with B2Brouter's ele
 - **On-Demand Download**: Manual download trigger with automatic caching
 - **Force Regeneration**: Option to force PDF regeneration and update cache
 
+### Invoice Status Sync
+
+Get real-time invoice status updates in your WooCommerce orders with two sync methods:
+
+**Real-Time Webhooks** (Recommended - Requires configuration):
+- **Instant updates** (< 1 second) when invoice status changes in B2Brouter
+- Status appears immediately after generation - no waiting
+- Secure HMAC-SHA256 signature verification
+- Optional 6-hourly backup polling for reliability (enabled by default)
+- See [Webhook Setup](#webhook-setup-recommended) below for configuration
+
+**Automatic Polling** (Default - Works out of the box):
+- Hourly status checks for all pending invoices
+- 10-second immediate check after invoice generation
+- No additional configuration needed
+- Works everywhere, including shared hosting
+
 ### Admin Interface
 
 - **Settings Panel**: Dedicated settings page under B2Brouter menu with API key validation
@@ -89,9 +106,6 @@ B2Brouter for WooCommerce integrates your WooCommerce store with B2Brouter's ele
   - Pagination and sorting capabilities
   - Bulk PDF download functionality
   - View/Download buttons for individual invoices
-- **Invoice Status Sync**: Automatic hourly synchronization of invoice status from B2Brouter API
-  - Batch processing for performance (50 invoices per run)
-  - Smart detection of final states to avoid unnecessary API calls
 - **Bulk Actions**: Invoice generation available in WooCommerce orders bulk actions menu
 - **Admin Bar Counter**: Transaction count displayed in WordPress admin bar
 - **Order Notes**: Automatic order notes added on invoice generation success/failure
@@ -215,6 +229,17 @@ Example patterns:
 - `{order_number}` → `1234`
 - Sequential → `00001`, `00002`, `00003`
 
+### Webhook Configuration (Optional - Recommended)
+
+Enable real-time invoice status updates for the best user experience:
+
+- **Enable Webhooks**: Receive instant status updates (< 1 second)
+- **Webhook URL**: Automatically generated endpoint (copy to B2Brouter dashboard)
+- **Webhook Secret**: Enter the secret provided by B2Brouter for security
+- **Enable Fallback Polling**: Keep 6-hourly backup polling enabled (recommended)
+
+**See the [Webhook Setup](#webhook-setup-recommended) section below for step-by-step instructions.**
+
 ---
 
 ## Usage
@@ -281,6 +306,64 @@ TIN field automatically appears in checkout. Customer can optionally provide:
 - Included automatically in invoice data
 
 For intra-EU B2B transactions with TIN, reverse charge (AE category) is automatically applied.
+
+### Webhook Setup (Recommended)
+
+Get instant invoice status updates instead of waiting for hourly checks. This 5-minute setup dramatically improves the user experience.
+
+**Why use webhooks?**
+- Invoice status appears in < 1 second
+- Customers see accurate status immediately
+- Reduces API calls and server load
+- More reliable with built-in fallback polling
+
+**Setup Steps:**
+
+1. **In B2Brouter Dashboard** ([app.b2brouter.net](https://app.b2brouter.net)):
+   - Go to **Developers → Webhooks**
+   - Click **"Create Webhook Endpoint"**
+   - Enter a description: "WooCommerce Store"
+   - Select events to send:
+     - ✅ `issued_invoice.state_change` (required)
+   - **Don't enter the URL yet** - we'll get it from WordPress
+
+2. **In WordPress Admin**:
+   - Go to **B2Brouter → Settings**
+   - Scroll to **"Webhook Configuration"**
+   - Check **"Enable Webhooks"**
+   - **Copy the Webhook URL** from the readonly field (it looks like: `https://yoursite.com/wp-json/b2brouter/v1/webhook`)
+   - Save settings
+
+3. **Back in B2Brouter Dashboard**:
+   - Paste the Webhook URL you copied
+   - **Copy the generated Webhook Secret**
+   - Save the webhook endpoint
+
+4. **Finish in WordPress Admin**:
+   - Return to **B2Brouter → Settings → Webhook Configuration**
+   - **Paste the Webhook Secret** from B2Brouter
+   - Leave **"Enable Fallback Polling"** checked (recommended for reliability)
+   - Click **"Save Settings"**
+
+**That's it!** Your store now receives instant status updates.
+
+**Troubleshooting:**
+
+- **Webhook not working?**
+  - Verify the Webhook URL in B2Brouter exactly matches the one shown in WordPress
+  - Ensure the Webhook Secret is pasted correctly (no extra spaces)
+  - Check that your WordPress site is accessible from the internet (webhooks won't work on localhost)
+  - Some hosting providers block incoming webhooks - contact your host if needed
+
+- **Need to test on localhost?**
+  - See [docs/LOCAL_DEVELOPMENT_SETUP.md](docs/LOCAL_DEVELOPMENT_SETUP.md) for detailed local testing instructions
+
+**Security Notes:**
+
+- All webhook requests are cryptographically signed with HMAC-SHA256
+- Requests with invalid signatures are rejected
+- Replay attacks are prevented with a 5-minute timestamp validation window
+- Your webhook secret is stored securely in WordPress options
 
 ---
 

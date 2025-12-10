@@ -38,6 +38,9 @@ class Settings {
     const OPTION_INVOICE_SERIES_CODE = 'b2brouter_invoice_series_code';
     const OPTION_CREDIT_NOTE_SERIES_CODE = 'b2brouter_credit_note_series_code';
     const OPTION_INVOICE_NUMBERING_PATTERN = 'b2brouter_invoice_numbering_pattern';
+    const OPTION_WEBHOOK_SECRET = 'b2brouter_webhook_secret';
+    const OPTION_WEBHOOK_ENABLED = 'b2brouter_webhook_enabled';
+    const OPTION_WEBHOOK_FALLBACK_POLLING = 'b2brouter_webhook_fallback_polling';
 
     /**
      * Constructor
@@ -121,6 +124,11 @@ class Settings {
      * @return string The API base URL
      */
     public function get_api_base_url() {
+        // Allow developers to override via wp-config.php constant
+        if (defined('B2BROUTER_DEV_API_BASE') && B2BROUTER_DEV_API_BASE) {
+            return B2BROUTER_DEV_API_BASE;
+        }
+
         $environment = $this->get_environment();
 
         if ($environment === 'production') {
@@ -556,5 +564,78 @@ class Settings {
         $next = $current + 1;
         update_option($option_name, $next);
         return $next;
+    }
+
+    /**
+     * Get webhook secret
+     *
+     * @since 1.0.0
+     * @return string Webhook secret
+     */
+    public function get_webhook_secret() {
+        return get_option(self::OPTION_WEBHOOK_SECRET, '');
+    }
+
+    /**
+     * Set webhook secret
+     *
+     * @since 1.0.0
+     * @param string $secret Webhook secret
+     * @return bool True on success, false on failure
+     */
+    public function set_webhook_secret($secret) {
+        return update_option(self::OPTION_WEBHOOK_SECRET, sanitize_text_field($secret));
+    }
+
+    /**
+     * Check if webhooks are enabled
+     *
+     * @since 1.0.0
+     * @return bool True if enabled, false otherwise
+     */
+    public function get_webhook_enabled() {
+        return get_option(self::OPTION_WEBHOOK_ENABLED, 'no') === 'yes';
+    }
+
+    /**
+     * Set webhook enabled status
+     *
+     * @since 1.0.0
+     * @param bool $enabled Whether webhooks should be enabled
+     * @return bool True on success, false on failure
+     */
+    public function set_webhook_enabled($enabled) {
+        return update_option(self::OPTION_WEBHOOK_ENABLED, $enabled ? 'yes' : 'no');
+    }
+
+    /**
+     * Check if fallback polling is enabled
+     *
+     * @since 1.0.0
+     * @return bool True if enabled, false otherwise
+     */
+    public function get_webhook_fallback_polling() {
+        return get_option(self::OPTION_WEBHOOK_FALLBACK_POLLING, 'yes') === 'yes';
+    }
+
+    /**
+     * Set webhook fallback polling status
+     *
+     * @since 1.0.0
+     * @param bool $enabled Whether fallback polling should be enabled
+     * @return bool True on success, false on failure
+     */
+    public function set_webhook_fallback_polling($enabled) {
+        return update_option(self::OPTION_WEBHOOK_FALLBACK_POLLING, $enabled ? 'yes' : 'no');
+    }
+
+    /**
+     * Get webhook URL
+     *
+     * @since 1.0.0
+     * @return string Webhook endpoint URL
+     */
+    public function get_webhook_url() {
+        return rest_url('b2brouter/v1/webhook');
     }
 }

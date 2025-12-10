@@ -38,15 +38,25 @@ class Admin {
     private $invoice_generator;
 
     /**
+     * Status Sync instance
+     *
+     * @since 1.0.0
+     * @var Status_Sync
+     */
+    private $status_sync;
+
+    /**
      * Constructor
      *
      * @since 1.0.0
      * @param Settings $settings Settings instance
      * @param Invoice_Generator $invoice_generator Invoice generator instance
+     * @param Status_Sync $status_sync Status sync instance
      */
-    public function __construct(Settings $settings, Invoice_Generator $invoice_generator) {
+    public function __construct(Settings $settings, Invoice_Generator $invoice_generator, Status_Sync $status_sync = null) {
         $this->settings = $settings;
         $this->invoice_generator = $invoice_generator;
+        $this->status_sync = $status_sync;
 
         // Add admin menu
         add_action('admin_menu', array($this, 'add_admin_menu'));
@@ -402,6 +412,36 @@ class Admin {
                 $invoice_mode = $this->settings->get_invoice_mode();
             }
 
+            // Save webhook settings
+            $webhook_enabled = isset($_POST['b2brouter_webhook_enabled']) && $_POST['b2brouter_webhook_enabled'] === 'yes';
+            $webhook_enabled_changed = $webhook_enabled !== $this->settings->get_webhook_enabled();
+            $this->settings->set_webhook_enabled($webhook_enabled);
+
+            if (isset($_POST['b2brouter_webhook_secret'])) {
+                $webhook_secret = sanitize_text_field($_POST['b2brouter_webhook_secret']);
+
+                // Validate webhook secret if webhooks are enabled
+                if ($webhook_enabled && empty($webhook_secret)) {
+                    add_settings_error(
+                        'b2brouter_webhook_secret',
+                        'empty_webhook_secret',
+                        __('Webhook secret is required when webhooks are enabled.', 'b2brouter-woocommerce'),
+                        'warning'
+                    );
+                }
+
+                $this->settings->set_webhook_secret($webhook_secret);
+            }
+
+            $webhook_fallback = isset($_POST['b2brouter_webhook_fallback_polling']) && $_POST['b2brouter_webhook_fallback_polling'] === 'yes';
+            $webhook_fallback_changed = $webhook_fallback !== $this->settings->get_webhook_fallback_polling();
+            $this->settings->set_webhook_fallback_polling($webhook_fallback);
+
+            // Reschedule cron if webhook settings changed
+            if (($webhook_enabled_changed || $webhook_fallback_changed) && $this->status_sync) {
+                $this->status_sync->reschedule_cron();
+            }
+
             // Save PDF auto-save setting
             $auto_save_enabled = isset($_POST['b2brouter_auto_save_pdf']) && $_POST['b2brouter_auto_save_pdf'] === '1';
             $this->settings->set_auto_save_pdf($auto_save_enabled);
@@ -553,6 +593,88 @@ class Admin {
                                 </label>
                                 <p class="description"><?php esc_html_e('Generate invoice manually using a button in the order admin', 'b2brouter-woocommerce'); ?></p>
                             </fieldset>
+                        </td>
+                    </tr>
+                </table>
+
+                <h2><?php esc_html_e('Webhook Configuration', 'b2brouter-woocommerce'); ?></h2>
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="b2brouter_webhook_enabled">
+                                <?php esc_html_e('Enable Webhooks', 'b2brouter-woocommerce'); ?>
+                            </label>
+                        </th>
+                        <td>
+                            <input type="checkbox"
+                                   name="b2brouter_webhook_enabled"
+                                   id="b2brouter_webhook_enabled"
+                                   value="yes"
+                                   <?php checked($this->settings->get_webhook_enabled(), true); ?> />
+                            <p class="description">
+                                <?php esc_html_e('Receive real-time invoice status updates from B2Brouter (recommended).', 'b2brouter-woocommerce'); ?>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="b2brouter_webhook_url">
+                                <?php esc_html_e('Webhook URL', 'b2brouter-woocommerce'); ?>
+                            </label>
+                        </th>
+                        <td>
+                            <input type="text"
+                                   name="b2brouter_webhook_url"
+                                   id="b2brouter_webhook_url"
+                                   value="<?php echo esc_attr($this->settings->get_webhook_url()); ?>"
+                                   readonly
+                                   class="regular-text"
+                                   style="background-color: #f0f0f0;" />
+                            <button type="button"
+                                    class="button button-secondary"
+                                    onclick="navigator.clipboard.writeText('<?php echo esc_attr($this->settings->get_webhook_url()); ?>'); this.textContent = '<?php esc_attr_e('Copied!', 'b2brouter-woocommerce'); ?>'; setTimeout(() => { this.textContent = '<?php esc_attr_e('Copy', 'b2brouter-woocommerce'); ?>'; }, 2000);">
+                                <?php esc_html_e('Copy', 'b2brouter-woocommerce'); ?>
+                            </button>
+                            <p class="description">
+                                <?php esc_html_e('Enter this URL in your B2Brouter dashboard webhook settings.', 'b2brouter-woocommerce'); ?>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="b2brouter_webhook_secret">
+                                <?php esc_html_e('Webhook Secret', 'b2brouter-woocommerce'); ?>
+                            </label>
+                        </th>
+                        <td>
+                            <input type="password"
+                                   name="b2brouter_webhook_secret"
+                                   id="b2brouter_webhook_secret"
+                                   value="<?php echo esc_attr($this->settings->get_webhook_secret()); ?>"
+                                   class="regular-text" />
+                            <p class="description">
+                                <?php esc_html_e('Enter the webhook secret from your B2Brouter dashboard to verify webhook authenticity.', 'b2brouter-woocommerce'); ?>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="b2brouter_webhook_fallback_polling">
+                                <?php esc_html_e('Fallback Polling', 'b2brouter-woocommerce'); ?>
+                            </label>
+                        </th>
+                        <td>
+                            <input type="checkbox"
+                                   name="b2brouter_webhook_fallback_polling"
+                                   id="b2brouter_webhook_fallback_polling"
+                                   value="yes"
+                                   <?php checked($this->settings->get_webhook_fallback_polling(), true); ?> />
+                            <p class="description">
+                                <?php esc_html_e('Keep polling as backup (checks every 6 hours if webhook fails). Recommended for reliability.', 'b2brouter-woocommerce'); ?>
+                            </p>
                         </td>
                     </tr>
                 </table>
