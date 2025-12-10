@@ -612,6 +612,38 @@ if (!function_exists('wp_schedule_event')) {
     }
 }
 
+if (!function_exists('wp_unschedule_event')) {
+    /**
+     * Mock wp_unschedule_event function
+     *
+     * @param int $timestamp Timestamp
+     * @param string $hook Hook name
+     * @param array $args Arguments
+     * @return bool Success
+     */
+    function wp_unschedule_event($timestamp, $hook, $args = array()) {
+        global $wp_cron_events;
+        if (isset($wp_cron_events[$hook])) {
+            unset($wp_cron_events[$hook]);
+            return true;
+        }
+        return false;
+    }
+}
+
+if (!function_exists('wp_rand')) {
+    /**
+     * Mock wp_rand function
+     *
+     * @param int $min Minimum value
+     * @param int $max Maximum value
+     * @return int Random number
+     */
+    function wp_rand($min = 0, $max = 0) {
+        return rand($min, $max);
+    }
+}
+
 if (!function_exists('wp_schedule_single_event')) {
     /**
      * Mock wp_schedule_single_event function
@@ -1229,7 +1261,34 @@ if (!function_exists('wc_get_orders')) {
      * @return array Orders
      */
     function wc_get_orders($args = array()) {
-        // Return empty array for tests
+        // Allow tests to override return value
+        if (isset($GLOBALS['test_wc_get_orders_return'])) {
+            return $GLOBALS['test_wc_get_orders_return'];
+        }
+
+        // Default: search in mock orders for matching meta
+        global $wc_mock_orders;
+        if (isset($args['meta_key']) && isset($args['meta_value'])) {
+            $results = array();
+            foreach ($wc_mock_orders as $order_id => $order) {
+                if ($order->get_meta($args['meta_key']) == $args['meta_value']) {
+                    $return_type = isset($args['return']) ? $args['return'] : 'objects';
+                    if ($return_type === 'ids') {
+                        $results[] = $order_id;
+                    } else {
+                        $results[] = $order;
+                    }
+
+                    // Check limit
+                    if (isset($args['limit']) && count($results) >= $args['limit']) {
+                        break;
+                    }
+                }
+            }
+            return $results;
+        }
+
+        // Return empty array for other cases
         return array();
     }
 }
@@ -1367,5 +1426,147 @@ if (!function_exists('wp_verify_nonce')) {
      */
     function wp_verify_nonce($nonce, $action = -1) {
         return true;
+    }
+}
+
+// Mock WP_REST_Request class
+if (!class_exists('WP_REST_Request')) {
+    /**
+     * Mock WP_REST_Request class
+     */
+    class WP_REST_Request {
+        private $body = '';
+        private $headers = array();
+        private $params = array();
+        private $method = 'GET';
+
+        public function __construct($method = 'GET', $route = '') {
+            $this->method = $method;
+        }
+
+        public function get_body() {
+            return $this->body;
+        }
+
+        public function set_body($body) {
+            $this->body = $body;
+        }
+
+        public function get_header($key) {
+            $key = strtolower($key);
+            return isset($this->headers[$key]) ? $this->headers[$key] : null;
+        }
+
+        public function set_header($key, $value) {
+            $this->headers[strtolower($key)] = $value;
+        }
+
+        public function get_headers() {
+            return $this->headers;
+        }
+
+        public function get_param($key) {
+            return isset($this->params[$key]) ? $this->params[$key] : null;
+        }
+
+        public function set_param($key, $value) {
+            $this->params[$key] = $value;
+        }
+
+        public function get_params() {
+            return $this->params;
+        }
+
+        public function get_method() {
+            return $this->method;
+        }
+    }
+}
+
+// Mock WP_REST_Response class
+if (!class_exists('WP_REST_Response')) {
+    /**
+     * Mock WP_REST_Response class
+     */
+    class WP_REST_Response {
+        private $data;
+        private $status;
+        private $headers = array();
+
+        public function __construct($data = null, $status = 200, $headers = array()) {
+            $this->data = $data;
+            $this->status = $status;
+            $this->headers = $headers;
+        }
+
+        public function get_data() {
+            return $this->data;
+        }
+
+        public function get_status() {
+            return $this->status;
+        }
+
+        public function get_headers() {
+            return $this->headers;
+        }
+
+        public function set_status($status) {
+            $this->status = $status;
+        }
+    }
+}
+
+// Global REST routes storage
+global $wp_rest_routes;
+$wp_rest_routes = array();
+
+// Mock register_rest_route function
+if (!function_exists('register_rest_route')) {
+    /**
+     * Mock register_rest_route function
+     *
+     * @param string $namespace Namespace
+     * @param string $route Route
+     * @param array $args Arguments
+     * @return bool Success
+     */
+    function register_rest_route($namespace, $route, $args = array()) {
+        global $wp_rest_routes;
+        $full_route = '/' . trim($namespace, '/') . '/' . trim($route, '/');
+        $wp_rest_routes[$full_route] = $args;
+        return true;
+    }
+}
+
+// Mock rest_url function
+if (!function_exists('rest_url')) {
+    /**
+     * Mock rest_url function
+     *
+     * @param string $path Path
+     * @return string REST URL
+     */
+    function rest_url($path = '') {
+        return 'http://example.com/wp-json/' . ltrim($path, '/');
+    }
+}
+
+// Mock do_action function
+if (!function_exists('do_action')) {
+    /**
+     * Mock do_action function
+     *
+     * @param string $hook Hook name
+     * @param mixed ...$args Arguments
+     * @return void
+     */
+    function do_action($hook, ...$args) {
+        global $wp_actions;
+        if (isset($wp_actions[$hook])) {
+            foreach ($wp_actions[$hook] as $action) {
+                call_user_func_array($action['callback'], $args);
+            }
+        }
     }
 }

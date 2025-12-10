@@ -190,8 +190,11 @@ class Invoice_Generator {
 
             $order->save();
 
-            // Schedule a single status check 10 seconds in the future
-            wp_schedule_single_event(time() + 10, 'b2brouter_sync_single_invoice', array($order_id));
+            // Schedule a single status check 10 seconds in the future (only if webhooks disabled)
+            if (!$this->settings->get_webhook_enabled()) {
+                wp_schedule_single_event(time() + 10, 'b2brouter_sync_single_invoice', array($order_id));
+            }
+            // Note: When webhooks are enabled, status will be updated in real-time (< 1 second)
 
             // Add order note with context-aware message
             // For refunds, add note to parent order instead of refund itself

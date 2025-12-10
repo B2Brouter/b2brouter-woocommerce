@@ -9,9 +9,10 @@ This guide provides multiple approaches to set up a local WordPress environment 
 ## Table of Contents
 
 1. [Option 1: PHP Built-in Server (Recommended - No Web Server)](#option-1-php-built-in-server-recommended)
-2. [Option 2: Nginx + PHP-FPM (Production-like)](#option-2-nginx--php-fpm)
-3. [Post-Installation: Plugin Setup](#post-installation-plugin-setup)
-4. [Troubleshooting](#troubleshooting)
+2. [Connecting to Local B2Brouter Instance (Advanced)](#connecting-to-local-b2brouter-instance)
+3. [Option 2: Nginx + PHP-FPM (Production-like)](#option-2-nginx--php-fpm)
+4. [Post-Installation: Plugin Setup](#post-installation-plugin-setup)
+5. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -90,6 +91,17 @@ define( 'WP_DEBUG_DISPLAY', false );
 ```
 
 Generate security keys from https://api.wordpress.org/secret-key/1.1/salt/ and replace the existing keys.
+
+**Optional - For Local B2Brouter Development:**
+
+If you're running a local instance of B2Brouter (not needed for most developers), add this line:
+
+```php
+/* Set B2Brouter API URL for local development */
+define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
+```
+
+See [Connecting to Local B2Brouter Instance](#connecting-to-local-b2brouter-instance) for complete setup instructions.
 
 ### Step 3: Start PHP Built-in Server
 
@@ -171,6 +183,270 @@ Activate in WordPress admin:
 2. Enter your B2Brouter API key
 3. Select invoice mode (automatic/manual)
 4. Click "Save Settings"
+
+---
+
+## Connecting to Local B2Brouter Instance
+
+**WARNING: Advanced Setup - Only for B2Brouter Core Developers**
+
+This section is for developers who are working on both the B2Brouter platform and the WooCommerce plugin simultaneously. Regular plugin developers can skip this section and use the production or staging B2Brouter API.
+
+### Prerequisites
+
+- Local B2Brouter instance running (typically on `http://api.b2brouter.local:3001`)
+- Basic understanding of B2Brouter platform architecture
+
+### Step 1: Configure System Hosts File
+
+Add local B2Brouter domains to your `/etc/hosts` file:
+
+```bash
+sudo vim /etc/hosts
+```
+
+Add these lines:
+```
+127.0.0.1    localhost api.b2brouter.local app.b2brouter.local
+```
+
+### Step 2: Configure WordPress to Use Local B2Brouter API
+
+Edit your WordPress configuration file:
+
+```bash
+vim ~/local-wordpress/wordpress/wp-config.php
+```
+
+Add this line **before** the `/* That's all, stop editing! */` comment:
+
+```php
+/* Set B2Brouter API URL for local development */
+define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
+```
+
+**How it works:**
+- The plugin checks for the `B2BROUTER_DEV_API_BASE` constant in `Settings::get_api_base_url()` (Settings.php:127-129)
+- If defined, it overrides the environment-based API URL (production/staging)
+- This allows testing against your local B2Brouter instance without changing plugin code
+
+### Step 3: Set Up Local B2Brouter Account
+
+1. **Create a test account** in your local B2Brouter instance:
+   - Access: `http://app.b2brouter.local`
+   - Register a new account or use existing test account
+   - Ensure the account has an **eDocExchange subscription** activated
+
+2. **Generate API credentials**:
+   - Log into B2Brouter dashboard
+   - Go to **Settings → API Keys** (or equivalent)
+   - Generate a new API key
+   - **Copy the API key** - you'll need it in Step 5
+
+### Step 4: Configure Webhooks in B2Brouter
+
+1. **Enable webhooks** in your local B2Brouter instance:
+   - Go to **Developers → Webhooks*
+   - Enable webhooks for your account
+   - Set the webhook URL to your WordPress site (see note below about URL format)
+   - **Copy the webhook secret** - you'll need it in Step 5
+
+   **Important - Webhook URL Format:**
+
+   The webhook URL format depends on your WordPress permalink settings:
+
+   - **Pretty Permalinks (Post name)**: `http://localhost:8000/wp-json/b2brouter/v1/webhook`
+   - **Plain Permalinks (Default)**: `http://localhost:8000/index.php?rest_route=/b2brouter/v1/webhook`
+
+   To check which URL to use:
+   - Go to **B2Brouter → Settings** in WordPress admin
+   - Scroll to **Webhook Configuration**
+   - Copy the **Webhook URL** from the readonly field (this is automatically generated with the correct format)
+
+   **Tip:** For development, it's recommended to use "Post name" permalinks:
+   ```bash
+   # In WordPress admin:
+   # Settings → Permalinks → Post name → Save Changes
+   ```
+
+2. **Configure webhook events** to send:
+   - `issued_invoice.state_change` - Invoice status updates
+   - Other events are optional for testing
+
+### Step 5: Configure WordPress Plugin
+
+1. **Add API Key**:
+   - Go to **B2Brouter → Settings** in WordPress admin
+   - Paste your API key
+   - Click **"Validate API Key"** to verify connection
+   - This is important: validation retrieves your `account_id` which is required for all API calls
+   - You should see a success message with your account details
+
+2. **Configure Webhook Settings**:
+   - Scroll to **Webhook Configuration** section
+   - Enable **"Enable Webhooks"**
+   - Copy the **Webhook URL** (readonly field) - this should match what you entered in B2Brouter
+   - Paste the **Webhook Secret** from Step 4
+   - Enable **"Fallback Polling"** (recommended for reliability during development)
+   - Click **"Save Settings"**
+
+3. **Verify webhook endpoint is accessible**:
+   ```bash
+   # Test webhook endpoint is registered (adjust URL based on your permalink settings)
+   # Note: The endpoint only accepts POST requests, not GET
+
+   # For pretty permalinks:
+   curl -X POST http://localhost:8000/wp-json/b2brouter/v1/webhook
+
+   # For plain permalinks:
+   curl -X POST "http://localhost:8000/index.php?rest_route=/b2brouter/v1/webhook"
+
+   # Expected response: {"error":"Invalid signature"} or {"error":"Invalid JSON payload"}
+   # This confirms the endpoint is registered and accessible
+
+   # Alternative: Check if the route is registered in the REST API index
+   curl -s "http://localhost:8000/index.php?rest_route=/" | grep -o "b2brouter/v1/webhook"
+   # Should output: b2brouter/v1/webhook
+   ```
+
+### Step 6: Test the Integration
+
+1. **Create a test order** in WooCommerce:
+   - Go to **WooCommerce → Orders → Add New**
+   - Add customer billing details (including TIN if required)
+   - Add test products
+   - Save order
+
+2. **Generate invoice**:
+   - Change order status to **"Completed"** (if automatic mode) or
+   - Click **"Generate Invoice"** button in order meta box (if manual mode)
+
+3. **Verify invoice creation**:
+   - Check order notes for invoice creation confirmation
+   - Note the B2Brouter invoice ID in the meta box
+   - Check your local B2Brouter dashboard to see the invoice
+
+4. **Test webhook status updates**:
+   - In your local B2Brouter instance, change the invoice status
+   - The WordPress order should update within 1 second
+   - Check the order notes for "Status updated via webhook" message
+   - Verify the status badge updates in the order meta box
+
+### Step 7: Switching Between Local and Staging
+
+**To test against local B2Brouter:**
+- Keep `B2BROUTER_DEV_API_BASE` defined in `wp-config.php`
+- Use local API key and webhook secret
+
+**To test against staging B2Brouter:**
+```php
+// In wp-config.php, comment out or remove:
+// define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
+```
+- Go to **B2Brouter → Settings**
+- Select **Environment: Staging**
+- Enter staging API key
+- Configure staging webhook secret
+- Save settings
+
+The plugin will automatically use `https://api-staging.b2brouter.net` when the constant is not defined.
+
+### Debugging Local Development
+
+**Check API connectivity:**
+```bash
+# check the base API endpoint
+curl http://api.b2brouter.local:3001/
+```
+
+**Check WordPress debug logs:**
+```bash
+tail -f ~/local-wordpress/wordpress/wp-content/debug.log
+```
+
+Look for:
+- `B2Brouter API request to: http://api.b2brouter.local:3001/...`
+- `B2Brouter webhook signature verification failed`
+- `B2Brouter webhook received for unknown invoice ID`
+
+**Test webhook signature verification:**
+
+The plugin uses HMAC-SHA256 to verify webhook authenticity. To test:
+
+```bash
+# Generate test webhook signature (example)
+TIMESTAMP=$(date +%s)
+BODY='{"code":"issued_invoice.state_change","data":{"invoice_id":123,"state":"sent"}}'
+SECRET="your-webhook-secret"
+
+# Create signature
+SIGNATURE=$(echo -n "${TIMESTAMP}.${BODY}" | openssl dgst -sha256 -hmac "$SECRET" | cut -d' ' -f2)
+
+# Send test webhook (adjust URL based on permalink settings)
+
+# For pretty permalinks:
+curl -X POST http://localhost:8000/wp-json/b2brouter/v1/webhook \
+  -H "Content-Type: application/json" \
+  -H "X-B2Brouter-Signature: t=${TIMESTAMP},s=${SIGNATURE}" \
+  -d "${BODY}"
+
+# For plain permalinks:
+curl -X POST "http://localhost:8000/index.php?rest_route=/b2brouter/v1/webhook" \
+  -H "Content-Type: application/json" \
+  -H "X-B2Brouter-Signature: t=${TIMESTAMP},s=${SIGNATURE}" \
+  -d "${BODY}"
+```
+
+**Common issues:**
+
+1. **"No route was found matching the URL" (404 error)**
+   - You're using GET instead of POST - webhooks only accept POST requests
+   - Solution: Use `curl -X POST` instead of just `curl`
+   - The plugin is not activated - activate it in WordPress admin
+   - REST API is not enabled - check WordPress Settings → Permalinks
+
+2. **"API key not configured" or "Invalid API key"**
+   - Verify `B2BROUTER_DEV_API_BASE` is correctly defined
+   - Check local B2Brouter API is running
+   - Ensure API key is valid in local instance
+
+3. **"Webhook signature verification failed"**
+   - Verify webhook secret matches in both systems
+   - Check timestamp is within 5-minute window
+   - Ensure no trailing spaces in secret
+
+4. **"Invoice not found" webhook error**
+   - Invoice was created in different B2Brouter instance
+   - Order doesn't exist in WordPress
+   - Invoice ID mismatch
+
+### Architecture Notes for Developers
+
+**API Base URL Priority (Settings.php:124-132):**
+1. `B2BROUTER_DEV_API_BASE` constant (if defined) - Highest priority
+2. Environment setting from admin:
+   - Production: `https://api.b2brouter.net`
+   - Staging: `https://staging.api.b2brouter.net`
+
+**Webhook Flow:**
+```
+B2Brouter (local) → Invoice status change
+    ↓
+Webhook POST → REST API endpoint (format depends on permalink settings):
+              • /wp-json/b2brouter/v1/webhook (pretty permalinks)
+              • /index.php?rest_route=/b2brouter/v1/webhook (plain permalinks)
+    ↓
+Webhook_Handler::verify_webhook_signature() - HMAC-SHA256 validation
+    ↓
+Webhook_Handler::process_invoice_status_change() - Update order meta
+    ↓
+Order status updated + order note added
+```
+
+**Cron Polling Behavior with Webhooks:**
+- Webhooks disabled: Polls every **1 hour**
+- Webhooks enabled + fallback: Polls every **6 hours** (only if webhook hasn't been received)
+- Webhooks enabled + no fallback: **No polling**
 
 ---
 
@@ -557,7 +833,7 @@ docker exec -it wordpress_db mysql -u wpuser -pwppass123 wordpress
 
 ## Security Notes
 
-⚠️ **These setups are for LOCAL DEVELOPMENT ONLY**
+WARNING: **These setups are for LOCAL DEVELOPMENT ONLY**
 
 - Simple passwords are used for convenience
 - Services bound to localhost (127.0.0.1) only
@@ -568,13 +844,13 @@ docker exec -it wordpress_db mysql -u wpuser -pwppass123 wordpress
 
 ## Next Steps
 
-1. ✅ Set up local environment (choose one option above)
-2. ✅ Install WordPress, WooCommerce, B2Brouter plugin
-3. ✅ Create test products and orders
-4. ✅ Test invoice generation
-5. 🔧 Make plugin changes and test
-6. ✅ Run unit tests
-7. 🚀 Deploy to production when ready
+1. Set up local environment (choose one option above)
+2. Install WordPress, WooCommerce, B2Brouter plugin
+3. Create test products and orders
+4. Test invoice generation
+5. Make plugin changes and test
+6. Run unit tests
+7. Deploy to production when ready
 
 ---
 

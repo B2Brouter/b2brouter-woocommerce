@@ -176,6 +176,7 @@ class B2Brouter_WooCommerce {
         $this->get('customer');
         $this->get('customer_fields');
         $this->get('status_sync');
+        $this->get('webhook_handler');
     }
 
     /**
@@ -229,11 +230,12 @@ class B2Brouter_WooCommerce {
             );
         };
 
-        // Register Admin (depends on Settings and Invoice_Generator)
+        // Register Admin (depends on Settings, Invoice_Generator, and Status_Sync)
         $this->container['admin'] = function() {
             return new \B2Brouter\WooCommerce\Admin(
                 $this->get('settings'),
-                $this->get('invoice_generator')
+                $this->get('invoice_generator'),
+                $this->get('status_sync')
             );
         };
 
@@ -263,6 +265,14 @@ class B2Brouter_WooCommerce {
             return new \B2Brouter\WooCommerce\Status_Sync(
                 $this->get('settings'),
                 $this->get('invoice_generator')
+            );
+        };
+
+        // Register Webhook_Handler (depends on Settings and Status_Sync)
+        $this->container['webhook_handler'] = function() {
+            return new \B2Brouter\WooCommerce\Webhook_Handler(
+                $this->get('settings'),
+                $this->get('status_sync')
             );
         };
     }
