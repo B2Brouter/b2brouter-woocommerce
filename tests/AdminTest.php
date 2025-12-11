@@ -102,7 +102,7 @@ class AdminTest extends TestCase {
 
         // Check main menu page
         $this->assertArrayHasKey('b2brouter', $wp_menu_pages);
-        $this->assertEquals('B2Brouter', $wp_menu_pages['b2brouter']['page_title']);
+        $this->assertEquals('Invoices', $wp_menu_pages['b2brouter']['page_title']);
 
         // Check submenu pages exist
         $this->assertArrayHasKey('b2brouter', $wp_submenu_pages);
@@ -167,7 +167,7 @@ class AdminTest extends TestCase {
         $this->admin->render_settings_page();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('B2Brouter Settings', $output);
+        $this->assertStringContainsString('Invoice Settings', $output);
         $this->assertStringContainsString('API Key', $output);
         $this->assertStringContainsString('Invoice Generation Mode', $output);
         $this->assertStringContainsString('test-key', $output);

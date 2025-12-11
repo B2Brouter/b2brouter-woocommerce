@@ -101,8 +101,8 @@ class Admin {
       }
 
         add_menu_page(
-            __('B2Brouter', 'b2brouter-woocommerce'),
-            __('B2Brouter', 'b2brouter-woocommerce'),
+            __('Invoices', 'b2brouter-woocommerce'),
+            __('Invoices', 'b2brouter-woocommerce'),
             'manage_options',
             'b2brouter',
             array($this, 'render_settings_page'),
@@ -503,7 +503,7 @@ class Admin {
 
         ?>
         <div class="wrap b2brouter-settings">
-            <h1><?php esc_html_e('B2Brouter Settings', 'b2brouter-woocommerce'); ?></h1>
+            <h1><?php esc_html_e('Invoice Settings', 'b2brouter-woocommerce'); ?></h1>
 
             <?php if (!$api_configured): ?>
                 <div class="notice notice-warning">
