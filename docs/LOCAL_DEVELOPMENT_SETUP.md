@@ -179,7 +179,7 @@ Activate in WordPress admin:
 
 ### Step 7: Configure B2Brouter Plugin
 
-1. Go to **B2Brouter → Settings**
+1. Go to **Invoices → Settings**
 2. Enter your B2Brouter API key
 3. Select invoice mode (automatic/manual)
 4. Click "Save Settings"
@@ -259,7 +259,7 @@ define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
    - **Plain Permalinks (Default)**: `http://localhost:8000/index.php?rest_route=/b2brouter/v1/webhook`
 
    To check which URL to use:
-   - Go to **B2Brouter → Settings** in WordPress admin
+   - Go to **Invoices → Settings** in WordPress admin
    - Scroll to **Webhook Configuration**
    - Copy the **Webhook URL** from the readonly field (this is automatically generated with the correct format)
 
@@ -276,7 +276,7 @@ define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
 ### Step 5: Configure WordPress Plugin
 
 1. **Add API Key**:
-   - Go to **B2Brouter → Settings** in WordPress admin
+   - Go to **Invoices → Settings** in WordPress admin
    - Paste your API key
    - Click **"Validate API Key"** to verify connection
    - This is important: validation retrieves your `account_id` which is required for all API calls
@@ -343,7 +343,7 @@ define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
 // In wp-config.php, comment out or remove:
 // define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
 ```
-- Go to **B2Brouter → Settings**
+- Go to **Invoices → Settings**
 - Select **Environment: Staging**
 - Enter staging API key
 - Configure staging webhook secret

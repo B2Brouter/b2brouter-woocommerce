@@ -17,20 +17,30 @@ Technical architecture documentation for the B2Brouter WooCommerce plugin.
 b2brouter-woocommerce/
 ├── assets/
 │   ├── css/admin.css              # Admin interface styles
-│   └── js/admin.js                # Admin JavaScript (AJAX handlers)
+│   ├── js/admin.js                # Admin JavaScript (AJAX handlers)
+│   └── img/b2b-icon-logo.svg      # Custom admin menu icon
 ├── includes/
 │   ├── Admin.php                  # Admin UI and AJAX endpoints
-│   ├── Customer_Fields.php        # TIN field management
+│   ├── API_Retry.php              # Retry logic helper with exponential backoff
+│   ├── Customer_Fields.php        # TIN field management (checkout)
+│   ├── Customer.php               # Customer-facing features (My Account)
 │   ├── Invoice_Generator.php     # Core invoice generation logic
+│   ├── Invoice_List_Table.php    # Invoice list admin page
 │   ├── Order_Handler.php          # WooCommerce order integration
-│   └── Settings.php               # Settings management
+│   ├── Settings.php               # Settings management
+│   ├── Status_Sync.php            # Invoice status synchronization
+│   └── Webhook_Handler.php        # Webhook endpoint for real-time updates
 ├── tests/
 │   ├── AdminTest.php
+│   ├── APIRetryTest.php
 │   ├── CustomerFieldsTest.php
 │   ├── InvoiceGeneratorTest.php
+│   ├── InvoiceListTableTest.php
 │   ├── InvoiceTypesTest.php
 │   ├── OrderHandlerTest.php
 │   ├── SettingsTest.php
+│   ├── StatusSyncTest.php
+│   ├── WebhookHandlerTest.php
 │   └── bootstrap.php
 ├── vendor/                        # Composer dependencies (gitignored)
 ├── .github/workflows/
@@ -88,6 +98,50 @@ b2brouter-woocommerce/
 - Customer profile integration
 - Order meta storage
 - Block checkout compatibility
+- HPOS compatibility for TIN field saving
+
+### Customer
+
+- Customer-facing features on My Account page
+- Invoice downloads for customers
+- Credit note downloads
+- Customer-initiated invoice generation (manual mode)
+- Security validation (ownership, order status checks)
+
+### Status_Sync
+
+- Invoice status synchronization from B2Brouter API
+- Smart polling strategy (hourly, 6-hourly, or disabled based on webhook config)
+- Immediate 10-second status check after invoice generation
+- Batch processing (50 invoices per run)
+- Final state detection to avoid unnecessary API calls
+- Randomized cron scheduling to distribute API load
+
+### Webhook_Handler
+
+- REST API endpoint for B2Brouter webhooks
+- HMAC-SHA256 signature verification for security
+- 5-minute timestamp window to prevent replay attacks
+- Processes `issued_invoice.state_change` events
+- Real-time invoice status updates (< 1 second)
+- HPOS-compatible order lookup
+- Webhook receipt tracking for fallback polling optimization
+
+### Invoice_List_Table
+
+- Admin page showing all generated invoices
+- Pagination and sorting capabilities
+- Bulk PDF download functionality
+- View/Download buttons for individual invoices
+- Environment-aware B2Brouter web app URLs
+
+### API_Retry
+
+- Exponential backoff retry logic for API calls
+- Adaptive retry strategy (up to 5 attempts: 1s, 2s, 4s, 8s)
+- Retries on transient errors (PDF not ready yet)
+- Immediate failure on non-retryable errors (auth, permission)
+- Used primarily for PDF downloads
 
 ---
 
@@ -135,6 +189,71 @@ Check: rate == 0? → E (exempt)
 Otherwise → S (standard rate with calculated percentage)
 ```
 
+### Invoice Status Sync Flow
+
+**Webhook Mode (Real-Time)**:
+```
+B2Brouter invoice state changes
+    ↓
+B2Brouter sends webhook to /wp-json/b2brouter/v1/webhook
+    ↓
+Webhook_Handler::handle_webhook_request()
+    ↓
+Verify HMAC-SHA256 signature
+    ↓
+Verify timestamp (5-minute window)
+    ↓
+Extract invoice_id and new status from payload
+    ↓
+Find WooCommerce order via _b2brouter_invoice_id meta
+    ↓
+Update order meta: _b2brouter_invoice_status, _b2brouter_status_checked_at
+    ↓
+Store webhook receipt timestamp: _b2brouter_webhook_received_at
+    ↓
+Add order note: "Status updated via webhook"
+    ↓
+Return 200 OK (< 1 second total)
+```
+
+**Polling Mode (Backup/Fallback)**:
+```
+WordPress Cron runs (hourly or 6-hourly based on webhook config)
+    ↓
+Status_Sync::sync_invoice_statuses()
+    ↓
+Get orders with pending invoices (batch of 50)
+    ↓
+Skip orders with recent webhook receipt (< 6 hours)
+    ↓
+For each order:
+    ↓
+    API call: $client->invoices->retrieve($invoice_id)
+    ↓
+    Extract status from response
+    ↓
+    Update order meta: _b2brouter_invoice_status, _b2brouter_status_checked_at
+    ↓
+    Add order note if status changed
+    ↓
+Final state detection → skip future polling for completed invoices
+```
+
+**Immediate Check (After Generation)**:
+```
+Invoice generated successfully
+    ↓
+Schedule single-run status check in 10 seconds
+    ↓
+Status_Sync::immediate_status_check($order_id)
+    ↓
+Fetch status from B2Brouter API
+    ↓
+Update order meta with current status
+    ↓
+Provides fast feedback when webhooks not configured
+```
+
 ---
 
 ## API Integration
@@ -171,6 +290,13 @@ $accounts = $client->accounts->all(['limit' => 1]);
 **Production Environment**:
 - Base URL: `https://api.b2brouter.net`
 - Use for live transactions
+
+**Webhook Endpoint**:
+- REST API: `/wp-json/b2brouter/v1/webhook`
+- Method: POST
+- Authentication: HMAC-SHA256 signature verification
+- Event: `issued_invoice.state_change`
+- Response: 200 OK on success, 401 on invalid signature, 403 if disabled
 
 ### Error Handling
 
@@ -299,6 +425,14 @@ The plugin is fully compatible with WooCommerce High-Performance Order Storage:
 - Nonces verified on AJAX requests
 - Capability checks on admin actions
 
+### Webhook Security
+
+- HMAC-SHA256 signature verification for all webhook requests
+- Webhook secret stored securely in WordPress options
+- 5-minute timestamp validation window to prevent replay attacks
+- Requests with invalid signatures are rejected (401)
+- Webhooks can be disabled entirely (403)
+
 ### PDF Access
 
 - PDFs stored in uploads directory with random subdirectory names
@@ -319,13 +453,17 @@ Tests use mocked WordPress and WooCommerce functions (see `tests/bootstrap.php`)
 
 ### Test Coverage
 
-Current coverage: 61.38% (1038/1691 lines)
+Current coverage: 62.53% (1572/2514 lines) across 293 tests
 
 Coverage by class:
-- Settings: 72.57%
-- Customer_Fields: 74.07%
-- Admin: 69.80%
-- Order_Handler: 64.61%
-- Invoice_Generator: 61.29%
+- Webhook_Handler: 95.97%
+- API_Retry: 91.43%
+- Customer_Fields: 82.76%
+- Invoice_List_Table: 72.77%
+- Admin: 71.89%
+- Settings: 70.63%
+- Order_Handler: 59.64%
+- Invoice_Generator: 59.15%
+- Status_Sync: 56.86%
 
 See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for testing instructions.

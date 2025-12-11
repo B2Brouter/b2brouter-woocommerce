@@ -5,6 +5,83 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.3] - 2025-12-11
+
+### Added
+
+#### Real-Time Webhook Integration
+- **Webhook Handler**: New REST API endpoint for receiving real-time invoice status updates from B2Brouter
+  - Endpoint: `/wp-json/b2brouter/v1/webhook`
+  - HMAC-SHA256 signature verification for security
+  - 5-minute timestamp validation window to prevent replay attacks
+  - Processes `issued_invoice.state_change` events
+  - Real-time status updates (< 1 second vs hourly polling)
+  - 95.97% test coverage with 19 comprehensive tests
+- **Webhook Configuration Settings**: New admin settings section
+  - Enable/disable webhooks toggle
+  - Auto-generated webhook URL display
+  - Webhook secret input field with validation
+  - Optional fallback polling (6-hourly, enabled by default)
+  - Settings validation prevents misconfiguration
+- **Smart Polling Strategy**: Dynamic cron scheduling based on webhook configuration
+  - Webhooks disabled: Hourly polling (existing behavior, unchanged)
+  - Webhooks + fallback: 6-hourly polling (skips orders with recent webhook receipt)
+  - Webhooks only: No polling (optional for advanced users)
+  - Maintains existing 10-second immediate check after invoice generation
+  - Custom "six_hourly" cron schedule (21600 seconds)
+- **Webhook Receipt Tracking**: Stores webhook receipt timestamps to optimize fallback polling
+  - New order meta: `_b2brouter_webhook_received_at`
+  - Fallback polling skips orders with webhook receipt < 6 hours ago
+  - Order notes indicate "Status updated via webhook" with timestamp
+
+#### UI Improvements
+- **Admin Menu Rename**: Changed admin menu from "B2Brouter" to "Invoices"
+  - Better UX - users can easily find invoices in WordPress admin
+  - More intuitive navigation for invoice-related functions
+- **Custom Admin Menu Icon**: New custom SVG icon for admin menu
+  - Professional branding with B2B icon logo
+  - Consistent with plugin identity
+
+### Changed
+
+#### Invoice Status Synchronization
+- **Enhanced Status Sync**: Updated `Status_Sync` class with webhook awareness
+  - Respects webhook configuration when scheduling polling
+  - Automatically reschedules cron on settings change
+  - Improved test coverage: 56.86% (up from 5.88%)
+  - 29 comprehensive tests with 94 assertions
+
+### Fixed
+
+#### HPOS Compatibility
+- **TIN Field Saving**: Fixed TIN/VAT number field saving for HPOS-enabled stores
+  - Affects classic checkout and admin order editing
+  - Block checkout (WooCommerce 8.2+) was unaffected and already worked correctly
+  - Ensures `_billing_tin` saves correctly on both HPOS and legacy storage modes
+  - Maintains full backward compatibility with WooCommerce 5.0+
+  - Added comprehensive tests: 13 new test cases, 82.76% coverage
+
+### Technical
+
+- **Test Suite Improvements**:
+  - Total coverage: 62.53% (1572/2514 lines) across 293 tests
+  - Webhook_Handler: 95.97% coverage
+  - Customer_Fields: 82.76% coverage (up from 74.07%)
+  - Status_Sync: 56.86% coverage (up from 5.88%)
+- **Documentation Updates**:
+  - README.md: Added comprehensive webhook setup guide, updated all menu references from "B2Brouter" to "Invoices"
+  - LOCAL_DEVELOPMENT_SETUP.md: Extended with webhook testing instructions, updated menu references
+  - ARCHITECTURE.md: Added webhook architecture and data flows
+  - DEVELOPER_GUIDE.md: Updated testing checklist and project structure
+  - release.yml: Updated installation instructions with new menu name
+- **Code Quality**:
+  - New `Webhook_Handler` class with full security validation
+  - Enhanced `Settings` class with webhook configuration methods
+  - Updated `Admin` class with webhook settings UI
+  - Improved `Status_Sync` with dynamic scheduling logic
+
+---
+
 ## [0.9.2] - 2025-12-05
 
 ### Changed
@@ -219,6 +296,7 @@ We welcome feedback on all aspects of the plugin. Please test in a staging envir
 
 ---
 
+[0.9.3]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.3
 [0.9.2]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.2
 [0.9.1]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.1
 [0.9.0]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.0

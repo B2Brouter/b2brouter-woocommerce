@@ -67,28 +67,44 @@ b2brouter-woocommerce/
 ├── assets/
 │   ├── css/
 │   │   └── admin.css            # Admin styles
-│   └── js/
-│       └── admin.js             # Admin JavaScript
+│   ├── js/
+│   │   └── admin.js             # Admin JavaScript
+│   └── img/
+│       └── b2b-icon-logo.svg    # Custom admin menu icon
 ├── docs/
-│   ├── LOCAL_DEVELOPMENT_SETUP.md  # Local dev environment setup
-│   └── DEVELOPER_GUIDE.md          # This file
+│   ├── ARCHITECTURE.md          # Technical architecture
+│   ├── DEVELOPER_GUIDE.md       # This file
+│   ├── DISTRIBUTION.md          # Distribution and packaging
+│   └── LOCAL_DEVELOPMENT_SETUP.md  # Local dev environment setup
 ├── includes/
 │   ├── Admin.php                # Admin interface & AJAX
+│   ├── API_Retry.php            # Retry logic with exponential backoff
+│   ├── Customer_Fields.php      # TIN field management (checkout)
+│   ├── Customer.php             # Customer-facing features (My Account)
 │   ├── Invoice_Generator.php   # Invoice generation logic
+│   ├── Invoice_List_Table.php  # Invoice list admin page
 │   ├── Order_Handler.php        # WooCommerce integration
-│   └── Settings.php             # Settings & API key management
+│   ├── Settings.php             # Settings & API key management
+│   ├── Status_Sync.php          # Invoice status synchronization
+│   └── Webhook_Handler.php      # Webhook endpoint for real-time updates
 ├── tests/
 │   ├── AdminTest.php
+│   ├── APIRetryTest.php
+│   ├── CustomerFieldsTest.php
 │   ├── InvoiceGeneratorTest.php
+│   ├── InvoiceListTableTest.php
+│   ├── InvoiceTypesTest.php
 │   ├── OrderHandlerTest.php
 │   ├── SettingsTest.php
+│   ├── StatusSyncTest.php
+│   ├── WebhookHandlerTest.php
 │   └── bootstrap.php
 ├── vendor/                      # Composer dependencies (gitignored)
 ├── b2brouter-woocommerce.php    # Main plugin file
 ├── build-release.sh             # Build distribution package
+├── CHANGELOG.md                 # Version history
 ├── composer.json                # Composer configuration
 ├── phpunit.xml                  # PHPUnit configuration
-├── DISTRIBUTION.md              # Distribution guide
 ├── LICENSE                      # MIT License
 └── README.md                    # User-facing documentation
 ```
@@ -98,10 +114,15 @@ b2brouter-woocommerce/
 | File | Purpose |
 |------|---------|
 | `b2brouter-woocommerce.php` | Plugin bootstrap, dependency injection container |
-| `includes/Settings.php` | API key storage, environment config, validation |
+| `includes/Settings.php` | API key storage, environment config, validation, webhook settings |
 | `includes/Invoice_Generator.php` | Invoice data preparation, SDK calls |
 | `includes/Order_Handler.php` | WooCommerce hooks, order integration |
 | `includes/Admin.php` | Settings pages, AJAX handlers, admin UI |
+| `includes/Webhook_Handler.php` | REST API endpoint for B2Brouter webhooks |
+| `includes/Status_Sync.php` | Invoice status synchronization (polling + immediate checks) |
+| `includes/Customer.php` | Customer-facing features (My Account page) |
+| `includes/Invoice_List_Table.php` | Admin page showing all generated invoices |
+| `includes/API_Retry.php` | Exponential backoff retry logic for API calls |
 | `build-release.sh` | Creates distribution ZIP with vendor/ |
 | `.github/workflows/release.yml` | GitHub Actions automated releases |
 
@@ -307,6 +328,7 @@ Test with real WordPress/WooCommerce:
 
 Before releasing:
 
+**Core Functionality:**
 - [ ] Plugin activates without errors
 - [ ] Settings page loads correctly
 - [ ] API key validation works (both valid/invalid)
@@ -314,11 +336,42 @@ Before releasing:
 - [ ] Manual invoice generation works
 - [ ] Automatic invoice generation works
 - [ ] Bulk invoice generation works
-- [ ] Invoice column shows in orders list
+
+**Admin UI:**
+- [ ] Invoice column shows in orders list with correct status
 - [ ] Invoice meta box shows in order details
+- [ ] Invoice status syncs and displays correctly
+- [ ] List of Invoices page displays all invoices
 - [ ] Admin bar counter works
+- [ ] Custom admin menu icon displays
+
+**Invoice Status Sync:**
+- [ ] Hourly polling works (with webhooks disabled)
+- [ ] 10-second immediate check works after generation
+- [ ] Status updates appear in order notes
+
+**Webhooks (if configured):**
+- [ ] Webhook URL displays correctly in settings
+- [ ] Webhook secret can be saved
+- [ ] Webhook endpoint responds to POST requests
+- [ ] Signature verification rejects invalid requests
+- [ ] Status updates instantly (< 1 second) via webhook
+- [ ] Fallback polling disabled when webhooks enabled
+- [ ] Order notes show "Status updated via webhook"
+
+**Customer Features:**
+- [ ] TIN field shows in checkout (both classic and block)
+- [ ] TIN field saves correctly with HPOS
+- [ ] Customers can download invoices from My Account
+- [ ] Customers can download credit notes
+- [ ] Customer-initiated invoice generation works (manual mode)
+
+**General:**
 - [ ] No PHP errors in debug log
 - [ ] No JavaScript console errors
+- [ ] No deprecation warnings
+
+**See [LOCAL_DEVELOPMENT_SETUP.md](LOCAL_DEVELOPMENT_SETUP.md) for webhook testing details.**
 
 ---
 

@@ -116,7 +116,7 @@ jobs:
           2. In WordPress Admin, go to **Plugins → Add New → Upload Plugin**
           3. Choose the downloaded ZIP file
           4. Click **Install Now** → **Activate Plugin**
-          5. Configure your B2Brouter API key in **B2Brouter → Settings**
+          5. Configure your B2Brouter API key in **Invoices → Settings**
 
           **No Composer required!** The ZIP includes all dependencies.
 

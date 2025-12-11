@@ -4,7 +4,7 @@
 
 B2Brouter for WooCommerce integrates your WooCommerce store with B2Brouter's electronic invoicing platform, providing structured data exchange, multi-country tax compliance, and API-driven invoice delivery for B2B and B2C eCommerce.
 
-[![Version](https://img.shields.io/badge/version-0.9.1-blue.svg)](https://github.com/B2Brouter/b2brouter-woocommerce/releases)
+[![Version](https://img.shields.io/badge/version-0.9.3-blue.svg)](https://github.com/B2Brouter/b2brouter-woocommerce/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-blue.svg)](https://wordpress.org)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-5.0%2B-purple.svg)](https://woocommerce.com)
@@ -96,7 +96,7 @@ Get real-time invoice status updates in your WooCommerce orders with two sync me
 
 ### Admin Interface
 
-- **Settings Panel**: Dedicated settings page under B2Brouter menu with API key validation
+- **Settings Panel**: Dedicated settings page under Invoices menu with API key validation
 - **Order Meta Box**: Invoice status and generation controls in WooCommerce order edit page
   - Real-time status display with color-coded badges
   - Last status update timestamp
@@ -122,7 +122,7 @@ Get real-time invoice status updates in your WooCommerce orders with two sync me
 
 ### API Integration
 
-- **B2Brouter PHP SDK**: Built on official B2Brouter PHP SDK (v0.9.1+)
+- **B2Brouter PHP SDK**: Built on official B2Brouter PHP SDK (v1.0.0+)
 - **Environment Support**:
   - Staging: `https://api-staging.b2brouter.net`
   - Production: `https://api.b2brouter.net`
@@ -151,7 +151,7 @@ Get real-time invoice status updates in your WooCommerce orders with two sync me
 2. In WordPress Admin, navigate to **Plugins → Add New → Upload Plugin**
 3. Select the downloaded ZIP file
 4. Click **Install Now**, then **Activate Plugin**
-5. Configure API key in **B2Brouter → Settings**
+5. Configure API key in **Invoices → Settings**
 
 The release ZIP includes all dependencies. Composer is not required.
 
@@ -184,7 +184,7 @@ See [DISTRIBUTION.md](docs/DISTRIBUTION.md) for release procedures.
 
 ### API Setup
 
-1. Navigate to **B2Brouter → Settings** in WordPress admin
+1. Navigate to **Invoices → Settings** in WordPress admin
 2. Enter your B2Brouter API key
 3. Click **Validate Key** to verify connectivity and retrieve account information
 4. Select environment (Staging or Production)
@@ -328,7 +328,7 @@ Get instant invoice status updates instead of waiting for hourly checks. This 5-
    - **Don't enter the URL yet** - we'll get it from WordPress
 
 2. **In WordPress Admin**:
-   - Go to **B2Brouter → Settings**
+   - Go to **Invoices → Settings**
    - Scroll to **"Webhook Configuration"**
    - Check **"Enable Webhooks"**
    - **Copy the Webhook URL** from the readonly field (it looks like: `https://yoursite.com/wp-json/b2brouter/v1/webhook`)
@@ -340,7 +340,7 @@ Get instant invoice status updates instead of waiting for hourly checks. This 5-
    - Save the webhook endpoint
 
 4. **Finish in WordPress Admin**:
-   - Return to **B2Brouter → Settings → Webhook Configuration**
+   - Return to **Invoices → Settings → Webhook Configuration**
    - **Paste the Webhook Secret** from B2Brouter
    - Leave **"Enable Fallback Polling"** checked (recommended for reliability)
    - Click **"Save Settings"**
