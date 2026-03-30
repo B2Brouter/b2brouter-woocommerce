@@ -105,32 +105,32 @@ class Admin {
             __('Invoices', 'b2brouter-woocommerce'),
             'manage_options',
             'b2brouter',
-            array($this, 'render_settings_page'),
+            array($this, 'render_welcome_page'),
             $icon_data,
             56
         );
 
-        // Register Welcome page first
+        // Register Welcome page first (same slug as parent to replace the auto-generated submenu item)
         add_submenu_page(
             'b2brouter',
             __('Welcome', 'b2brouter-woocommerce'),
             __('Welcome', 'b2brouter-woocommerce'),
             'manage_options',
-            'b2brouter-welcome',
+            'b2brouter',
             array($this, 'render_welcome_page')
         );
 
-        // Register Settings page second (renames the default first submenu item)
+        // Register Settings page
         add_submenu_page(
             'b2brouter',
             __('Settings', 'b2brouter-woocommerce'),
             __('Settings', 'b2brouter-woocommerce'),
             'manage_options',
-            'b2brouter',
+            'b2brouter-settings',
             array($this, 'render_settings_page')
         );
 
-        // Register List of Invoices page third
+        // Register List of Invoices page
         add_submenu_page(
             'b2brouter',
             __('List of Invoices', 'b2brouter-woocommerce'),
@@ -177,7 +177,7 @@ class Admin {
     public function add_plugin_action_links($links) {
         $settings_link = sprintf(
             '<a href="%s">%s</a>',
-            admin_url('admin.php?page=b2brouter'),
+            admin_url('admin.php?page=b2brouter-settings'),
             __('Settings', 'b2brouter-woocommerce')
         );
 
@@ -206,7 +206,7 @@ class Admin {
                 '<span class="ab-icon dashicons dashicons-media-document"></span> <span class="ab-label">%s</span>',
                 sprintf(__('Invoices: %d', 'b2brouter-woocommerce'), $count)
             ),
-            'href'  => admin_url('admin.php?page=b2brouter'),
+            'href'  => admin_url('admin.php?page=b2brouter-settings'),
             'meta'  => array(
                 'title' => __('B2Brouter Invoices', 'b2brouter-woocommerce'),
             ),
@@ -350,7 +350,7 @@ class Admin {
                         <a href="https://app.b2brouter.net" class="button button-primary button-hero" target="_blank">
                             <?php esc_html_e('Go to B2Brouter - Activate Subscription', 'b2brouter-woocommerce'); ?>
                         </a>
-                        <a href="<?php echo esc_url(admin_url('admin.php?page=b2brouter')); ?>" class="button button-secondary button-hero">
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=b2brouter-settings')); ?>" class="button button-secondary button-hero">
                             <?php esc_html_e('Configure Plugin', 'b2brouter-woocommerce'); ?>
                         </a>
                     </div>
