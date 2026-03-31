@@ -1,0 +1,1082 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: B2Brouter for WooCommerce 0.9.3\n"
+"Report-Msgid-Bugs-To: support@b2brouter.net\n"
+"Last-Translator: B2Brouter <support@b2brouter.net>\n"
+"Language-Team: German (Germany)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-03-31 13:56+0200\n"
+"PO-Revision-Date: 2026-03-31 13:56+0200\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: b2brouter-woocommerce.php:158
+msgid "B2Brouter for WooCommerce requires WooCommerce to be installed and active."
+msgstr "B2Brouter für WooCommerce erfordert, dass WooCommerce installiert und aktiv ist."
+
+#: includes/Admin.php:104
+#: includes/Admin.php:105
+#: includes/Invoice_List_Table.php:58
+msgid "Invoices"
+msgstr "Rechnungen"
+
+#: includes/Admin.php:116
+#: includes/Admin.php:117
+msgid "Welcome"
+msgstr "Willkommen"
+
+#: includes/Admin.php:126
+#: includes/Admin.php:127
+#: includes/Admin.php:181
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: includes/Admin.php:136
+#: includes/Admin.php:137
+#: includes/Admin.php:978
+msgid "List of Invoices"
+msgstr "Rechnungsliste"
+
+#: includes/Admin.php:207
+#, php-format
+msgid "Invoices: %d"
+msgstr "Rechnungen: %d"
+
+#: includes/Admin.php:211
+msgid "B2Brouter Invoices"
+msgstr "B2Brouter Rechnungen"
+
+#: includes/Admin.php:257
+msgid "Validating..."
+msgstr "Wird überprüft..."
+
+#: includes/Admin.php:258
+msgid "Generating invoice..."
+msgstr "Rechnung wird erstellt..."
+
+#: includes/Admin.php:259
+msgid "Success!"
+msgstr "Erfolg!"
+
+#: includes/Admin.php:260
+#: includes/Invoice_Generator.php:894
+#: includes/Invoice_Generator.php:928
+#: includes/Invoice_Generator.php:947
+#: includes/Invoice_Generator.php:984
+msgid "Error"
+msgstr "Fehler"
+
+#: includes/Admin.php:275
+#: includes/Admin.php:299
+#: includes/Admin.php:1014
+msgid "Permission denied"
+msgstr "Zugriff verweigert"
+
+#: includes/Admin.php:305
+#: includes/Admin.php:1023
+#: includes/Customer.php:250
+#: includes/Customer.php:298
+msgid "Invalid order ID"
+msgstr "Ungültige Bestell-ID"
+
+#: includes/Admin.php:326
+msgid "Welcome to B2Brouter for WooCommerce"
+msgstr "Willkommen bei B2Brouter für WooCommerce"
+
+#: includes/Admin.php:330
+msgid "B2Brouter plugin allows you to automatically generate and send electronic invoices for your WooCommerce orders."
+msgstr "Das B2Brouter-Plugin ermöglicht es Ihnen, automatisch elektronische Rechnungen für Ihre WooCommerce-Bestellungen zu erstellen und zu versenden."
+
+#: includes/Admin.php:332
+msgid "Requirements"
+msgstr "Voraussetzungen"
+
+#: includes/Admin.php:334
+msgid "WordPress 5.8 or higher"
+msgstr "WordPress 5.8 oder höher"
+
+#: includes/Admin.php:335
+msgid "WooCommerce 5.0 or higher, installed and active"
+msgstr "WooCommerce 5.0 oder höher, installiert und aktiv"
+
+#: includes/Admin.php:336
+msgid "PHP 7.4 or higher"
+msgstr "PHP 7.4 oder höher"
+
+#: includes/Admin.php:337
+msgid "A B2Brouter account with an active eDocExchange subscription"
+msgstr "Ein B2Brouter-Konto mit einem aktiven eDocExchange-Abonnement"
+
+#: includes/Admin.php:340
+msgid "Next Steps"
+msgstr "Nächste Schritte"
+
+#: includes/Admin.php:345
+msgid "Go to Developers → API Keys in your B2Brouter dashboard."
+msgstr "Gehen Sie zu Entwickler → API-Schlüssel in Ihrem B2Brouter-Dashboard."
+
+#: includes/Admin.php:346
+msgid "Copy the API key and store it safely."
+msgstr "Kopieren Sie den API-Schlüssel und bewahren Sie ihn sicher auf."
+
+#: includes/Admin.php:350
+msgid "In WordPress, go to Invoices → Settings."
+msgstr "Gehen Sie in WordPress zu Rechnungen → Einstellungen."
+
+#: includes/Admin.php:351
+msgid "Paste your B2Brouter API key."
+msgstr "Fügen Sie Ihren B2Brouter-API-Schlüssel ein."
+
+#: includes/Admin.php:352
+msgid "Click Validate Key. If the key is correct, the plugin will display your account information."
+msgstr "Klicken Sie auf Schlüssel überprüfen. Wenn der Schlüssel korrekt ist, zeigt das Plugin Ihre Kontoinformationen an."
+
+#: includes/Admin.php:378
+msgid "Go to B2Brouter - Activate Subscription"
+msgstr "Zu B2Brouter gehen - Abonnement aktivieren"
+
+#: includes/Admin.php:381
+msgid "Configure Plugin"
+msgstr "Plugin konfigurieren"
+
+#: includes/Admin.php:387
+msgid "Need Help?"
+msgstr "Brauchen Sie Hilfe?"
+
+#: includes/Admin.php:388
+msgid "Visit our Github where you will find detailed documentation. If you need help open issue support if you need assistance."
+msgstr "Besuchen Sie unser Github, wo Sie ausführliche Dokumentation finden. Wenn Sie Hilfe benötigen, eröffnen Sie ein Support-Issue."
+
+#: includes/Admin.php:390
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: includes/Admin.php:391
+msgid "Changelog"
+msgstr "Änderungsprotokoll"
+
+#: includes/Admin.php:391
+msgid "Support"
+msgstr "Support"
+
+#: includes/Admin.php:455
+msgid "Webhook secret is required when webhooks are enabled."
+msgstr "Das Webhook-Geheimnis ist erforderlich, wenn Webhooks aktiviert sind."
+
+#: includes/Admin.php:528
+msgid "Settings saved successfully."
+msgstr "Einstellungen erfolgreich gespeichert."
+
+#: includes/Admin.php:533
+msgid "Invoice Settings"
+msgstr "Rechnungseinstellungen"
+
+#: includes/Admin.php:538
+msgid "API key is not configured. Please enter your B2Brouter API key below."
+msgstr "Der API-Schlüssel ist nicht konfiguriert. Bitte geben Sie unten Ihren B2Brouter-API-Schlüssel ein."
+
+#: includes/Admin.php:539
+#: includes/Admin.php:565
+msgid "Get your API key"
+msgstr "API-Schlüssel erhalten"
+
+#: includes/Admin.php:550
+msgid "API Key"
+msgstr "API-Schlüssel"
+
+#: includes/Admin.php:558
+msgid "Enter your B2Brouter API key"
+msgstr "Geben Sie Ihren B2Brouter-API-Schlüssel ein"
+
+#: includes/Admin.php:560
+msgid "Validate Key"
+msgstr "Schlüssel überprüfen"
+
+#: includes/Admin.php:564
+msgid "Enter your B2Brouter API key to enable invoice generation."
+msgstr "Geben Sie Ihren B2Brouter-API-Schlüssel ein, um die Rechnungserstellung zu aktivieren."
+
+#: includes/Admin.php:572
+msgid "Environment"
+msgstr "Umgebung"
+
+#: includes/Admin.php:581
+msgid "Staging"
+msgstr "Staging"
+
+#: includes/Admin.php:584
+msgid "Use staging environment for testing"
+msgstr "Staging-Umgebung zum Testen verwenden"
+
+#: includes/Admin.php:591
+msgid "Production"
+msgstr "Produktion"
+
+#: includes/Admin.php:594
+msgid "Use production environment for live invoices"
+msgstr "Produktionsumgebung für echte Rechnungen verwenden"
+
+#: includes/Admin.php:601
+msgid "Invoice Generation Mode"
+msgstr "Rechnungserstellungsmodus"
+
+#: includes/Admin.php:610
+msgid "Automatic"
+msgstr "Automatisch"
+
+#: includes/Admin.php:612
+msgid "Generate invoice automatically when order is completed"
+msgstr "Rechnung automatisch erstellen, wenn die Bestellung abgeschlossen ist"
+
+#: includes/Admin.php:619
+msgid "Manual"
+msgstr "Manuell"
+
+#: includes/Admin.php:621
+msgid "Generate invoice manually using a button in the order admin"
+msgstr "Rechnung manuell über eine Schaltfläche in der Bestellverwaltung erstellen"
+
+#: includes/Admin.php:627
+msgid "Webhook Configuration"
+msgstr "Webhook-Konfiguration"
+
+#: includes/Admin.php:632
+msgid "Enable Webhooks"
+msgstr "Webhooks aktivieren"
+
+#: includes/Admin.php:642
+msgid "Receive real-time invoice status updates from B2Brouter (recommended)."
+msgstr "Echtzeit-Statusaktualisierungen für Rechnungen von B2Brouter erhalten (empfohlen)."
+
+#: includes/Admin.php:650
+msgid "Webhook URL"
+msgstr "Webhook-URL"
+
+#: includes/Admin.php:663
+msgid "Copied!"
+msgstr "Kopiert!"
+
+#: includes/Admin.php:663
+#: includes/Admin.php:664
+msgid "Copy"
+msgstr "Kopieren"
+
+#: includes/Admin.php:667
+msgid "Enter this URL in your B2Brouter dashboard webhook settings."
+msgstr "Geben Sie diese URL in den Webhook-Einstellungen Ihres B2Brouter-Dashboards ein."
+
+#: includes/Admin.php:675
+msgid "Webhook Secret"
+msgstr "Webhook-Geheimnis"
+
+#: includes/Admin.php:685
+msgid "Enter the webhook secret from your B2Brouter dashboard to verify webhook authenticity."
+msgstr "Geben Sie das Webhook-Geheimnis aus Ihrem B2Brouter-Dashboard ein, um die Webhook-Authentizität zu überprüfen."
+
+#: includes/Admin.php:693
+msgid "Fallback Polling"
+msgstr "Fallback-Abfrage"
+
+#: includes/Admin.php:703
+msgid "Keep polling as backup (checks every 6 hours if webhook fails). Recommended for reliability."
+msgstr "Abfrage als Backup beibehalten (prüft alle 6 Stunden, wenn der Webhook fehlschlägt). Empfohlen für Zuverlässigkeit."
+
+#: includes/Admin.php:709
+msgid "Invoice Numbering & Series"
+msgstr "Rechnungsnummerierung & Serien"
+
+#: includes/Admin.php:713
+msgid "Invoice Series Code"
+msgstr "Rechnungsseriencode"
+
+#: includes/Admin.php:721
+msgid "e.g., INV, S01"
+msgstr "z. B. INV, S01"
+
+#: includes/Admin.php:723
+msgid "Define one invoice series code for all invoices. B2Brouter allows one series per invoice type. Leave empty to use B2Brouter default."
+msgstr "Definieren Sie einen Seriencode für alle Rechnungen. B2Brouter erlaubt eine Serie pro Rechnungstyp. Leer lassen, um den B2Brouter-Standard zu verwenden."
+
+#: includes/Admin.php:730
+msgid "Credit Note Series Code"
+msgstr "Gutschrift-Seriencode"
+
+#: includes/Admin.php:738
+msgid "e.g., CN, R01"
+msgstr "z. B. GS, R01"
+
+#: includes/Admin.php:740
+msgid "Define one credit note series code for all credit notes. B2Brouter allows one series per type. Leave empty to use the same series as invoices."
+msgstr "Definieren Sie einen Seriencode für alle Gutschriften. B2Brouter erlaubt eine Serie pro Typ. Leer lassen, um dieselbe Serie wie bei Rechnungen zu verwenden."
+
+#: includes/Admin.php:747
+msgid "Invoice Numbering Pattern"
+msgstr "Rechnungsnummerierungsmuster"
+
+#: includes/Admin.php:756
+msgid "Automatic (B2Brouter manages numbering)"
+msgstr "Automatisch (B2Brouter verwaltet die Nummerierung)"
+
+#: includes/Admin.php:758
+msgid "Let B2Brouter automatically assign invoice numbers"
+msgstr "B2Brouter automatisch Rechnungsnummern zuweisen lassen"
+
+#: includes/Admin.php:765
+msgid "WooCommerce Order Number"
+msgstr "WooCommerce-Bestellnummer"
+
+#: includes/Admin.php:767
+msgid "Use the WooCommerce order number as the invoice number"
+msgstr "Die WooCommerce-Bestellnummer als Rechnungsnummer verwenden"
+
+#: includes/Admin.php:774
+msgid "Sequential (plugin-managed)"
+msgstr "Sequenziell (plugin-verwaltet)"
+
+#: includes/Admin.php:776
+msgid "Plugin maintains sequential numbering per series (starts at 1)"
+msgstr "Das Plugin pflegt eine sequenzielle Nummerierung pro Serie (beginnt bei 1)"
+
+#: includes/Admin.php:783
+msgid "Custom Pattern"
+msgstr "Benutzerdefiniertes Muster"
+
+#: includes/Admin.php:793
+msgid "Available placeholders: {order_id}, {order_number}, {year}, {month}, {day}. Note: Series code is defined separately above and will be prefixed automatically."
+msgstr "Verfügbare Platzhalter: {order_id}, {order_number}, {year}, {month}, {day}. Hinweis: Der Seriencode wird oben separat definiert und automatisch vorangestellt."
+
+#: includes/Admin.php:800
+msgid "PDF Options"
+msgstr "PDF-Optionen"
+
+#: includes/Admin.php:804
+msgid "Automatic PDF Caching"
+msgstr "Automatische PDF-Zwischenspeicherung"
+
+#: includes/Admin.php:813
+msgid "Automatically download and cache PDF when invoice is generated"
+msgstr "PDF automatisch herunterladen und zwischenspeichern, wenn die Rechnung erstellt wird"
+
+#: includes/Admin.php:816
+msgid "When enabled, PDFs will be automatically downloaded from B2Brouter and stored locally when an invoice is generated. This improves performance and reduces API calls."
+msgstr "Wenn aktiviert, werden PDFs automatisch von B2Brouter heruntergeladen und lokal gespeichert, wenn eine Rechnung erstellt wird. Dies verbessert die Leistung und reduziert API-Aufrufe."
+
+#: includes/Admin.php:824
+msgid "PDF Storage Location"
+msgstr "PDF-Speicherort"
+
+#: includes/Admin.php:829
+msgid "Invoice PDFs are stored in this directory. Files are protected from direct access via .htaccess rules."
+msgstr "Rechnungs-PDFs werden in diesem Verzeichnis gespeichert. Dateien sind durch .htaccess-Regeln vor direktem Zugriff geschützt."
+
+#: includes/Admin.php:847
+#, php-format
+msgid "Currently storing %d PDF(s) using %s of disk space"
+msgstr "Derzeit %d PDF(s) gespeichert, %s Speicherplatz verwendet"
+
+#: includes/Admin.php:856
+msgid "Directory will be created automatically when first PDF is downloaded"
+msgstr "Das Verzeichnis wird automatisch erstellt, wenn das erste PDF heruntergeladen wird"
+
+#: includes/Admin.php:864
+msgid "Email PDF Attachments"
+msgstr "PDF-E-Mail-Anhänge"
+
+#: includes/Admin.php:873
+msgid "Attach PDF to Order Completed email (sent to customer)"
+msgstr "PDF an Bestellung-abgeschlossen-E-Mail anhängen (wird an den Kunden gesendet)"
+
+#: includes/Admin.php:881
+msgid "Attach PDF to Customer Invoice email"
+msgstr "PDF an Kundenrechnungs-E-Mail anhängen"
+
+#: includes/Admin.php:889
+msgid "Attach PDF to Refunded Order email (credit note/rectificative)"
+msgstr "PDF an Rückerstattungs-E-Mail anhängen (Gutschrift/Korrektur)"
+
+#: includes/Admin.php:892
+msgid "Automatically attach invoice PDFs to customer emails. \"Order Completed\" is sent when orders are fulfilled. \"Customer Invoice\" is sent for pending/unpaid orders or when manually sent from admin panel. \"Refunded Order\" is sent when orders are refunded."
+msgstr "Rechnungs-PDFs automatisch an Kunden-E-Mails anhängen. \"Bestellung abgeschlossen\" wird gesendet, wenn Bestellungen ausgeführt werden. \"Kundenrechnung\" wird für ausstehende/unbezahlte Bestellungen oder bei manuellem Versand aus dem Admin-Panel gesendet. \"Rückerstattete Bestellung\" wird gesendet, wenn Bestellungen erstattet werden."
+
+#: includes/Admin.php:900
+msgid "Automatic Cleanup"
+msgstr "Automatische Bereinigung"
+
+#: includes/Admin.php:909
+msgid "Automatically delete old cached PDFs"
+msgstr "Alte zwischengespeicherte PDFs automatisch löschen"
+
+#: includes/Admin.php:913
+msgid "Delete PDFs older than"
+msgstr "PDFs löschen, die älter sind als"
+
+#: includes/Admin.php:920
+msgid "days"
+msgstr "Tage"
+
+#: includes/Admin.php:923
+msgid "When enabled, PDFs older than the specified number of days will be automatically deleted daily via cron job. This helps manage disk space usage."
+msgstr "Wenn aktiviert, werden PDFs, die älter als die angegebene Anzahl von Tagen sind, täglich automatisch per Cron-Job gelöscht. Dies hilft bei der Verwaltung des Speicherplatzverbrauchs."
+
+#: includes/Admin.php:930
+msgid "Plugin Information"
+msgstr "Plugin-Informationen"
+
+#: includes/Admin.php:934
+msgid "Transaction Counter"
+msgstr "Transaktionszähler"
+
+#: includes/Admin.php:938
+msgid "Total number of invoices generated from this plugin"
+msgstr "Gesamtanzahl der von diesem Plugin erstellten Rechnungen"
+
+#: includes/Admin.php:944
+msgid "B2Brouter Account"
+msgstr "B2Brouter-Konto"
+
+#: includes/Admin.php:948
+msgid "Access B2Brouter Account Settings"
+msgstr "B2Brouter-Kontoeinstellungen aufrufen"
+
+#: includes/Admin.php:950
+msgid "Configure advanced settings like transports, formats, and taxes in your B2Brouter account."
+msgstr "Konfigurieren Sie erweiterte Einstellungen wie Transporte, Formate und Steuern in Ihrem B2Brouter-Konto."
+
+#: includes/Admin.php:957
+msgid "Save Settings"
+msgstr "Einstellungen speichern"
+
+#: includes/Admin.php:973
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Sie haben nicht die erforderlichen Berechtigungen, um auf diese Seite zuzugreifen."
+
+#: includes/Customer.php:111
+msgid "Downloading..."
+msgstr "Wird heruntergeladen..."
+
+#: includes/Customer.php:112
+msgid "Error downloading PDF"
+msgstr "Fehler beim Herunterladen des PDF"
+
+#: includes/Customer.php:113
+msgid "Generating..."
+msgstr "Wird erstellt..."
+
+#: includes/Customer.php:114
+#: includes/Customer.php:143
+#: includes/Order_Handler.php:367
+msgid "Generate Invoice"
+msgstr "Rechnung erstellen"
+
+#: includes/Customer.php:135
+msgid "Download Invoice"
+msgstr "Rechnung herunterladen"
+
+#: includes/Customer.php:156
+msgid "Download Credit Note"
+msgstr "Gutschrift herunterladen"
+
+#: includes/Customer.php:193
+#: includes/Invoice_List_Table.php:57
+#: includes/Order_Handler.php:482
+msgid "Invoice"
+msgstr "Rechnung"
+
+#: includes/Customer.php:198
+#: includes/Order_Handler.php:238
+msgid "Invoice Number:"
+msgstr "Rechnungsnummer:"
+
+#: includes/Customer.php:209
+msgid "Download Invoice PDF"
+msgstr "Rechnungs-PDF herunterladen"
+
+#: includes/Customer.php:223
+#, php-format
+msgid "PDF Size: %s"
+msgstr "PDF-Größe: %s"
+
+#: includes/Customer.php:259
+#: includes/Customer.php:307
+#: includes/Invoice_Generator.php:136
+#: includes/Invoice_Generator.php:771
+#: includes/Invoice_Generator.php:893
+#: includes/Status_Sync.php:285
+msgid "Order not found"
+msgstr "Bestellung nicht gefunden"
+
+#: includes/Customer.php:266
+#: includes/Customer.php:314
+msgid "You do not have permission to access this order"
+msgstr "Sie haben keine Berechtigung, auf diese Bestellung zuzugreifen"
+
+#: includes/Customer.php:275
+#: includes/Invoice_Generator.php:778
+#: includes/Invoice_Generator.php:927
+msgid "No invoice found for this order"
+msgstr "Keine Rechnung für diese Bestellung gefunden"
+
+#: includes/Customer.php:321
+msgid "Invoice generation is not available in automatic mode"
+msgstr "Die Rechnungserstellung ist im automatischen Modus nicht verfügbar"
+
+#: includes/Customer.php:328
+msgid "Invoice can only be generated for completed or processing orders"
+msgstr "Die Rechnung kann nur für abgeschlossene oder in Bearbeitung befindliche Bestellungen erstellt werden"
+
+#: includes/Customer.php:335
+msgid "Invoice already exists for this order"
+msgstr "Für diese Bestellung existiert bereits eine Rechnung"
+
+#: includes/Customer_Fields.php:106
+#: includes/Customer_Fields.php:133
+#: includes/Customer_Fields.php:170
+#: includes/Customer_Fields.php:253
+msgid "Tax ID / VAT Number"
+msgstr "Steuernummer / USt-IdNr."
+
+#: includes/Customer_Fields.php:107
+#: includes/Customer_Fields.php:134
+msgid "Tax Identification Number"
+msgstr "Steueridentifikationsnummer"
+
+#: includes/Customer_Fields.php:112
+#: includes/Customer_Fields.php:139
+msgid "Enter your business Tax ID or VAT number for invoicing (optional)"
+msgstr "Geben Sie Ihre Steuernummer oder USt-IdNr. für die Rechnungsstellung ein (optional)"
+
+#: includes/Customer_Fields.php:254
+msgid "Customer Tax Identification Number or VAT number"
+msgstr "Steueridentifikationsnummer oder USt-IdNr. des Kunden"
+
+#: includes/Invoice_Generator.php:109
+#: includes/Status_Sync.php:400
+msgid "API key not configured"
+msgstr "API-Schlüssel nicht konfiguriert"
+
+#: includes/Invoice_Generator.php:113
+#: includes/Status_Sync.php:404
+msgid "B2Brouter PHP SDK not found"
+msgstr "B2Brouter PHP SDK nicht gefunden"
+
+#: includes/Invoice_Generator.php:144
+msgid "Credit note already generated for this refund"
+msgstr "Gutschrift wurde bereits für diese Rückerstattung erstellt"
+
+#: includes/Invoice_Generator.php:145
+msgid "Invoice already generated for this order"
+msgstr "Rechnung wurde bereits für diese Bestellung erstellt"
+
+#: includes/Invoice_Generator.php:153
+msgid "Cannot generate credit note: parent order has no invoice"
+msgstr "Gutschrift kann nicht erstellt werden: Ursprungsbestellung hat keine Rechnung"
+
+#: includes/Invoice_Generator.php:164
+msgid "Account ID not configured. Please validate your API key."
+msgstr "Konto-ID nicht konfiguriert. Bitte überprüfen Sie Ihren API-Schlüssel."
+
+#: includes/Invoice_Generator.php:213
+#, php-format
+msgid "B2Brouter credit note generated successfully. Invoice: %s (ID: %s)"
+msgstr "B2Brouter-Gutschrift erfolgreich erstellt. Rechnung: %s (ID: %s)"
+
+#: includes/Invoice_Generator.php:218
+#, php-format
+msgid "B2Brouter invoice generated successfully. Invoice: %s (ID: %s)"
+msgstr "B2Brouter-Rechnung erfolgreich erstellt. Rechnung: %s (ID: %s)"
+
+#: includes/Invoice_Generator.php:245
+msgid "Credit note PDF automatically downloaded and cached locally"
+msgstr "Gutschrift-PDF automatisch heruntergeladen und lokal zwischengespeichert"
+
+#: includes/Invoice_Generator.php:246
+msgid "Invoice PDF automatically downloaded and cached locally"
+msgstr "Rechnungs-PDF automatisch heruntergeladen und lokal zwischengespeichert"
+
+#: includes/Invoice_Generator.php:257
+msgid "Credit note generated successfully"
+msgstr "Gutschrift erfolgreich erstellt"
+
+#: includes/Invoice_Generator.php:258
+msgid "Invoice generated successfully"
+msgstr "Rechnung erfolgreich erstellt"
+
+#: includes/Invoice_Generator.php:282
+#, php-format
+msgid "B2Brouter credit note generation failed: %s"
+msgstr "B2Brouter-Gutschrifterstellung fehlgeschlagen: %s"
+
+#: includes/Invoice_Generator.php:286
+#, php-format
+msgid "B2Brouter invoice generation failed: %s"
+msgstr "B2Brouter-Rechnungserstellung fehlgeschlagen: %s"
+
+#: includes/Invoice_Generator.php:316
+msgid "Parent order has no invoice. Cannot create refund invoice."
+msgstr "Die Ursprungsbestellung hat keine Rechnung. Rückerstattungsrechnung kann nicht erstellt werden."
+
+#: includes/Invoice_Generator.php:429
+msgid "Shipping"
+msgstr "Versand"
+
+#: includes/Invoice_Generator.php:489
+#, php-format
+msgid "WooCommerce Order #%s"
+msgstr "WooCommerce-Bestellung Nr. %s"
+
+#: includes/Invoice_Generator.php:693
+msgid "Invoice ID is required"
+msgstr "Rechnungs-ID ist erforderlich"
+
+#: includes/Invoice_Generator.php:704
+msgid "PDF data is empty"
+msgstr "PDF-Daten sind leer"
+
+#: includes/Invoice_Generator.php:714
+msgid "PDF downloaded successfully"
+msgstr "PDF erfolgreich heruntergeladen"
+
+#: includes/Invoice_Generator.php:721
+msgid "Invoice not found"
+msgstr "Rechnung nicht gefunden"
+
+#: includes/Invoice_Generator.php:728
+msgid "API authentication failed. Please check your API key."
+msgstr "API-Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihren API-Schlüssel."
+
+#: includes/Invoice_Generator.php:735
+msgid "You do not have permission to download this invoice."
+msgstr "Sie haben keine Berechtigung, diese Rechnung herunterzuladen."
+
+#: includes/Invoice_Generator.php:743
+#: includes/Status_Sync.php:348
+#, php-format
+msgid "API error: %s"
+msgstr "API-Fehler: %s"
+
+#: includes/Invoice_Generator.php:792
+msgid "Using existing PDF file"
+msgstr "Vorhandene PDF-Datei wird verwendet"
+
+#: includes/Invoice_Generator.php:809
+msgid "Failed to create PDF storage directory"
+msgstr "Fehler beim Erstellen des PDF-Speicherverzeichnisses"
+
+#: includes/Invoice_Generator.php:824
+msgid "Failed to save PDF file"
+msgstr "Fehler beim Speichern der PDF-Datei"
+
+#: includes/Invoice_Generator.php:843
+msgid "PDF saved successfully"
+msgstr "PDF erfolgreich gespeichert"
+
+#: includes/Invoice_Generator.php:902
+msgid "You do not have permission to access this invoice."
+msgstr "Sie haben keine Berechtigung, auf diese Rechnung zuzugreifen."
+
+#: includes/Invoice_Generator.php:903
+msgid "Permission Denied"
+msgstr "Zugriff verweigert"
+
+#: includes/Invoice_List_Table.php:72
+msgid "Order #"
+msgstr "Bestellung Nr."
+
+#: includes/Invoice_List_Table.php:73
+msgid "Customer"
+msgstr "Kunde"
+
+#: includes/Invoice_List_Table.php:74
+msgid "Invoice #"
+msgstr "Rechnung Nr."
+
+#: includes/Invoice_List_Table.php:75
+msgid "Date"
+msgstr "Datum"
+
+#: includes/Invoice_List_Table.php:76
+msgid "Status"
+msgstr "Status"
+
+#: includes/Invoice_List_Table.php:77
+msgid "Amount"
+msgstr "Betrag"
+
+#: includes/Invoice_List_Table.php:78
+msgid "Actions"
+msgstr "Aktionen"
+
+#: includes/Invoice_List_Table.php:103
+msgid "Download PDFs"
+msgstr "PDFs herunterladen"
+
+#: includes/Invoice_List_Table.php:225
+msgid "Refund"
+msgstr "Rückerstattung"
+
+#: includes/Invoice_List_Table.php:226
+msgid "for Order"
+msgstr "für Bestellung"
+
+#: includes/Invoice_List_Table.php:268
+msgid "Guest"
+msgstr "Gast"
+
+#: includes/Invoice_List_Table.php:306
+#: includes/Order_Handler.php:457
+msgid "View in B2Brouter"
+msgstr "In B2Brouter anzeigen"
+
+#: includes/Invoice_List_Table.php:382
+#: includes/Order_Handler.php:303
+msgid "View PDF"
+msgstr "PDF anzeigen"
+
+#: includes/Invoice_List_Table.php:383
+#: includes/Order_Handler.php:418
+msgid "View"
+msgstr "Anzeigen"
+
+#: includes/Invoice_List_Table.php:392
+#: includes/Order_Handler.php:313
+msgid "Download PDF"
+msgstr "PDF herunterladen"
+
+#: includes/Invoice_List_Table.php:393
+#: includes/Order_Handler.php:426
+msgid "Download"
+msgstr "Herunterladen"
+
+#: includes/Invoice_List_Table.php:409
+msgid "Security check failed"
+msgstr "Sicherheitsüberprüfung fehlgeschlagen"
+
+#: includes/Invoice_List_Table.php:449
+#, php-format
+msgid "Preparing to download %d invoice PDF."
+msgid_plural "Preparing to download %d invoice PDFs."
+msgstr[0] "Vorbereitung zum Herunterladen von %d Rechnungs-PDF."
+msgstr[1] "Vorbereitung zum Herunterladen von %d Rechnungs-PDFs."
+
+#: includes/Invoice_List_Table.php:468
+msgid "No invoices found."
+msgstr "Keine Rechnungen gefunden."
+
+#: includes/Order_Handler.php:120
+#: includes/Order_Handler.php:142
+msgid "B2Brouter Invoice"
+msgstr "B2Brouter-Rechnung"
+
+#: includes/Order_Handler.php:130
+msgid "B2Brouter Credit Note"
+msgstr "B2Brouter-Gutschrift"
+
+#: includes/Order_Handler.php:180
+msgid "Parent Order:"
+msgstr "Ursprungsbestellung:"
+
+#: includes/Order_Handler.php:190
+msgid "Parent has invoice"
+msgstr "Ursprungsbestellung hat Rechnung"
+
+#: includes/Order_Handler.php:193
+msgid "Parent Invoice:"
+msgstr "Ursprungsrechnung:"
+
+#: includes/Order_Handler.php:199
+msgid "Parent has no invoice"
+msgstr "Ursprungsbestellung hat keine Rechnung"
+
+#: includes/Order_Handler.php:202
+msgid "Generate invoice for parent order first."
+msgstr "Erstellen Sie zuerst die Rechnung für die Ursprungsbestellung."
+
+#: includes/Order_Handler.php:214
+msgid "Credit Note Generated"
+msgstr "Gutschrift erstellt"
+
+#: includes/Order_Handler.php:216
+msgid "Invoice Generated"
+msgstr "Rechnung erstellt"
+
+#: includes/Order_Handler.php:224
+msgid "Credit Note ID:"
+msgstr "Gutschrift-ID:"
+
+#: includes/Order_Handler.php:226
+msgid "Invoice ID:"
+msgstr "Rechnungs-ID:"
+
+#: includes/Order_Handler.php:236
+msgid "Credit Note Number:"
+msgstr "Gutschriftnummer:"
+
+#: includes/Order_Handler.php:245
+msgid "Generated Date:"
+msgstr "Erstellungsdatum:"
+
+#: includes/Order_Handler.php:257
+msgid "Status:"
+msgstr "Status:"
+
+#: includes/Order_Handler.php:267
+#, php-format
+msgid "Last checked: %s"
+msgstr "Zuletzt geprüft: %s"
+
+#: includes/Order_Handler.php:268
+#: includes/Order_Handler.php:330
+msgid "ago"
+msgstr "her"
+
+#: includes/Order_Handler.php:283
+msgid "Error:"
+msgstr "Fehler:"
+
+#: includes/Order_Handler.php:328
+#, php-format
+msgid "PDF cached (%s, %s)"
+msgstr "PDF zwischengespeichert (%s, %s)"
+
+#: includes/Order_Handler.php:340
+msgid "Credit Note Not Generated"
+msgstr "Gutschrift nicht erstellt"
+
+#: includes/Order_Handler.php:342
+msgid "Invoice Not Generated"
+msgstr "Rechnung nicht erstellt"
+
+#: includes/Order_Handler.php:349
+msgid "API key not configured."
+msgstr "API-Schlüssel nicht konfiguriert."
+
+#: includes/Order_Handler.php:351
+msgid "Configure now"
+msgstr "Jetzt konfigurieren"
+
+#: includes/Order_Handler.php:356
+msgid "Cannot generate credit note: parent order has no invoice."
+msgstr "Gutschrift kann nicht erstellt werden: Die Ursprungsbestellung hat keine Rechnung."
+
+#: includes/Order_Handler.php:365
+msgid "Generate Credit Note"
+msgstr "Gutschrift erstellen"
+
+#: includes/Order_Handler.php:375
+msgid "Click to manually generate a credit note for this refund."
+msgstr "Klicken Sie, um manuell eine Gutschrift für diese Rückerstattung zu erstellen."
+
+#: includes/Order_Handler.php:377
+msgid "Click to manually generate an invoice for this order."
+msgstr "Klicken Sie, um manuell eine Rechnung für diese Bestellung zu erstellen."
+
+#: includes/Order_Handler.php:391
+msgid "Refund Invoices"
+msgstr "Rückerstattungsrechnungen"
+
+#: includes/Order_Handler.php:400
+#, php-format
+msgid "Refund #%s"
+msgstr "Rückerstattung Nr. %s"
+
+#: includes/Order_Handler.php:432
+msgid "No credit note"
+msgstr "Keine Gutschrift"
+
+#: includes/Order_Handler.php:456
+msgid "Manage from B2Brouter"
+msgstr "Von B2Brouter aus verwalten"
+
+#: includes/Order_Handler.php:606
+msgid "Generate B2Brouter Invoices"
+msgstr "B2Brouter-Rechnungen erstellen"
+
+#: includes/Order_Handler.php:661
+#, php-format
+msgid "%d invoice generated successfully."
+msgid_plural "%d invoices generated successfully."
+msgstr[0] "%d Rechnung erfolgreich erstellt."
+msgstr[1] "%d Rechnungen erfolgreich erstellt."
+
+#: includes/Order_Handler.php:675
+#, php-format
+msgid "%d invoice failed to generate."
+msgid_plural "%d invoices failed to generate."
+msgstr[0] "%d Rechnung konnte nicht erstellt werden."
+msgstr[1] "%d Rechnungen konnten nicht erstellt werden."
+
+#: includes/Settings.php:245
+msgid "API key cannot be empty"
+msgstr "Der API-Schlüssel darf nicht leer sein"
+
+#: includes/Settings.php:253
+msgid "B2Brouter PHP SDK not found. Please install dependencies."
+msgstr "B2Brouter PHP SDK nicht gefunden. Bitte installieren Sie die Abhängigkeiten."
+
+#: includes/Settings.php:281
+msgid "Invalid API key"
+msgstr "Ungültiger API-Schlüssel"
+
+#: includes/Settings.php:295
+msgid "No accounts found for this API key"
+msgstr "Keine Konten für diesen API-Schlüssel gefunden"
+
+#: includes/Settings.php:308
+#, php-format
+msgid "API key is valid. Using account: %s"
+msgstr "API-Schlüssel ist gültig. Verwendetes Konto: %s"
+
+#: includes/Settings.php:316
+#, php-format
+msgid "API key validation failed: %s"
+msgstr "API-Schlüssel-Überprüfung fehlgeschlagen: %s"
+
+#: includes/Status_Sync.php:151
+msgid "Every 6 Hours"
+msgstr "Alle 6 Stunden"
+
+#: includes/Status_Sync.php:294
+msgid "No invoice ID found"
+msgstr "Keine Rechnungs-ID gefunden"
+
+#: includes/Status_Sync.php:307
+#: includes/Status_Sync.php:336
+msgid "Invoice not found in B2Brouter"
+msgstr "Rechnung nicht in B2Brouter gefunden"
+
+#: includes/Status_Sync.php:329
+#, php-format
+msgid "Status updated to: %s"
+msgstr "Status aktualisiert auf: %s"
+
+#: includes/Status_Sync.php:342
+msgid "API authentication failed"
+msgstr "API-Authentifizierung fehlgeschlagen"
+
+#: includes/Webhook_Handler.php:279
+#, php-format
+msgid "Status updated via webhook: %s → %s"
+msgstr "Status per Webhook aktualisiert: %s → %s"
+
+#. Plugin Name of the plugin
+#: b2brouter-woocommerce.php
+msgid "B2Brouter for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: b2brouter-woocommerce.php
+msgid "https://b2brouter.net"
+msgstr ""
+
+#. Description of the plugin
+#: b2brouter-woocommerce.php
+msgid "Generate and send electronic invoices from WooCommerce orders using B2Brouter"
+msgstr ""
+
+#. Author of the plugin
+#: b2brouter-woocommerce.php
+msgid "B2Brouter"
+msgstr ""
+
+#: includes/Admin.php:341
+msgid "Step 1 — Get your B2Brouter credentials"
+msgstr "Schritt 1 — B2Brouter-Zugangsdaten erhalten"
+
+#: includes/Admin.php:348
+msgid "Step 2 — Configure the plugin"
+msgstr "Schritt 2 — Plugin konfigurieren"
+
+#: includes/Admin.php:356
+msgid "Benefits"
+msgstr "Vorteile"
+
+#: includes/Admin.php:365
+msgid "How it works"
+msgstr "So funktioniert es"
+
+#: includes/Admin.php:374
+msgid "Ready to get started?"
+msgstr "Bereit loszulegen?"
+
+#. translators: %s: link to B2Brouter registration page
+#: includes/Admin.php:344
+msgid "Purchase an eDocExchange subscription."
+msgstr "Erwerben Sie ein eDocExchange-Abonnement."
+
+#. translators: %s: link to B2Brouter registration page
+#: includes/Admin.php:344
+msgid "First month is for free!"
+msgstr "Der erste Monat ist kostenlos!"
+
+#. translators: %s: link to B2Brouter registration page
+#: includes/Admin.php:343
+#, php-format
+msgid "Register at %s."
+msgstr "Registrieren Sie sich bei %s."
+
+#: includes/Admin.php:358
+msgid "Legal Compliance"
+msgstr "Rechtskonformität"
+
+#: includes/Admin.php:358
+msgid "Automatic compliance with electronic invoicing regulations across multiple countries."
+msgstr "Automatische Einhaltung der Vorschriften zur elektronischen Rechnungsstellung in mehreren Ländern."
+
+#: includes/Admin.php:359
+msgid "Time Saving"
+msgstr "Zeitersparnis"
+
+#: includes/Admin.php:359
+msgid "Automatic generation of electronic invoices without manual intervention."
+msgstr "Automatische Erstellung elektronischer Rechnungen ohne manuellen Eingriff."
+
+#: includes/Admin.php:360
+msgid "Professionalism"
+msgstr "Professionalität"
+
+#: includes/Admin.php:360
+msgid "Invoices in standard formats: UBL, CII, XML, etc."
+msgstr "Rechnungen in Standardformaten: UBL, CII, XML, etc."
+
+#: includes/Admin.php:361
+msgid "Cross-border"
+msgstr "Grenzüberschreitend"
+
+#: includes/Admin.php:361
+msgid "Support for international B2B and B2C transactions."
+msgstr "Unterstützung für internationale B2B- und B2C-Transaktionen."
+
+#: includes/Admin.php:362
+msgid "Full Integration"
+msgstr "Vollständige Integration"
+
+#: includes/Admin.php:362
+msgid "Works seamlessly with WooCommerce without affecting your workflow."
+msgstr "Funktioniert nahtlos mit WooCommerce, ohne Ihren Arbeitsablauf zu beeinträchtigen."
+
+#: includes/Admin.php:367
+msgid "Advanced configuration (transports, formats, taxes) is done in your B2Brouter account."
+msgstr "Die erweiterte Konfiguration (Transporte, Formate, Steuern) erfolgt in Ihrem B2Brouter-Konto."
+
+#: includes/Admin.php:368
+msgid "When an order is completed, the plugin automatically generates the invoice via the B2Brouter API."
+msgstr "Wenn eine Bestellung abgeschlossen wird, erstellt das Plugin automatisch die Rechnung über die B2Brouter-API."
+
+#: includes/Admin.php:369
+msgid "B2Brouter sends the invoice to your customer using your configured transport (email, Peppol, etc.)."
+msgstr "B2Brouter sendet die Rechnung an Ihren Kunden über den konfigurierten Transport (E-Mail, Peppol, etc.)."
+
+#: includes/Admin.php:370
+msgid "Your customers can also download their invoices from their account page."
+msgstr "Ihre Kunden können ihre Rechnungen auch von ihrer Kontoseite herunterladen."
+
+#: includes/Admin.php:371
+msgid "Invoice PDFs can be attached to WooCommerce order emails. This requires enabling email attachments in the plugin settings and configuring WooCommerce email notifications."
+msgstr "Rechnungs-PDFs können an WooCommerce-Bestellungs-E-Mails angehängt werden. Dies erfordert die Aktivierung von E-Mail-Anhängen in den Plugin-Einstellungen und die Konfiguration der WooCommerce-E-Mail-Benachrichtigungen."
+
+#: includes/Admin.php:372
+msgid "Credit notes are generated automatically when you process a refund."
+msgstr "Gutschriften werden automatisch erstellt, wenn Sie eine Rückerstattung verarbeiten."
