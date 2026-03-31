@@ -326,7 +326,7 @@ class Admin {
             <h1><?php esc_html_e('Welcome to B2Brouter for WooCommerce', 'b2brouter-woocommerce'); ?></h1>
             <div class="b2brouter-welcome-content">
                 <div class="b2brouter-card">
-                    <img src="<?php echo B2BROUTER_WC_PLUGIN_URL . 'assets//img/b2b-icon-logo.svg'; ?>" alt="Logo">
+                    <img src="<?php echo B2BROUTER_WC_PLUGIN_URL . 'assets/img/b2b-icon-logo.svg'; ?>" alt="Logo">
                     <h3><?php esc_html_e('B2Brouter plugin allows you to automatically generate and send electronic invoices for your WooCommerce orders.', 'b2brouter-woocommerce'); ?></h3>
 
                     <h3><?php esc_html_e('Requirements', 'b2brouter-woocommerce'); ?></h3>
