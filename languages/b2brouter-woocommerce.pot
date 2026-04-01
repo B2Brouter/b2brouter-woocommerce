@@ -269,7 +269,7 @@ msgid "Need Help?"
 msgstr ""
 
 #: includes/Admin.php:388
-msgid "Visit our Github where you will find detailed documentation. If you need help open issue support if you need assistance."
+msgid "Visit our GitHub repository for detailed documentation. If you need help, please open an issue."
 msgstr ""
 
 #: includes/Admin.php:390

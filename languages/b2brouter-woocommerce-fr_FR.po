@@ -146,8 +146,8 @@ msgid "Need Help?"
 msgstr "Besoin d'aide ?"
 
 #: includes/Admin.php:388
-msgid "Visit our Github where you will find detailed documentation. If you need help open issue support if you need assistance."
-msgstr "Visitez notre Github où vous trouverez une documentation détaillée. Si vous avez besoin d'aide, ouvrez un ticket de support."
+msgid "Visit our GitHub repository for detailed documentation. If you need help, please open an issue."
+msgstr "Visitez notre dépôt GitHub pour consulter la documentation détaillée. Si vous avez besoin d'aide, veuillez ouvrir un ticket."
 
 #: includes/Admin.php:390
 msgid "Documentation"
