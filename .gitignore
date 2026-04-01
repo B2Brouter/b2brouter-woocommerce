@@ -37,4 +37,4 @@ tests/coverage/
 coverage/
 
 # tests
-.phpunit.result.cach
+.phpunit.result.cache
