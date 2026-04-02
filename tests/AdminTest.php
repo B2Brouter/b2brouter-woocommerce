@@ -186,7 +186,7 @@ class AdminTest extends TestCase {
         $output = ob_get_clean();
 
         $this->assertStringContainsString('Welcome to B2Brouter', $output);
-        $this->assertStringContainsString('Electronic Invoicing', $output);
+        $this->assertStringContainsString('electronic invoices', $output);
     }
 
     /**

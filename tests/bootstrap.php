@@ -693,6 +693,11 @@ if (!defined('B2BROUTER_WC_PLUGIN_BASENAME')) {
     define('B2BROUTER_WC_PLUGIN_BASENAME', 'b2brouter-woocommerce/b2brouter-woocommerce.php');
 }
 
+// Define B2BROUTER_WC_PLUGIN_URL constant for asset URLs
+if (!defined('B2BROUTER_WC_PLUGIN_URL')) {
+    define('B2BROUTER_WC_PLUGIN_URL', 'https://example.com/wp-content/plugins/b2brouter-woocommerce/');
+}
+
 // Global storage for mock orders
 global $mock_orders;
 $mock_orders = array();
