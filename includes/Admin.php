@@ -162,7 +162,7 @@ class Admin {
     public function maybe_show_welcome() {
         if ($this->settings->should_show_welcome()) {
             $this->settings->mark_welcome_shown();
-            wp_safe_redirect(admin_url('admin.php?page=b2brouter-welcome'));
+            wp_safe_redirect(admin_url('admin.php?page=b2brouter'));
             exit;
         }
     }
@@ -206,7 +206,7 @@ class Admin {
                 '<span class="ab-icon dashicons dashicons-media-document"></span> <span class="ab-label">%s</span>',
                 sprintf(__('Invoices: %d', 'b2brouter-woocommerce'), $count)
             ),
-            'href'  => admin_url('admin.php?page=b2brouter-settings'),
+            'href'  => admin_url('admin.php?page=b2brouter-invoices'),
             'meta'  => array(
                 'title' => __('B2Brouter Invoices', 'b2brouter-woocommerce'),
             ),
