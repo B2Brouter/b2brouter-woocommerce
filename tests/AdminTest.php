@@ -134,7 +134,7 @@ class AdminTest extends TestCase {
         // Settings link is added at the beginning via array_unshift
         $first_link = reset($result);
         $this->assertStringContainsString('Settings', $first_link);
-        $this->assertStringContainsString('page=b2brouter', $first_link);
+        $this->assertStringContainsString('page=b2brouter-settings', $first_link);
     }
 
     /**

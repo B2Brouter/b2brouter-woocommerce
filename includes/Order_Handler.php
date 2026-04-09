@@ -347,7 +347,7 @@ class Order_Handler {
                 <?php if (!$this->settings->is_api_key_configured()): ?>
                     <p class="description">
                         <?php esc_html_e('API key not configured.', 'b2brouter-woocommerce'); ?>
-                        <a href="<?php echo esc_url(admin_url('admin.php?page=b2brouter')); ?>">
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=b2brouter-settings')); ?>">
                             <?php esc_html_e('Configure now', 'b2brouter-woocommerce'); ?>
                         </a>
                     </p>
