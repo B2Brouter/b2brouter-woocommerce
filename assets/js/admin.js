@@ -88,13 +88,16 @@
             $result
                 .removeClass('success error')
                 .addClass('error')
-                .html('<span class="dashicons dashicons-warning"></span> ' + b2brouterAdmin.strings.error + ': API key is required');
+                .html('<span class="dashicons dashicons-warning"></span> ' + b2brouterAdmin.strings.error + ': ' + b2brouterAdmin.strings.api_key_required);
             return;
         }
 
         // Disable button and show loading
         $button.prop('disabled', true).text(b2brouterAdmin.strings.validating);
         $result.removeClass('success error').html('');
+
+        // Hide account selector from previous validation
+        $('#b2brouter_account_selector').hide();
 
         // AJAX request
         $.ajax({
@@ -107,9 +110,30 @@
             },
             success: function(response) {
                 if (response.success) {
-                    $result
-                        .addClass('success')
-                        .html('<span class="dashicons dashicons-yes-alt"></span> ' + response.data.message);
+                    if (response.data.multiple_accounts && response.data.accounts) {
+                        // Multiple accounts: show selector
+                        $result
+                            .addClass('success')
+                            .html('<span class="dashicons dashicons-yes-alt"></span> ' + response.data.message);
+
+                        var $select = $('#b2brouter_account_select');
+                        $select.empty();
+                        $.each(response.data.accounts, function(i, account) {
+                            $select.append(
+                                $('<option></option>')
+                                    .val(account.id)
+                                    .text(account.label)
+                                    .data('name', account.name)
+                            );
+                        });
+                        $('#b2brouter_account_selector').show();
+                        $('#b2brouter_account_select_result').removeClass('success error').html('');
+                    } else {
+                        // Single account: auto-selected
+                        $result
+                            .addClass('success')
+                            .html('<span class="dashicons dashicons-yes-alt"></span> ' + response.data.message);
+                    }
                 } else {
                     $result
                         .addClass('error')
@@ -122,7 +146,60 @@
                     .html('<span class="dashicons dashicons-warning"></span> ' + b2brouterAdmin.strings.error);
             },
             complete: function() {
-                $button.prop('disabled', false).text('Validate Key');
+                $button.prop('disabled', false).text(b2brouterAdmin.strings.validate_key);
+            }
+        });
+    }
+
+    /**
+     * Select Account
+     */
+    function selectAccount() {
+        var $select = $('#b2brouter_account_select');
+        var $button = $('#b2brouter_select_account');
+        var $result = $('#b2brouter_account_select_result');
+        var accountId = $select.val();
+        var accountName = $select.find(':selected').data('name');
+
+        if (!accountId) {
+            return;
+        }
+
+        $button.prop('disabled', true);
+        $result.removeClass('success error').html('');
+
+        $.ajax({
+            url: b2brouterAdmin.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'b2brouter_select_account',
+                nonce: b2brouterAdmin.nonce,
+                account_id: accountId,
+                account_name: accountName
+            },
+            success: function(response) {
+                if (response.success) {
+                    $result
+                        .addClass('success')
+                        .html('<span class="dashicons dashicons-yes-alt"></span> ' + response.data.message);
+                    // Update displayed current account
+                    var $current = $('#b2brouter_current_account');
+                    if ($current.length) {
+                        $current.text(b2brouterAdmin.strings.current_account.replace('%1$s', accountName).replace('%2$s', accountId));
+                    }
+                } else {
+                    $result
+                        .addClass('error')
+                        .html('<span class="dashicons dashicons-warning"></span> ' + response.data.message);
+                }
+            },
+            error: function() {
+                $result
+                    .addClass('error')
+                    .html('<span class="dashicons dashicons-warning"></span> ' + b2brouterAdmin.strings.error);
+            },
+            complete: function() {
+                $button.prop('disabled', false);
             }
         });
     }
@@ -217,6 +294,12 @@
             generateInvoice(orderId, $(this));
         });
 
+        // Select account button
+        $('#b2brouter_select_account').on('click', function(e) {
+            e.preventDefault();
+            selectAccount();
+        });
+
         // Validate on Enter key in API key input
         $('#b2brouter_api_key').on('keypress', function(e) {
             if (e.which === 13) {
@@ -237,7 +320,7 @@
             var originalText = $button.html();
             $button.prop('disabled', true)
                    .html('<span class="dashicons dashicons-update dashicons-spin"></span> ' +
-                         (downloadMode === 'download' ? 'Downloading...' : 'Loading...'));
+                         (downloadMode === 'download' ? b2brouterAdmin.strings.downloading : b2brouterAdmin.strings.loading));
 
             // Create form and submit to new window/tab
             var form = $('<form>', {
@@ -291,7 +374,7 @@
             // Disable button and show loading
             var originalHtml = $button.html();
             $button.prop('disabled', true)
-                   .html('<span class="dashicons dashicons-update dashicons-spin" style="line-height: 1.4;"></span> Loading...');
+                   .html('<span class="dashicons dashicons-update dashicons-spin" style="line-height: 1.4;"></span> ' + b2brouterAdmin.strings.loading);
 
             // Create form and submit to new tab
             var form = $('<form>', {
@@ -345,7 +428,7 @@
             // Disable button and show loading
             var originalHtml = $button.html();
             $button.prop('disabled', true)
-                   .html('<span class="dashicons dashicons-update dashicons-spin" style="line-height: 1.4;"></span> Downloading...');
+                   .html('<span class="dashicons dashicons-update dashicons-spin" style="line-height: 1.4;"></span> ' + b2brouterAdmin.strings.downloading);
 
             // Create form and submit
             var form = $('<form>', {

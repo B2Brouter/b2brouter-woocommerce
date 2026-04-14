@@ -23,6 +23,7 @@ class Settings {
 
     const OPTION_API_KEY = 'b2brouter_api_key';
     const OPTION_ACCOUNT_ID = 'b2brouter_account_id';
+    const OPTION_ACCOUNT_NAME = 'b2brouter_account_name';
     const OPTION_ENVIRONMENT = 'b2brouter_environment';
     const OPTION_INVOICE_MODE = 'b2brouter_invoice_mode';
     const OPTION_TRANSACTION_COUNT = 'b2brouter_transaction_count';
@@ -91,6 +92,27 @@ class Settings {
      */
     public function set_account_id($account_id) {
         return update_option(self::OPTION_ACCOUNT_ID, sanitize_text_field($account_id));
+    }
+
+    /**
+     * Get account name
+     *
+     * @since 1.0.0
+     * @return string The account name
+     */
+    public function get_account_name() {
+        return get_option(self::OPTION_ACCOUNT_NAME, '');
+    }
+
+    /**
+     * Set account name
+     *
+     * @since 1.0.0
+     * @param string $account_name The account name to save
+     * @return bool True on success, false on failure
+     */
+    public function set_account_name($account_name) {
+        return update_option(self::OPTION_ACCOUNT_NAME, sanitize_text_field($account_name));
     }
 
     /**
@@ -258,8 +280,8 @@ class Settings {
             $options = array('api_base' => $this->get_api_base_url());
             $client = new \B2BRouter\B2BRouterClient($api_key, $options);
 
-            // Call GET /accounts to validate the key and retrieve account ID
-            $url = $client->getApiBase() . '/accounts?limit=1';
+            // Call GET /accounts to validate the key and retrieve all accounts
+            $url = $client->getApiBase() . '/accounts?limit=100';
 
             $headers = array(
                 'X-B2B-API-Key' => $api_key,
@@ -286,7 +308,7 @@ class Settings {
                 );
             }
 
-            // Parse response and extract first account ID
+            // Parse response and extract accounts
             $body = json_decode($response['body'], true);
 
             if (!isset($body['accounts']) || empty($body['accounts'])) {
@@ -296,18 +318,53 @@ class Settings {
                 );
             }
 
-            $first_account = $body['accounts'][0];
-            $account_id = (string) $first_account['id'];
+            $accounts = $body['accounts'];
 
-            // Store the account ID
-            $this->set_account_id($account_id);
+            // Single account: auto-select it
+            if (count($accounts) === 1) {
+                $account = $accounts[0];
+                $this->set_account_id((string) $account['id']);
+                $this->set_account_name($account['name']);
+
+                return array(
+                    'valid' => true,
+                    'message' => sprintf(
+                        __('API key is valid. Using account: %s', 'b2brouter-woocommerce'),
+                        $account['name']
+                    )
+                );
+            }
+
+            // Multiple accounts: return list for user selection
+            $account_list = array();
+            foreach ($accounts as $account) {
+                $label = $account['name'];
+                if (!empty($account['tin_value'])) {
+                    $label .= ' (' . $account['tin_value'] . ')';
+                }
+                if (!empty($account['parent_id'])) {
+                    $label = '↳ ' . $label;
+                }
+                $account_list[] = array(
+                    'id' => (string) $account['id'],
+                    'name' => $account['name'],
+                    'label' => $label,
+                    'parent_id' => isset($account['parent_id']) ? $account['parent_id'] : null,
+                );
+            }
+
+            // Sort: parent accounts first, then organizational units
+            usort($account_list, function($a, $b) {
+                $a_is_child = !empty($a['parent_id']) ? 1 : 0;
+                $b_is_child = !empty($b['parent_id']) ? 1 : 0;
+                return $a_is_child - $b_is_child;
+            });
 
             return array(
                 'valid' => true,
-                'message' => sprintf(
-                    __('API key is valid. Using account: %s', 'b2brouter-woocommerce'),
-                    $first_account['name']
-                )
+                'multiple_accounts' => true,
+                'accounts' => $account_list,
+                'message' => __('API key is valid. Please select an account.', 'b2brouter-woocommerce')
             );
         } catch (\Exception $e) {
             return array(
