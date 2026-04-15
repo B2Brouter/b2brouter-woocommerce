@@ -4,14 +4,45 @@
 
 /* Welcome Page */
 .b2brouter-welcome {
-    max-width: 900px;
+    max-width: 1200px;
+    font-size: 1rem;
 }
 
-.b2brouter-welcome h1 {
-    font-size: 2.5em;
-    margin-bottom: 1em;
+/* Banner */
+.b2brouter-banner{
+    display: flex;
+    padding: 52px 32px 52px 62px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    margin: 24px 0px;
+    background: linear-gradient(273deg, rgba(205, 222, 254, 0.9) 46.09%, rgba(205, 222, 254, 0.50) 108.62%);
 }
 
+.b2brouter-banner .first-column{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 3rem;
+}
+
+.b2brouter-banner h1 {
+    font-size: 1.9rem;
+    font-weight: bold;
+    color: #233558;
+}
+
+.b2brouter-banner h3 {
+    font-weight: normal;
+    font-size: 1.25rem;
+    margin-top: 0em;
+    line-height: 1.6rem;
+    color: #233558;
+}
+/* end Banner */
+
+
+/* welcome content */
 .b2brouter-welcome-content {
     display: grid;
     gap: 20px;
@@ -19,39 +50,82 @@
 
 .b2brouter-card {
     background: #fff;
-    border: 1px solid #ccd0d4;
     border-radius: 4px;
     padding: 30px;
     box-shadow: 0 1px 1px rgba(0,0,0,.04);
 }
 
+.b2brouter-card-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.b2brouter-card-row--70-30 > .b2brouter-card-col:first-child {
+    flex: 7;
+}
+
+.b2brouter-card-row--70-30 > .b2brouter-card-col:last-child {
+    flex: 3;
+}
+
+.b2brouter-card span{
+    font-weight: bold;
+    color:#fff;
+    background-color: #04de87;
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-size: .8rem;
+    letter-spacing: .02rem;
+}
+
+.b2brouter-card a{
+    color:#1362FB;
+}
+
 .b2brouter-card h2 {
     margin-top: 0;
-    font-size: 1.8em;
+    font-size: 2rem;
+    color: #103949;
 }
 
 .b2brouter-card h3 {
     margin-top: 1.5em;
-    font-size: 1.3em;
-    color: #1d2327;
+    font-size: 1.3rem;
+    color: #103949;
 }
 
-.b2brouter-checklist {
-    list-style: none;
-    padding: 0;
+.b2brouter-card h4 {
+    margin-bottom: 0rem;
+    font-size: 1rem;
+    color: #103949;
 }
 
-.b2brouter-checklist li {
-    padding: 8px 0;
-    padding-left: 30px;
+.b2brouter-card-highlight {
+    background-color: #F5F8FF;
+    padding: 2px 24px 15px 24px;
+}
+
+.b2brouter-list {
+    list-style-type: disc;
+    padding-left: 15px;
+}
+
+.b2brouter-list li{
+    padding-bottom: 4px;
+}
+
+.b2brouter-ckecklist li {
+    list-style: none!important;
+    padding: 8px 10px 10px 22px;
     position: relative;
 }
 
-.b2brouter-checklist li:before {
+.b2brouter-ckecklist li:before {
     content: "✓";
     position: absolute;
-    left: 0;
-    color: #46b450;
+    left: 0px;
+    color: #04de87;
     font-weight: bold;
     font-size: 1.2em;
 }
@@ -75,10 +149,41 @@
     flex-wrap: wrap;
 }
 
-.b2brouter-info {
-    background: #f0f6fc;
-    border-left: 4px solid #2271b1;
+.b2brouter-actions .button-secondary{
+    color: #1362FB;
+    border-color: #1362FB;
+    background-color:#F5F8FF;
 }
+
+.b2brouter-actions .button-secondary:hover{
+    color: #1362FB;
+    border-color: #1362FB;
+    background-color:#E5ECFA;
+}
+
+.b2brouter-actions .button-primary{
+    color: #fff;
+    background: #1362FB;
+}
+
+.b2brouter-actions .button-primary:hover{
+    color: #fff;
+    background: #367AFC;
+}
+
+.b2brouter-info {
+    background: #F5F8FF;
+    border-left: 6px solid #1362FB;
+}
+
+.b2brouter-info p{
+    font-size: 1rem;
+    color: #103949;
+}
+
+/* end welcome content */
+
+
 
 /* Settings Page */
 .b2brouter-settings .form-table th {
@@ -90,7 +195,6 @@
 }
 
 .b2brouter-settings .description {
-    color: #646970;
     font-size: 13px;
 }
 
@@ -232,6 +336,26 @@
 }
 
 /* Responsive */
+@media screen and (max-width: 1160px) {
+    .b2brouter-banner {
+        flex-wrap: wrap;
+        padding: 52px 62px;
+    }
+
+    .b2brouter-banner .first-column {
+        padding-right: 0;
+    }
+
+    .b2brouter-banner img {
+        max-width: 100%;
+        margin-top: 14px;
+    }
+
+    .b2brouter-card-row {
+        flex-direction: column;
+    }
+}
+
 @media screen and (max-width: 782px) {
     .b2brouter-settings .form-table input[type="text"].regular-text {
         width: 100%;
