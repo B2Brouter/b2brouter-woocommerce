@@ -78,7 +78,6 @@ class Admin {
 
         // Handle AJAX requests
         add_action('wp_ajax_b2brouter_validate_api_key', array($this, 'ajax_validate_api_key'));
-        add_action('wp_ajax_b2brouter_select_account', array($this, 'ajax_select_account'));
         add_action('wp_ajax_b2brouter_generate_invoice', array($this, 'ajax_generate_invoice'));
         add_action('wp_ajax_b2brouter_download_pdf', array($this, 'ajax_download_pdf'));
     }
@@ -259,12 +258,6 @@ class Admin {
                 'generating' => __('Generating invoice...', 'b2brouter-woocommerce'),
                 'success' => __('Success!', 'b2brouter-woocommerce'),
                 'error' => __('Error', 'b2brouter-woocommerce'),
-                'validate_key' => __('Validate Key', 'b2brouter-woocommerce'),
-                'api_key_required' => __('API key is required', 'b2brouter-woocommerce'),
-                'downloading' => __('Downloading...', 'b2brouter-woocommerce'),
-                'loading' => __('Loading...', 'b2brouter-woocommerce'),
-                /* translators: %1$s: account name, %2$s: account ID */
-                'current_account' => __('Current account: %1$s (ID: %2$s)', 'b2brouter-woocommerce'),
             ),
         ));
     }
@@ -291,37 +284,6 @@ class Admin {
         } else {
             wp_send_json_error($result);
         }
-    }
-
-    /**
-     * AJAX: Select account from multiple accounts
-     *
-     * @since 1.0.0
-     * @return void
-     */
-    public function ajax_select_account() {
-        check_ajax_referer('b2brouter_nonce', 'nonce');
-
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-woocommerce')));
-        }
-
-        $account_id = isset($_POST['account_id']) ? sanitize_text_field($_POST['account_id']) : '';
-        $account_name = isset($_POST['account_name']) ? sanitize_text_field($_POST['account_name']) : '';
-
-        if (empty($account_id)) {
-            wp_send_json_error(array('message' => __('No account selected', 'b2brouter-woocommerce')));
-        }
-
-        $this->settings->set_account_id($account_id);
-        $this->settings->set_account_name($account_name);
-
-        wp_send_json_success(array(
-            'message' => sprintf(
-                __('Account selected: %s', 'b2brouter-woocommerce'),
-                $account_name
-            )
-        ));
     }
 
     /**
@@ -361,72 +323,91 @@ class Admin {
     public function render_welcome_page() {
         ?>
         <div class="wrap b2brouter-welcome">
-            <h1><?php esc_html_e('Welcome to B2Brouter for WooCommerce', 'b2brouter-woocommerce'); ?></h1>
+            
+            <div class="b2brouter-banner">
+                <div class="first-column">
+                    <img src="<?php echo B2BROUTER_WC_PLUGIN_URL . 'assets/img/Woo-isotip-linear-degradate.svg'; ?>" alt="Logo">
+                    <h1><?php esc_html_e('B2Brouter for WooCommerce', 'b2brouter-woocommerce'); ?></h1>
+                    <h3><?php esc_html_e('The B2Brouter plugin allows you to automatically generate and send electronic invoices for your WooCommerce orders.', 'b2brouter-woocommerce'); ?></h3>
+                </div>  
+                <img src="<?php echo B2BROUTER_WC_PLUGIN_URL . 'assets/img/woo-graphic.svg'; ?>" alt="Logo">
+            </div>
             <div class="b2brouter-welcome-content">
                 <div class="b2brouter-card">
-                    <img src="<?php echo B2BROUTER_WC_PLUGIN_URL . 'assets/img/b2b-icon-logo.svg'; ?>" alt="Logo">
-                    <h3><?php esc_html_e('B2Brouter plugin allows you to automatically generate and send electronic invoices for your WooCommerce orders.', 'b2brouter-woocommerce'); ?></h3>
 
-                    <h3><?php esc_html_e('Requirements', 'b2brouter-woocommerce'); ?></h3>
-                    <ul>
-                        <li><?php esc_html_e('WordPress 5.8 or higher', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('WooCommerce 5.0 or higher, installed and active', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('PHP 7.4 or higher', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('A B2Brouter account with an active eDocExchange subscription', 'b2brouter-woocommerce'); ?></li>
-                    </ul>
-
-                    <h3><?php esc_html_e('Next Steps', 'b2brouter-woocommerce'); ?></h3>
-                    <h4><?php esc_html_e('Step 1 — Get your B2Brouter credentials', 'b2brouter-woocommerce'); ?></h4>
-                    <ol>
-                        <li><?php /* translators: %s: link to B2Brouter registration page */ printf(esc_html__('Register at %s.', 'b2brouter-woocommerce'), '<a href="https://app.b2brouter.net/register" target="_blank">app.b2brouter.net</a>'); ?></li>
-                        <li><?php esc_html_e('Purchase an eDocExchange subscription.', 'b2brouter-woocommerce'); ?> <strong><?php esc_html_e('First month is for free!', 'b2brouter-woocommerce'); ?></strong></li>
-                        <li><?php esc_html_e('Go to Developers → API Keys in your B2Brouter dashboard.', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('Copy the API key and store it safely.', 'b2brouter-woocommerce'); ?></li>
-                    </ol>  
-                    <h4><?php esc_html_e('Step 2 — Configure the plugin', 'b2brouter-woocommerce'); ?></h4> 
-                    <ol>
-                        <li><?php esc_html_e('In WordPress, go to Invoices → Settings.', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('Paste your B2Brouter API key.', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('Click Validate Key. If the key is correct, the plugin will display your account information.', 'b2brouter-woocommerce'); ?></li>
-
-                    </ol>
-
-                    <h3><?php esc_html_e('Benefits', 'b2brouter-woocommerce'); ?></h3> 
-                    <ul class="b2brouter-checklist">
-                        <li><strong><?php esc_html_e('Legal Compliance', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Automatic compliance with electronic invoicing regulations across multiple countries.', 'b2brouter-woocommerce'); ?></li>
-                        <li><strong><?php esc_html_e('Time Saving', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Automatic generation of electronic invoices without manual intervention.', 'b2brouter-woocommerce'); ?></li>
-                        <li><strong><?php esc_html_e('Professionalism', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Invoices in standard formats: UBL, CII, XML, etc.', 'b2brouter-woocommerce'); ?></li>
-                        <li><strong><?php esc_html_e('Cross-border', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Support for international B2B and B2C transactions.', 'b2brouter-woocommerce'); ?></li>
-                        <li><strong><?php esc_html_e('Full Integration', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Works seamlessly with WooCommerce without affecting your workflow.', 'b2brouter-woocommerce'); ?></li>
-                    </ul>
-
-                    <h3><?php esc_html_e('How it works', 'b2brouter-woocommerce'); ?></h3> 
-                    <ul class="b2brouter-checklist">
-                        <li><?php esc_html_e('Advanced configuration (transports, formats, taxes) is done in your B2Brouter account.', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('When an order is completed, the plugin automatically generates the invoice via the B2Brouter API.', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('B2Brouter sends the invoice to your customer using your configured transport (email, Peppol, etc.).', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('Your customers can also download their invoices from their account page.', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('Invoice PDFs can be attached to WooCommerce order emails. This requires enabling email attachments in the plugin settings and configuring WooCommerce email notifications.', 'b2brouter-woocommerce'); ?></li>
-                        <li><?php esc_html_e('Credit notes are generated automatically when you process a refund.', 'b2brouter-woocommerce'); ?></li>
-                    </ul>
-                    <h3><?php esc_html_e('Ready to get started?', 'b2brouter-woocommerce'); ?></h3> 
-                    <div class="b2brouter-actions">
-                        
-                        <a href="https://app.b2brouter.net" class="button button-primary button-hero" target="_blank">
-                            <?php esc_html_e('Go to B2Brouter - Activate Subscription', 'b2brouter-woocommerce'); ?>
-                        </a>
-                        <a href="<?php echo esc_url(admin_url('admin.php?page=b2brouter')); ?>" class="button button-secondary button-hero">
-                            <?php esc_html_e('Configure Plugin', 'b2brouter-woocommerce'); ?>
-                        </a>
+                    <div class="b2brouter-card-row b2brouter-card-row--70-30">
+                        <div class="b2brouter-card-col">
+                            <h3><?php esc_html_e('Next Steps', 'b2brouter-woocommerce'); ?></h3>
+                            <h4>Step 1 — Get your B2Brouter credentials</h4>
+                            <ol>
+                                <li><a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Register at app.b2brouter.net', 'b2brouter-woocommerce'); ?></a></li>
+                                <li><?php esc_html_e('Purchase an eDocExchange subscription.', 'b2brouter-woocommerce'); ?> <span><?php esc_html_e('First month is for free!', 'b2brouter-woocommerce'); ?></span></li>
+                                <li><?php esc_html_e('Go to Developers → API Keys in your B2Brouter dashboard.', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Copy the API key and store it safely.', 'b2brouter-woocommerce'); ?></li>
+                            </ol>
+                            <h4>Step 2 — Configure the plugin</h4>
+                            <ol>
+                                <li><?php esc_html_e('In WordPress, go to Invoices → Settings.', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Paste your B2Brouter API key.', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Click Validate Key. If the key is correct, the plugin will display your account information.', 'b2brouter-woocommerce'); ?></li>
+                            </ol>
+                        </div>
+                        <div class="b2brouter-card-col b2brouter-card-highlight">
+                            <h3><?php esc_html_e('Requirements', 'b2brouter-woocommerce'); ?></h4>
+                            <ul class="b2brouter-list">
+                                <li><?php esc_html_e('A B2Brouter account with an active eDocExchange subscription', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('WordPress 5.8 or higher', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('WooCommerce 5.0 or higher, installed and active', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('PHP 7.4 or higher', 'b2brouter-woocommerce'); ?></li>
+                            </ul>
+                        </div>
                     </div>
+
+                    <div class="b2brouter-card-row b2brouter-card-row--70-30">
+                        
+                        <div class="b2brouter-card-col">
+                            <h3>How it works</h3>
+                            <ul class="b2brouter-list">
+                                <li><?php esc_html_e('Advanced configuration (transports, formats, taxes) is done in your B2Brouter account.', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Lorem', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Lorem', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Lorem', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Lorem', 'b2brouter-woocommerce'); ?></li>
+                            </ul>
+                            <h3>Ready to get started?</h3>
+                            <div class="b2brouter-actions">
+                                <a href="https://app.b2brouter.net" class="button button-primary button-hero" target="_blank">
+                                    <?php esc_html_e('Go to B2Brouter - Activate Subscription', 'b2brouter-woocommerce'); ?>
+                                </a>
+                                <a href="<?php echo esc_url(admin_url('admin.php?page=b2brouter')); ?>" class="button button-secondary button-hero">
+                                    <?php esc_html_e('Configure Plugin', 'b2brouter-woocommerce'); ?>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="b2brouter-card-col b2brouter-card-highlight">
+                            <h3>Benefits</h4>
+                            
+                            <ul class="b2brouter-ckecklist">
+                                <li><strong>Legal Compliance </strong> — Automatic compliance with electronic invoicing regulations across multiple countries.</li>
+                                <li><strong>Tax reports </strong> — Automatic compliance with tax report regulations across multiple countries.</li>
+                                <li><strong>Time Saving </strong>  — Automatic generation of electronic invoices without manual intervention.</li>
+                                <li><strong>Professionalism </strong> — Invoices in standard formats: UBL, CII, XML, etc.</li>
+                                <li><strong>Cross-border  </strong> — Support for international B2B and B2C transactions.</li>
+                                <li><strong>Full Integration </strong> — Works seamlessly with WooCommerce without affecting your workflow.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    
                 </div>
 
                 <div class="b2brouter-card b2brouter-info">
                     <h3><?php esc_html_e('Need Help?', 'b2brouter-woocommerce'); ?></h3>
-                    <p><?php esc_html_e('Visit our GitHub repository for detailed documentation. If you need help, please open an issue.', 'b2brouter-woocommerce'); ?></p>
+                    <p><?php esc_html_e('Visit our GitHub for detailed documentation. If you need help, open a support issue.', 'b2brouter-woocommerce'); ?></p>
                     <p>
                         <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Documentation', 'b2brouter-woocommerce'); ?></a> |
-                        <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Changelog', 'b2brouter-woocommerce'); ?></a> | <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Support', 'b2brouter-woocommerce'); ?></a>
+                        <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Changelog', 'b2brouter-woocommerce'); ?></a> | 
+                        <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Support', 'b2brouter-woocommerce'); ?></a>
                     </p>
                 </div>
             </div>
@@ -598,25 +579,6 @@ class Admin {
                                 <?php esc_html_e('Validate Key', 'b2brouter-woocommerce'); ?>
                             </button>
                             <span id="b2brouter_validation_result"></span>
-                            <div id="b2brouter_account_selector" style="display:none; margin-top: 10px;">
-                                <select id="b2brouter_account_select" class="regular-text"></select>
-                                <button type="button" id="b2brouter_select_account" class="button button-primary">
-                                    <?php esc_html_e('Use this account', 'b2brouter-woocommerce'); ?>
-                                </button>
-                                <span id="b2brouter_account_select_result"></span>
-                            </div>
-                            <?php
-                            $current_account_name = $this->settings->get_account_name();
-                            $current_account_id = $this->settings->get_account_id();
-                            if (!empty($current_account_id) && !empty($current_account_name)) : ?>
-                                <p class="description" id="b2brouter_current_account">
-                                    <?php echo esc_html(sprintf(
-                                        __('Current account: %s (ID: %s)', 'b2brouter-woocommerce'),
-                                        $current_account_name,
-                                        $current_account_id
-                                    )); ?>
-                                </p>
-                            <?php endif; ?>
                             <p class="description">
                                 <?php esc_html_e('Enter your B2Brouter API key to enable invoice generation.', 'b2brouter-woocommerce'); ?>
                                 <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-woocommerce'); ?></a>
