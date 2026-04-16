@@ -409,6 +409,10 @@ if (!function_exists('register_setting')) {
     }
 }
 
+// Global flag: when true, wp_send_json_* throw instead of exit
+global $wp_send_json_throw;
+$wp_send_json_throw = false;
+
 if (!function_exists('wp_send_json_success')) {
     /**
      * Mock wp_send_json_success function
@@ -417,7 +421,12 @@ if (!function_exists('wp_send_json_success')) {
      * @return void
      */
     function wp_send_json_success($data = null) {
-        echo json_encode(array('success' => true, 'data' => $data));
+        global $wp_send_json_throw;
+        $response = json_encode(array('success' => true, 'data' => $data));
+        if ($wp_send_json_throw) {
+            throw new \WpJsonResponseException($response);
+        }
+        echo $response;
         exit;
     }
 }
@@ -430,8 +439,25 @@ if (!function_exists('wp_send_json_error')) {
      * @return void
      */
     function wp_send_json_error($data = null) {
-        echo json_encode(array('success' => false, 'data' => $data));
+        global $wp_send_json_throw;
+        $response = json_encode(array('success' => false, 'data' => $data));
+        if ($wp_send_json_throw) {
+            throw new \WpJsonResponseException($response);
+        }
+        echo $response;
         exit;
+    }
+}
+
+/**
+ * Exception thrown by mocked wp_send_json functions to prevent exit()
+ */
+class WpJsonResponseException extends \Exception {
+    public $response;
+
+    public function __construct($response) {
+        $this->response = $response;
+        parent::__construct('wp_send_json called');
     }
 }
 
@@ -873,9 +899,61 @@ if (!class_exists('B2BRouter\B2BRouterClient')) {
     namespace B2BRouter {
         namespace HttpClient {
             class MockHttpClient {
+                private $apiKey;
+
+                public function setApiKey($apiKey) {
+                    $this->apiKey = $apiKey;
+                }
+
                 public function request($method, $url, $headers, $body, $timeout) {
                     // Mock GET /accounts endpoint (API key validation)
                     if ($method === "GET" && strpos($url, "/accounts") !== false) {
+                        // Multi-account response for key "multi-account-key"
+                        if ($this->apiKey === "multi-account-key") {
+                            return [
+                                "status" => 200,
+                                "body" => json_encode([
+                                    "accounts" => [
+                                        [
+                                            "id" => 211162,
+                                            "tin_value" => "ES01738726H",
+                                            "name" => "Parent Company",
+                                            "parent_id" => null,
+                                            "country" => "es"
+                                        ],
+                                        [
+                                            "id" => 211163,
+                                            "tin_value" => "ES99999999R",
+                                            "name" => "Child Unit A",
+                                            "parent_id" => 211162,
+                                            "country" => "es"
+                                        ],
+                                        [
+                                            "id" => 211164,
+                                            "tin_value" => "ES88888888Q",
+                                            "name" => "Child Unit B",
+                                            "parent_id" => 211162,
+                                            "country" => "es"
+                                        ]
+                                    ],
+                                    "total_count" => 3,
+                                    "offset" => 0,
+                                    "limit" => 100
+                                ]),
+                                "headers" => []
+                            ];
+                        }
+
+                        // Invalid key response
+                        if ($this->apiKey === "invalid-key") {
+                            return [
+                                "status" => 401,
+                                "body" => json_encode(["message" => "Invalid API key"]),
+                                "headers" => []
+                            ];
+                        }
+
+                        // Default: single account response
                         return [
                             "status" => 200,
                             "body" => json_encode([
@@ -949,6 +1027,7 @@ if (!class_exists('B2BRouter\B2BRouterClient')) {
                     $this->apiBase = $options["api_base"];
                 }
                 $this->httpClient = new HttpClient\MockHttpClient();
+                $this->httpClient->setApiKey($api_key);
 
                 $this->invoices = new class {
                     public function create($account, $params) {

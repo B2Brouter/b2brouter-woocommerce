@@ -179,6 +179,38 @@ class SettingsTest extends TestCase {
         $this->assertEquals('211162', $stored);
     }
 
+    // ========== Account Name Tests ==========
+
+    /**
+     * Test get_account_name returns empty string by default
+     *
+     * @return void
+     */
+    public function test_get_account_name_returns_empty_by_default() {
+        $this->assertEquals('', $this->settings->get_account_name());
+    }
+
+    /**
+     * Test set_account_name stores value
+     *
+     * @return void
+     */
+    public function test_set_account_name_stores_value() {
+        $result = $this->settings->set_account_name('Test Company');
+        $this->assertTrue($result);
+        $this->assertEquals('Test Company', $this->settings->get_account_name());
+    }
+
+    /**
+     * Test set_account_name sanitizes input
+     *
+     * @return void
+     */
+    public function test_set_account_name_sanitizes_input() {
+        $this->settings->set_account_name('  Company Name  ');
+        $this->assertEquals('Company Name', $this->settings->get_account_name());
+    }
+
     // ========== Environment Tests ==========
 
     /**
@@ -446,8 +478,6 @@ class SettingsTest extends TestCase {
     /**
      * Test validate_api_key with invalid key returns error
      *
-     * Note: With real SDK installed, this makes actual API calls
-     *
      * @return void
      */
     public function test_validate_api_key_with_invalid_key() {
@@ -456,6 +486,30 @@ class SettingsTest extends TestCase {
         $this->assertIsArray($result);
         $this->assertFalse($result['valid']);
         $this->assertIsString($result['message']);
+    }
+
+    /**
+     * Test validate_api_key with valid single-account key auto-selects and stores account name
+     *
+     * Note: Uses the real SDK against mock/staging API.
+     * The mock bootstrap SDK is used when real SDK is not available.
+     *
+     * @return void
+     */
+    public function test_validate_api_key_single_account_stores_account_name() {
+        // If validate succeeds with single account, it should store both id and name
+        $result = $this->settings->validate_api_key('test-key');
+
+        // With the real SDK and an invalid test key, this may return valid=false
+        // We test the structural guarantee: if valid and no multiple_accounts, name was set
+        if ($result['valid'] && !isset($result['multiple_accounts'])) {
+            $this->assertNotEmpty($this->settings->get_account_id());
+            $this->assertNotEmpty($this->settings->get_account_name());
+        } else {
+            // Key was rejected - just verify structure
+            $this->assertArrayHasKey('valid', $result);
+            $this->assertArrayHasKey('message', $result);
+        }
     }
 
     // ========== Integration Tests ==========
@@ -816,6 +870,8 @@ class SettingsTest extends TestCase {
             'set_api_key',
             'get_account_id',
             'set_account_id',
+            'get_account_name',
+            'set_account_name',
             'get_environment',
             'set_environment',
             'get_api_base_url',

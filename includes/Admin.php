@@ -307,11 +307,18 @@ class Admin {
         }
 
         $account_id = isset($_POST['account_id']) ? sanitize_text_field($_POST['account_id']) : '';
-        $account_name = isset($_POST['account_name']) ? sanitize_text_field($_POST['account_name']) : '';
 
         if (empty($account_id)) {
             wp_send_json_error(array('message' => __('No account selected', 'b2brouter-woocommerce')));
         }
+
+        // Verify account_id against server-validated account list
+        $verified_accounts = get_transient('b2brouter_validated_accounts');
+        if (empty($verified_accounts) || !isset($verified_accounts[$account_id])) {
+            wp_send_json_error(array('message' => __('Invalid account. Please re-validate your API key.', 'b2brouter-woocommerce')));
+        }
+
+        $account_name = $verified_accounts[$account_id];
 
         $this->settings->set_account_id($account_id);
         $this->settings->set_account_name($account_name);
@@ -608,11 +615,12 @@ class Admin {
                             <?php
                             $current_account_name = $this->settings->get_account_name();
                             $current_account_id = $this->settings->get_account_id();
-                            if (!empty($current_account_id) && !empty($current_account_name)) : ?>
+                            if (!empty($current_account_id)) : ?>
                                 <p class="description" id="b2brouter_current_account">
                                     <?php echo esc_html(sprintf(
-                                        __('Current account: %s (ID: %s)', 'b2brouter-woocommerce'),
-                                        $current_account_name,
+                                        /* translators: %1$s: account name, %2$s: account ID */
+                                        __('Current account: %1$s (ID: %2$s)', 'b2brouter-woocommerce'),
+                                        !empty($current_account_name) ? $current_account_name : __('Unknown', 'b2brouter-woocommerce'),
                                         $current_account_id
                                     )); ?>
                                 </p>

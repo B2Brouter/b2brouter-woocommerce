@@ -10,6 +10,7 @@ use B2Brouter\WooCommerce\Admin;
 use B2Brouter\WooCommerce\Settings;
 use B2Brouter\WooCommerce\Invoice_Generator;
 
+
 /**
  * Admin test case
  *
@@ -148,6 +149,17 @@ class AdminTest extends TestCase {
     public function test_ajax_methods_are_callable() {
         $this->assertTrue(method_exists($this->admin, 'ajax_validate_api_key'));
         $this->assertTrue(method_exists($this->admin, 'ajax_generate_invoice'));
+        $this->assertTrue(method_exists($this->admin, 'ajax_select_account'));
+    }
+
+    /**
+     * Test that select_account AJAX hook is registered
+     *
+     * @return void
+     */
+    public function test_select_account_ajax_hook_registered() {
+        global $wp_actions;
+        $this->assertArrayHasKey('wp_ajax_b2brouter_select_account', $wp_actions);
     }
 
     /**
@@ -227,6 +239,180 @@ class AdminTest extends TestCase {
         $this->assertEquals('List of Invoices', $invoices_page['page_title']);
         $this->assertEquals('List of Invoices', $invoices_page['menu_title']);
         $this->assertEquals('manage_woocommerce', $invoices_page['capability']);
+    }
+
+    /**
+     * Helper to call an AJAX handler and capture the JSON response
+     *
+     * @param callable $callback The AJAX handler to call
+     * @return array Decoded JSON response
+     */
+    private function callAjaxHandler($callback) {
+        global $wp_send_json_throw;
+        $wp_send_json_throw = true;
+        try {
+            call_user_func($callback);
+        } catch (\WpJsonResponseException $e) {
+            $wp_send_json_throw = false;
+            return json_decode($e->response, true);
+        }
+        $wp_send_json_throw = false;
+        $this->fail('AJAX handler did not call wp_send_json');
+    }
+
+    /**
+     * Test ajax_select_account rejects when no transient exists
+     *
+     * @return void
+     */
+    public function test_ajax_select_account_rejects_without_transient() {
+        global $wp_transients;
+        $wp_transients = array();
+
+        $_POST['account_id'] = '211162';
+
+        $response = $this->callAjaxHandler(array($this->admin, 'ajax_select_account'));
+
+        $this->assertFalse($response['success']);
+        $this->assertStringContainsString('Invalid account', $response['data']['message']);
+
+        unset($_POST['account_id']);
+    }
+
+    /**
+     * Test ajax_select_account rejects account_id not in transient
+     *
+     * @return void
+     */
+    public function test_ajax_select_account_rejects_unknown_account_id() {
+        global $wp_transients;
+        $wp_transients = array(
+            'b2brouter_validated_accounts' => array(
+                '211162' => 'Real Company',
+            )
+        );
+
+        $_POST['account_id'] = '999999';
+
+        $response = $this->callAjaxHandler(array($this->admin, 'ajax_select_account'));
+
+        $this->assertFalse($response['success']);
+        $this->assertStringContainsString('Invalid account', $response['data']['message']);
+
+        unset($_POST['account_id']);
+    }
+
+    /**
+     * Test ajax_select_account accepts valid account from transient and uses server name
+     *
+     * @return void
+     */
+    public function test_ajax_select_account_accepts_valid_account_from_transient() {
+        global $wp_transients;
+        $wp_transients = array(
+            'b2brouter_validated_accounts' => array(
+                '211162' => 'Real Company',
+                '211163' => 'Child Unit',
+            )
+        );
+
+        $_POST['account_id'] = '211162';
+        $_POST['account_name'] = 'Spoofed Name That Should Be Ignored';
+
+        $this->mock_settings->expects($this->once())
+            ->method('set_account_id')
+            ->with('211162');
+        $this->mock_settings->expects($this->once())
+            ->method('set_account_name')
+            ->with('Real Company'); // Server-side name, not the spoofed one
+
+        $response = $this->callAjaxHandler(array($this->admin, 'ajax_select_account'));
+
+        $this->assertTrue($response['success']);
+        $this->assertStringContainsString('Real Company', $response['data']['message']);
+
+        unset($_POST['account_id'], $_POST['account_name']);
+    }
+
+    /**
+     * Test ajax_select_account rejects empty account_id
+     *
+     * @return void
+     */
+    public function test_ajax_select_account_rejects_empty_account_id() {
+        $_POST['account_id'] = '';
+
+        $response = $this->callAjaxHandler(array($this->admin, 'ajax_select_account'));
+
+        $this->assertFalse($response['success']);
+        $this->assertStringContainsString('No account selected', $response['data']['message']);
+
+        unset($_POST['account_id']);
+    }
+
+    /**
+     * Test render_settings_page shows account selector markup
+     *
+     * @return void
+     */
+    public function test_render_settings_page_shows_account_selector() {
+        $this->mock_settings->method('get_api_key')->willReturn('test-key');
+        $this->mock_settings->method('get_invoice_mode')->willReturn('manual');
+        $this->mock_settings->method('get_transaction_count')->willReturn(0);
+        $this->mock_settings->method('get_account_id')->willReturn('');
+        $this->mock_settings->method('get_account_name')->willReturn('');
+
+        ob_start();
+        $this->admin->render_settings_page();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString('b2brouter_account_selector', $output);
+        $this->assertStringContainsString('b2brouter_account_select', $output);
+        $this->assertStringContainsString('Use this account', $output);
+    }
+
+    /**
+     * Test render_settings_page shows current account when account_id set without account_name
+     * (backward compatibility for existing installations)
+     *
+     * @return void
+     */
+    public function test_render_settings_page_shows_current_account_without_name() {
+        $this->mock_settings->method('get_api_key')->willReturn('test-key');
+        $this->mock_settings->method('get_invoice_mode')->willReturn('manual');
+        $this->mock_settings->method('get_transaction_count')->willReturn(0);
+        $this->mock_settings->method('get_account_id')->willReturn('211162');
+        $this->mock_settings->method('get_account_name')->willReturn('');
+
+        ob_start();
+        $this->admin->render_settings_page();
+        $output = ob_get_clean();
+
+        // Should display current account even without name (shows "Unknown")
+        $this->assertStringContainsString('b2brouter_current_account', $output);
+        $this->assertStringContainsString('211162', $output);
+        $this->assertStringContainsString('Unknown', $output);
+    }
+
+    /**
+     * Test render_settings_page shows current account with name and ID
+     *
+     * @return void
+     */
+    public function test_render_settings_page_shows_current_account_with_name() {
+        $this->mock_settings->method('get_api_key')->willReturn('test-key');
+        $this->mock_settings->method('get_invoice_mode')->willReturn('manual');
+        $this->mock_settings->method('get_transaction_count')->willReturn(0);
+        $this->mock_settings->method('get_account_id')->willReturn('211162');
+        $this->mock_settings->method('get_account_name')->willReturn('WP test');
+
+        ob_start();
+        $this->admin->render_settings_page();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString('b2brouter_current_account', $output);
+        $this->assertStringContainsString('WP test', $output);
+        $this->assertStringContainsString('211162', $output);
     }
 
     /**

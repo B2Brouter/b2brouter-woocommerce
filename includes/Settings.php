@@ -255,9 +255,14 @@ class Settings {
     /**
      * Validate API key with B2Brouter
      *
+     * For single-account keys, auto-selects the account and returns {valid, message}.
+     * For multi-account keys, returns {valid, message, multiple_accounts, accounts}
+     * where accounts is a list of {id, name, label, parent_id} and stores a
+     * transient of verified accounts for server-side validation on selection.
+     *
      * @since 1.0.0
      * @param string $api_key The API key to validate
-     * @return array{valid: bool, message: string} Validation result
+     * @return array{valid: bool, message: string, multiple_accounts?: bool, accounts?: array} Validation result
      */
     public function validate_api_key($api_key) {
         try {
@@ -353,12 +358,28 @@ class Settings {
                 );
             }
 
-            // Sort: parent accounts first, then organizational units
+            // Sort: parents first, then children grouped by parent_id
             usort($account_list, function($a, $b) {
                 $a_is_child = !empty($a['parent_id']) ? 1 : 0;
                 $b_is_child = !empty($b['parent_id']) ? 1 : 0;
-                return $a_is_child - $b_is_child;
+                if ($a_is_child !== $b_is_child) {
+                    return $a_is_child - $b_is_child;
+                }
+                if ($a_is_child && $b_is_child) {
+                    $parent_cmp = strcmp((string) $a['parent_id'], (string) $b['parent_id']);
+                    if ($parent_cmp !== 0) {
+                        return $parent_cmp;
+                    }
+                }
+                return strcmp($a['name'], $b['name']);
             });
+
+            // Store validated accounts in transient for server-side verification
+            $verified_accounts = array();
+            foreach ($account_list as $acct) {
+                $verified_accounts[$acct['id']] = $acct['name'];
+            }
+            set_transient('b2brouter_validated_accounts', $verified_accounts, HOUR_IN_SECONDS);
 
             return array(
                 'valid' => true,

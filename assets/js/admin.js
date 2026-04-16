@@ -174,8 +174,7 @@
             data: {
                 action: 'b2brouter_select_account',
                 nonce: b2brouterAdmin.nonce,
-                account_id: accountId,
-                account_name: accountName
+                account_id: accountId
             },
             success: function(response) {
                 if (response.success) {
