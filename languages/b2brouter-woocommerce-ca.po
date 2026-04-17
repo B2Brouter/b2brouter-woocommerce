@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: B2Brouter for WooCommerce 0.9.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/b2brouter-"
 "woocommerce\n"
-"POT-Creation-Date: 2026-04-14T10:58:23+00:00\n"
+"POT-Creation-Date: 2026-04-17T11:29:46+00:00\n"
 "PO-Revision-Date: 2026-03-31 16:11+0200\n"
 "Last-Translator: B2Brouter <support@b2brouter.net>\n"
 "Language-Team: Catalan\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Generator: Poedit 3.9\n"
 
 #. Plugin Name of the plugin
-#: b2brouter-woocommerce.php
+#: b2brouter-woocommerce.php includes/Admin.php:375
 msgid "B2Brouter for WooCommerce"
 msgstr ""
 
@@ -56,7 +56,7 @@ msgstr "Benvingut"
 msgid "Settings"
 msgstr "Configuració"
 
-#: includes/Admin.php:137 includes/Admin.php:138 includes/Admin.php:1035
+#: includes/Admin.php:137 includes/Admin.php:138 includes/Admin.php:1059
 msgid "List of Invoices"
 msgstr "Llista de factures"
 
@@ -87,7 +87,7 @@ msgstr "Èxit!"
 msgid "Error"
 msgstr "Error"
 
-#: includes/Admin.php:262 includes/Admin.php:598
+#: includes/Admin.php:262 includes/Admin.php:621
 msgid "Validate Key"
 msgstr "Valida la clau"
 
@@ -104,107 +104,85 @@ msgid "Loading..."
 msgstr "Carregant..."
 
 #. translators: %1$s: account name, %2$s: account ID
-#: includes/Admin.php:267
+#: includes/Admin.php:267 includes/Admin.php:638
 #, php-format
 msgid "Current account: %1$s (ID: %2$s)"
 msgstr "Compte actual: %1$s (ID: %2$s)"
 
-#: includes/Admin.php:282 includes/Admin.php:306 includes/Admin.php:337
-#: includes/Admin.php:1071
+#: includes/Admin.php:282 includes/Admin.php:306 includes/Admin.php:344
+#: includes/Admin.php:1095
 msgid "Permission denied"
 msgstr "Permís denegat"
 
-#: includes/Admin.php:313
+#: includes/Admin.php:312
 msgid "No account selected"
 msgstr "Cap compte seleccionat"
 
-#: includes/Admin.php:321
+#: includes/Admin.php:318
+#, fuzzy
+msgid "Invalid account. Please re-validate your API key."
+msgstr "ID de compte no configurat. Si us plau, valideu la vostra clau API."
+
+#: includes/Admin.php:328
 #, php-format
 msgid "Account selected: %s"
 msgstr "Compte seleccionat: %s"
 
-#: includes/Admin.php:343 includes/Admin.php:1080 includes/Customer.php:250
+#: includes/Admin.php:350 includes/Admin.php:1104 includes/Customer.php:250
 #: includes/Customer.php:298
 msgid "Invalid order ID"
 msgstr "ID de comanda no vàlid"
 
-#: includes/Admin.php:364
-msgid "Welcome to B2Brouter for WooCommerce"
-msgstr "Benvingut a B2Brouter per a WooCommerce"
-
-#: includes/Admin.php:368
+#: includes/Admin.php:376
+#, fuzzy
 msgid ""
-"B2Brouter plugin allows you to automatically generate and send electronic "
-"invoices for your WooCommerce orders."
+"The B2Brouter plugin allows you to automatically generate and send "
+"electronic invoices for your WooCommerce orders."
 msgstr ""
 "El connector B2Brouter us permet generar i enviar automàticament factures "
 "electròniques per a les vostres comandes de WooCommerce."
 
-#: includes/Admin.php:370
-msgid "Requirements"
-msgstr "Requisits"
-
-#: includes/Admin.php:372
-msgid "WordPress 5.8 or higher"
-msgstr "WordPress 5.8 o superior"
-
-#: includes/Admin.php:373
-msgid "WooCommerce 5.0 or higher, installed and active"
-msgstr "WooCommerce 5.0 o superior, instal·lat i actiu"
-
-#: includes/Admin.php:374
-msgid "PHP 7.4 or higher"
-msgstr "PHP 7.4 o superior"
-
-#: includes/Admin.php:375
-msgid "A B2Brouter account with an active eDocExchange subscription"
-msgstr "Un compte de B2Brouter amb una subscripció activa a eDocExchange"
-
-#: includes/Admin.php:378
+#: includes/Admin.php:386
 msgid "Next Steps"
 msgstr "Propers passos"
 
-#: includes/Admin.php:379
+#: includes/Admin.php:387
 msgid "Step 1 — Get your B2Brouter credentials"
 msgstr "Pas 1 — Obtén les teves credencials de B2Brouter"
 
-#. translators: %s: link to B2Brouter registration page
-#: includes/Admin.php:381
-#, php-format
-msgid "Register at %s."
-msgstr "Registra't a %s."
+#: includes/Admin.php:389
+msgid "Register at app.b2brouter.net"
+msgstr "Registra't a app.b2brouter.net"
 
-#. translators: %s: link to B2Brouter registration page
-#: includes/Admin.php:382
+#: includes/Admin.php:390
 msgid "Purchase an eDocExchange subscription."
 msgstr "Contracta una subscripció eDocExchange."
 
-#. translators: %s: link to B2Brouter registration page
-#: includes/Admin.php:382
+#: includes/Admin.php:390
 msgid "First month is for free!"
 msgstr "El primer mes és gratuït!"
 
-#: includes/Admin.php:383
+#: includes/Admin.php:391
 msgid "Go to Developers → API Keys in your B2Brouter dashboard."
 msgstr "Aneu a Desenvolupadors → Claus API al vostre panell de B2Brouter."
 
-#: includes/Admin.php:384
+#: includes/Admin.php:392
 msgid "Copy the API key and store it safely."
 msgstr "Copieu la clau API i deseu-la de forma segura."
 
-#: includes/Admin.php:386
+#: includes/Admin.php:394
 msgid "Step 2 — Configure the plugin"
 msgstr "Pas 2 — Configura el plugin"
 
-#: includes/Admin.php:388
+#: includes/Admin.php:396
 msgid "In WordPress, go to Invoices → Settings."
 msgstr "A WordPress, aneu a Factures → Configuració."
 
-#: includes/Admin.php:389
+#: includes/Admin.php:397
 msgid "Paste your B2Brouter API key."
 msgstr "Enganxeu la vostra clau API de B2Brouter."
 
-#: includes/Admin.php:390
+#: includes/Admin.php:398
 msgid ""
 "Click Validate Key. If the key is correct, the plugin will display your "
 "account information."
@@ -212,62 +190,31 @@ msgstr ""
 "Feu clic a Valida la clau. Si la clau és correcta, el connector mostrarà la "
 "informació del vostre compte."
 
-#: includes/Admin.php:394
-msgid "Benefits"
-msgstr "Avantatges"
+#: includes/Admin.php:402
+msgid "Requirements"
+msgstr "Requisits"
 
-#: includes/Admin.php:396
-msgid "Legal Compliance"
-msgstr "Compliment legal"
+#: includes/Admin.php:404
+msgid "A B2Brouter account with an active eDocExchange subscription"
+msgstr "Un compte de B2Brouter amb una subscripció activa a eDocExchange"
 
-#: includes/Admin.php:396
-msgid ""
-"Automatic compliance with electronic invoicing regulations across multiple "
-"countries."
-msgstr ""
-"Compliment automàtic amb les normatives de facturació electrònica a "
-"múltiples països."
+#: includes/Admin.php:405
+msgid "WordPress 5.8 or higher"
+msgstr "WordPress 5.8 o superior"
 
-#: includes/Admin.php:397
-msgid "Time Saving"
-msgstr "Estalvi de temps"
+#: includes/Admin.php:406
+msgid "WooCommerce 5.0 or higher, installed and active"
+msgstr "WooCommerce 5.0 o superior, instal·lat i actiu"
 
-#: includes/Admin.php:397
-msgid ""
-"Automatic generation of electronic invoices without manual intervention."
-msgstr ""
-"Generació automàtica de factures electròniques sense intervenció manual."
+#: includes/Admin.php:407
+msgid "PHP 7.4 or higher"
+msgstr "PHP 7.4 o superior"
 
-#: includes/Admin.php:398
-msgid "Professionalism"
-msgstr "Professionalitat"
-
-#: includes/Admin.php:398
-msgid "Invoices in standard formats: UBL, CII, XML, etc."
-msgstr "Factures en formats estàndard: UBL, CII, XML, etc."
-
-#: includes/Admin.php:399
-msgid "Cross-border"
-msgstr "Transfronterer"
-
-#: includes/Admin.php:399
-msgid "Support for international B2B and B2C transactions."
-msgstr "Suport per a transaccions internacionals B2B i B2C."
-
-#: includes/Admin.php:400
-msgid "Full Integration"
-msgstr "Integració completa"
-
-#: includes/Admin.php:400
-msgid "Works seamlessly with WooCommerce without affecting your workflow."
-msgstr ""
-"Funciona perfectament amb WooCommerce sense afectar el teu flux de treball."
-
-#: includes/Admin.php:403
+#: includes/Admin.php:414
 msgid "How it works"
 msgstr "Com funciona"
 
-#: includes/Admin.php:405
+#: includes/Admin.php:416
 msgid ""
 "Advanced configuration (transports, formats, taxes) is done in your "
 "B2Brouter account."
@@ -275,7 +222,7 @@ msgstr ""
 "La configuració avançada (transports, formats, impostos) es fa al teu compte "
 "de B2Brouter."
 
-#: includes/Admin.php:406
+#: includes/Admin.php:417
 msgid ""
 "When an order is completed, the plugin automatically generates the invoice "
 "via the B2Brouter API."
@@ -283,7 +230,7 @@ msgstr ""
 "Quan una comanda es completa, el plugin genera automàticament la factura a "
 "través de l'API de B2Brouter."
 
-#: includes/Admin.php:407
+#: includes/Admin.php:418
 msgid ""
 "B2Brouter sends the invoice to your customer using your configured transport "
 "(email, Peppol, etc.)."
@@ -291,46 +238,87 @@ msgstr ""
 "B2Brouter envia la factura al teu client usant el transport configurat "
 "(email, Peppol, etc.)."
 
-#: includes/Admin.php:408
+#: includes/Admin.php:419
 msgid ""
 "Your customers can also download their invoices from their account page."
 msgstr ""
 "Els teus clients també poden descarregar les seves factures des de la seva "
 "pàgina de compte."
 
-#: includes/Admin.php:409
-msgid ""
-"Invoice PDFs can be attached to WooCommerce order emails. This requires "
-"enabling email attachments in the plugin settings and configuring "
-"WooCommerce email notifications."
-msgstr ""
-"Els PDFs de les factures es poden adjuntar als correus de comanda de "
-"WooCommerce. Això requereix activar els adjunts de correu a la configuració "
-"del plugin i configurar les notificacions per correu de WooCommerce."
-
-#: includes/Admin.php:410
+#: includes/Admin.php:420
 msgid "Credit notes are generated automatically when you process a refund."
 msgstr ""
 "Les factures rectificatives es generen automàticament quan processes un "
 "reemborsament."
 
-#: includes/Admin.php:412
+#: includes/Admin.php:422
 msgid "Ready to get started?"
 msgstr "Preparat per començar?"
 
-#: includes/Admin.php:416
+#: includes/Admin.php:425
 msgid "Go to B2Brouter - Activate Subscription"
 msgstr "Anar a B2Brouter - Activar subscripció"
 
-#: includes/Admin.php:419
+#: includes/Admin.php:428
 msgid "Configure Plugin"
 msgstr "Configurar connector"
 
-#: includes/Admin.php:425
+#: includes/Admin.php:433
+msgid "Benefits"
+msgstr "Avantatges"
+
+#: includes/Admin.php:435
+msgid "Legal Compliance"
+msgstr "Compliment legal"
+
+#: includes/Admin.php:435
+msgid ""
+"Automatic compliance with electronic invoicing regulations across multiple "
+"countries."
+msgstr ""
+"Compliment automàtic amb les normatives de facturació electrònica a "
+"múltiples països."
+
+#: includes/Admin.php:436
+msgid "Time Saving"
+msgstr "Estalvi de temps"
+
+#: includes/Admin.php:436
+msgid ""
+"Automatic generation of electronic invoices without manual intervention."
+msgstr ""
+"Generació automàtica de factures electròniques sense intervenció manual."
+
+#: includes/Admin.php:437
+msgid "Professionalism"
+msgstr "Professionalitat"
+
+#: includes/Admin.php:437
+msgid "Invoices in standard formats: UBL, CII, XML, etc."
+msgstr "Factures en formats estàndard: UBL, CII, XML, etc."
+
+#: includes/Admin.php:438
+msgid "Cross-border"
+msgstr "Transfronterer"
+
+#: includes/Admin.php:438
+msgid "Support for international B2B and B2C transactions."
+msgstr "Suport per a transaccions internacionals B2B i B2C."
+
+#: includes/Admin.php:439
+msgid "Full Integration"
+msgstr "Integració completa"
+
+#: includes/Admin.php:439
+msgid "Works seamlessly with WooCommerce without affecting your workflow."
+msgstr ""
+"Funciona perfectament amb WooCommerce sense afectar el teu flux de treball."
+
+#: includes/Admin.php:447
 msgid "Need Help?"
 msgstr "Necessiteu ajuda?"
 
-#: includes/Admin.php:426
+#: includes/Admin.php:448
 msgid ""
 "Visit our GitHub repository for detailed documentation. If you need help, "
 "please open an issue."
@@ -338,142 +326,141 @@ msgstr ""
 "Visiteu el nostre repositori de GitHub per consultar la documentació "
 "detallada. Si necessiteu ajuda, obriu un issue."
 
-#: includes/Admin.php:428
+#: includes/Admin.php:450
 msgid "Documentation"
 msgstr "Documentació"
 
-#: includes/Admin.php:429
+#: includes/Admin.php:451
 msgid "Changelog"
 msgstr "Registre de canvis"
 
-#: includes/Admin.php:429
+#: includes/Admin.php:452
 msgid "Support"
 msgstr "Suport"
 
-#: includes/Admin.php:493
+#: includes/Admin.php:516
 msgid "Webhook secret is required when webhooks are enabled."
 msgstr ""
 "El secret del webhook és obligatori quan els webhooks estan habilitats."
 
-#: includes/Admin.php:566
+#: includes/Admin.php:589
 msgid "Settings saved successfully."
 msgstr "Configuració desada correctament."
 
-#: includes/Admin.php:571
+#: includes/Admin.php:594
 msgid "Invoice Settings"
 msgstr "Configuració de factures"
 
-#: includes/Admin.php:576
+#: includes/Admin.php:599
 msgid "API key is not configured. Please enter your B2Brouter API key below."
 msgstr ""
 "La clau API no està configurada. Introduïu la vostra clau API de B2Brouter a "
 "continuació."
 
-#: includes/Admin.php:577 includes/Admin.php:622
+#: includes/Admin.php:600 includes/Admin.php:646
 msgid "Get your API key"
 msgstr "Obteniu la vostra clau API"
 
-#: includes/Admin.php:588
+#: includes/Admin.php:611
 msgid "API Key"
 msgstr "Clau API"
 
-#: includes/Admin.php:596
+#: includes/Admin.php:619
 msgid "Enter your B2Brouter API key"
 msgstr "Introduïu la vostra clau API de B2Brouter"
 
-#: includes/Admin.php:604
+#: includes/Admin.php:627
 msgid "Use this account"
 msgstr "Utilitza aquest compte"
 
-#: includes/Admin.php:614
-#, php-format
-msgid "Current account: %s (ID: %s)"
-msgstr "Compte actual: %s (ID: %s)"
+#: includes/Admin.php:639
+msgid "Unknown"
+msgstr "Desconegut"
 
-#: includes/Admin.php:621
+#: includes/Admin.php:645
 msgid "Enter your B2Brouter API key to enable invoice generation."
 msgstr ""
 "Introduïu la vostra clau API de B2Brouter per habilitar la generació de "
 "factures."
 
-#: includes/Admin.php:629
+#: includes/Admin.php:653
 msgid "Environment"
 msgstr "Entorn"
 
-#: includes/Admin.php:638
+#: includes/Admin.php:662
 msgid "Staging"
 msgstr "Proves"
 
-#: includes/Admin.php:641
+#: includes/Admin.php:665
 msgid "Use staging environment for testing"
 msgstr "Utilitzar l'entorn de proves per a tests"
 
-#: includes/Admin.php:648
+#: includes/Admin.php:672
 msgid "Production"
 msgstr "Producció"
 
-#: includes/Admin.php:651
+#: includes/Admin.php:675
 msgid "Use production environment for live invoices"
 msgstr "Utilitzar l'entorn de producció per a factures reals"
 
-#: includes/Admin.php:658
+#: includes/Admin.php:682
 msgid "Invoice Generation Mode"
 msgstr "Mode de generació de factures"
 
-#: includes/Admin.php:667
+#: includes/Admin.php:691
 msgid "Automatic"
 msgstr "Automàtic"
 
-#: includes/Admin.php:669
+#: includes/Admin.php:693
 msgid "Generate invoice automatically when order is completed"
 msgstr "Generar factura automàticament quan es completi la comanda"
 
-#: includes/Admin.php:676
+#: includes/Admin.php:700
 msgid "Manual"
 msgstr "Manual"
 
-#: includes/Admin.php:678
+#: includes/Admin.php:702
 msgid "Generate invoice manually using a button in the order admin"
 msgstr ""
 "Generar factura manualment usant un botó a l'administració de la comanda"
 
-#: includes/Admin.php:684
+#: includes/Admin.php:708
 msgid "Webhook Configuration"
 msgstr "Configuració de webhooks"
 
-#: includes/Admin.php:689
+#: includes/Admin.php:713
 msgid "Enable Webhooks"
 msgstr "Habilitar webhooks"
 
-#: includes/Admin.php:699
+#: includes/Admin.php:723
 msgid "Receive real-time invoice status updates from B2Brouter (recommended)."
 msgstr ""
 "Rebre actualitzacions d'estat de factures en temps real des de B2Brouter "
 "(recomanat)."
 
-#: includes/Admin.php:707
+#: includes/Admin.php:731
 msgid "Webhook URL"
 msgstr "URL del webhook"
 
-#: includes/Admin.php:720
+#: includes/Admin.php:744
 msgid "Copied!"
 msgstr "Copiat!"
 
-#: includes/Admin.php:720 includes/Admin.php:721
+#: includes/Admin.php:744 includes/Admin.php:745
 msgid "Copy"
 msgstr "Copia"
 
-#: includes/Admin.php:724
+#: includes/Admin.php:748
 msgid "Enter this URL in your B2Brouter dashboard webhook settings."
 msgstr ""
 "Introduïu aquesta URL a la configuració de webhooks del vostre panell de "
 "B2Brouter."
 
-#: includes/Admin.php:732
+#: includes/Admin.php:756
 msgid "Webhook Secret"
 msgstr "Secret del webhook"
 
-#: includes/Admin.php:742
+#: includes/Admin.php:766
 msgid ""
 "Enter the webhook secret from your B2Brouter dashboard to verify webhook "
 "authenticity."
@@ -481,11 +468,11 @@ msgstr ""
 "Introduïu el secret del webhook des del vostre panell de B2Brouter per "
 "verificar l'autenticitat del webhook."
 
-#: includes/Admin.php:750
+#: includes/Admin.php:774
 msgid "Fallback Polling"
 msgstr "Sondeig de reserva"
 
-#: includes/Admin.php:760
+#: includes/Admin.php:784
 msgid ""
 "Keep polling as backup (checks every 6 hours if webhook fails). Recommended "
 "for reliability."
@@ -493,19 +480,19 @@ msgstr ""
 "Mantenir el sondeig com a reserva (verifica cada 6 hores si el webhook "
 "falla). Recomanat per fiabilitat."
 
-#: includes/Admin.php:766
+#: includes/Admin.php:790
 msgid "Invoice Numbering & Series"
 msgstr "Numeració i sèries de factures"
 
-#: includes/Admin.php:770
+#: includes/Admin.php:794
 msgid "Invoice Series Code"
 msgstr "Codi de sèrie de factura"
 
-#: includes/Admin.php:778
+#: includes/Admin.php:802
 msgid "e.g., INV, S01"
 msgstr "p. ex., FAC, S01"
 
-#: includes/Admin.php:780
+#: includes/Admin.php:804
 msgid ""
 "Define one invoice series code for all invoices. B2Brouter allows one series "
 "per invoice type. Leave empty to use B2Brouter default."
@@ -514,15 +501,15 @@ msgstr ""
 "sèrie per tipus de factura. Deixeu-lo buit per utilitzar el valor "
 "predeterminat de B2Brouter."
 
-#: includes/Admin.php:787
+#: includes/Admin.php:811
 msgid "Credit Note Series Code"
 msgstr "Codi de sèrie de factura rectificativa"
 
-#: includes/Admin.php:795
+#: includes/Admin.php:819
 msgid "e.g., CN, R01"
 msgstr "p. ex., NC, R01"
 
-#: includes/Admin.php:797
+#: includes/Admin.php:821
 msgid ""
 "Define one credit note series code for all credit notes. B2Brouter allows "
 "one series per type. Leave empty to use the same series as invoices."
@@ -531,39 +518,39 @@ msgstr ""
 "permet una sèrie per tipus. Deixeu-lo buit per utilitzar la mateixa sèrie "
 "que les factures."
 
-#: includes/Admin.php:804
+#: includes/Admin.php:828
 msgid "Invoice Numbering Pattern"
 msgstr "Patró de numeració de factures"
 
-#: includes/Admin.php:813
+#: includes/Admin.php:837
 msgid "Automatic (B2Brouter manages numbering)"
 msgstr "Automàtic (B2Brouter gestiona la numeració)"
 
-#: includes/Admin.php:815
+#: includes/Admin.php:839
 msgid "Let B2Brouter automatically assign invoice numbers"
 msgstr "Deixar que B2Brouter assigni automàticament els números de factura"
 
-#: includes/Admin.php:822
+#: includes/Admin.php:846
 msgid "WooCommerce Order Number"
 msgstr "Número de comanda de WooCommerce"
 
-#: includes/Admin.php:824
+#: includes/Admin.php:848
 msgid "Use the WooCommerce order number as the invoice number"
 msgstr "Utilitzar el número de comanda de WooCommerce com a número de factura"
 
-#: includes/Admin.php:831
+#: includes/Admin.php:855
 msgid "Sequential (plugin-managed)"
 msgstr "Seqüencial (gestionat pel connector)"
 
-#: includes/Admin.php:833
+#: includes/Admin.php:857
 msgid "Plugin maintains sequential numbering per series (starts at 1)"
 msgstr "El connector manté una numeració seqüencial per sèrie (comença a 1)"
 
-#: includes/Admin.php:840
+#: includes/Admin.php:864
 msgid "Custom Pattern"
 msgstr "Patró personalitzat"
 
-#: includes/Admin.php:850
+#: includes/Admin.php:874
 msgid ""
 "Available placeholders: {order_id}, {order_number}, {year}, {month}, {day}. "
 "Note: Series code is defined separately above and will be prefixed "
@@ -573,20 +560,20 @@ msgstr ""
 "Nota: El codi de sèrie es defineix per separat a dalt i s'afegirà "
 "automàticament com a prefix."
 
-#: includes/Admin.php:857
+#: includes/Admin.php:881
 msgid "PDF Options"
 msgstr "Opcions de PDF"
 
-#: includes/Admin.php:861
+#: includes/Admin.php:885
 msgid "Automatic PDF Caching"
 msgstr "Memòria cau automàtica de PDF"
 
-#: includes/Admin.php:870
+#: includes/Admin.php:894
 msgid "Automatically download and cache PDF when invoice is generated"
 msgstr ""
 "Descarregar i emmagatzemar automàticament el PDF quan es generi la factura"
 
-#: includes/Admin.php:873
+#: includes/Admin.php:897
 msgid ""
 "When enabled, PDFs will be automatically downloaded from B2Brouter and "
 "stored locally when an invoice is generated. This improves performance and "
@@ -596,11 +583,11 @@ msgstr ""
 "s'emmagatzemaran localment quan es generi una factura. Això millora el "
 "rendiment i redueix les crides a l'API."
 
-#: includes/Admin.php:881
+#: includes/Admin.php:905
 msgid "PDF Storage Location"
 msgstr "Ubicació d'emmagatzematge de PDF"
 
-#: includes/Admin.php:886
+#: includes/Admin.php:910
 msgid ""
 "Invoice PDFs are stored in this directory. Files are protected from direct "
 "access via .htaccess rules."
@@ -608,33 +595,33 @@ msgstr ""
 "Els PDFs de factures s'emmagatzemen en aquest directori. Els fitxers estan "
 "protegits contra l'accés directe mitjançant regles .htaccess."
 
-#: includes/Admin.php:904
+#: includes/Admin.php:928
 #, php-format
 msgid "Currently storing %d PDF(s) using %s of disk space"
 msgstr "Actualment emmagatzemant %d PDF(s) usant %s d'espai en disc"
 
-#: includes/Admin.php:913
+#: includes/Admin.php:937
 msgid "Directory will be created automatically when first PDF is downloaded"
 msgstr ""
 "El directori es crearà automàticament quan es descarregui el primer PDF"
 
-#: includes/Admin.php:921
+#: includes/Admin.php:945
 msgid "Email PDF Attachments"
 msgstr "Adjuntar PDF en correus electrònics"
 
-#: includes/Admin.php:930
+#: includes/Admin.php:954
 msgid "Attach PDF to Order Completed email (sent to customer)"
 msgstr "Adjuntar PDF al correu de comanda completada (enviat al client)"
 
-#: includes/Admin.php:938
+#: includes/Admin.php:962
 msgid "Attach PDF to Customer Invoice email"
 msgstr "Adjuntar PDF al correu de factura del client"
 
-#: includes/Admin.php:946
+#: includes/Admin.php:970
 msgid "Attach PDF to Refunded Order email (credit note/rectificative)"
 msgstr "Adjuntar PDF al correu de comanda reemborsada (factura rectificativa)"
 
-#: includes/Admin.php:949
+#: includes/Admin.php:973
 msgid ""
 "Automatically attach invoice PDFs to customer emails. \"Order Completed\" is "
 "sent when orders are fulfilled. \"Customer Invoice\" is sent for pending/"
@@ -647,23 +634,23 @@ msgstr ""
 "panell d'administració. \"Comanda reemborsada\" s'envia quan es reemborsen "
 "les comandes."
 
-#: includes/Admin.php:957
+#: includes/Admin.php:981
 msgid "Automatic Cleanup"
 msgstr "Neteja automàtica"
 
-#: includes/Admin.php:966
+#: includes/Admin.php:990
 msgid "Automatically delete old cached PDFs"
 msgstr "Eliminar automàticament els PDFs en memòria cau antics"
 
-#: includes/Admin.php:970
+#: includes/Admin.php:994
 msgid "Delete PDFs older than"
 msgstr "Eliminar PDFs amb més de"
 
-#: includes/Admin.php:977
+#: includes/Admin.php:1001
 msgid "days"
 msgstr "dies"
 
-#: includes/Admin.php:980
+#: includes/Admin.php:1004
 msgid ""
 "When enabled, PDFs older than the specified number of days will be "
 "automatically deleted daily via cron job. This helps manage disk space usage."
@@ -672,27 +659,27 @@ msgstr ""
 "automàticament diàriament mitjançant una tasca cron. Això ajuda a gestionar "
 "l'ús de l'espai en disc."
 
-#: includes/Admin.php:987
+#: includes/Admin.php:1011
 msgid "Plugin Information"
 msgstr "Informació del connector"
 
-#: includes/Admin.php:991
+#: includes/Admin.php:1015
 msgid "Transaction Counter"
 msgstr "Comptador de transaccions"
 
-#: includes/Admin.php:995
+#: includes/Admin.php:1019
 msgid "Total number of invoices generated from this plugin"
 msgstr "Nombre total de factures generades des d'aquest connector"
 
-#: includes/Admin.php:1001
+#: includes/Admin.php:1025
 msgid "B2Brouter Account"
 msgstr "Compte B2Brouter"
 
-#: includes/Admin.php:1005
+#: includes/Admin.php:1029
 msgid "Access B2Brouter Account Settings"
 msgstr "Accedir a la configuració del compte B2Brouter"
 
-#: includes/Admin.php:1007
+#: includes/Admin.php:1031
 msgid ""
 "Configure advanced settings like transports, formats, and taxes in your "
 "B2Brouter account."
@@ -700,11 +687,11 @@ msgstr ""
 "Configureu ajustos avançats com transports, formats i impostos al vostre "
 "compte de B2Brouter."
 
-#: includes/Admin.php:1014
+#: includes/Admin.php:1038
 msgid "Save Settings"
 msgstr "Desar configuració"
 
-#: includes/Admin.php:1030
+#: includes/Admin.php:1054
 msgid "You do not have sufficient permissions to access this page."
 msgstr "No teniu permisos suficients per accedir a aquesta pàgina."
 
@@ -1148,33 +1135,33 @@ msgid_plural "%d invoices failed to generate."
 msgstr[0] "%d factura no s'ha pogut generar."
 msgstr[1] "%d factures no s'han pogut generar."
 
-#: includes/Settings.php:267
+#: includes/Settings.php:272
 msgid "API key cannot be empty"
 msgstr "La clau API no pot estar buida"
 
-#: includes/Settings.php:275
+#: includes/Settings.php:280
 msgid "B2Brouter PHP SDK not found. Please install dependencies."
 msgstr ""
 "SDK PHP de B2Brouter no trobat. Si us plau, instal·leu les dependències."
 
-#: includes/Settings.php:303
+#: includes/Settings.php:308
 msgid "Invalid API key"
 msgstr "Clau API no vàlida"
 
-#: includes/Settings.php:317
+#: includes/Settings.php:322
 msgid "No accounts found for this API key"
 msgstr "No s'han trobat comptes per a aquesta clau API"
 
-#: includes/Settings.php:332
+#: includes/Settings.php:337
 #, php-format
 msgid "API key is valid. Using account: %s"
 msgstr "Clau API vàlida. Usant compte: %s"
 
-#: includes/Settings.php:367
+#: includes/Settings.php:389
 msgid "API key is valid. Please select an account."
 msgstr "La clau API és vàlida. Si us plau, seleccioneu un compte."
 
-#: includes/Settings.php:373
+#: includes/Settings.php:395
 #, php-format
 msgid "API key validation failed: %s"
 msgstr "Validació de clau API fallida: %s"
@@ -1204,3 +1191,24 @@ msgstr "Autenticació API fallida"
 #, php-format
 msgid "Status updated via webhook: %s → %s"
 msgstr "Estat actualitzat via webhook: %s → %s"
+
+#~ msgid "Welcome to B2Brouter for WooCommerce"
+#~ msgstr "Benvingut a B2Brouter per a WooCommerce"
+
+#, php-format
+#~ msgid "Register at %s."
+#~ msgstr "Registra't a %s."
+
+#~ msgid ""
+#~ "Invoice PDFs can be attached to WooCommerce order emails. This requires "
+#~ "enabling email attachments in the plugin settings and configuring "
+#~ "WooCommerce email notifications."
+#~ msgstr ""
+#~ "Els PDFs de les factures es poden adjuntar als correus de comanda de "
+#~ "WooCommerce. Això requereix activar els adjunts de correu a la "
+#~ "configuració del plugin i configurar les notificacions per correu de "
+#~ "WooCommerce."
+
+#, php-format
+#~ msgid "Current account: %s (ID: %s)"
+#~ msgstr "Compte actual: %s (ID: %s)"
