@@ -908,7 +908,9 @@ if (!class_exists('B2BRouter\B2BRouterClient')) {
                 public function request($method, $url, $headers, $body, $timeout) {
                     // Mock GET /accounts endpoint (API key validation)
                     if ($method === "GET" && strpos($url, "/accounts") !== false) {
-                        // Multi-account response for key "multi-account-key"
+                        // Multi-account response for key "multi-account-key".
+                        // Two parents with one child each, returned unsorted so
+                        // sort behavior is observable in tests.
                         if ($this->apiKey === "multi-account-key") {
                             return [
                                 "status" => 200,
@@ -917,26 +919,33 @@ if (!class_exists('B2BRouter\B2BRouterClient')) {
                                         [
                                             "id" => 211162,
                                             "tin_value" => "ES01738726H",
-                                            "name" => "Parent Company",
+                                            "name" => "Parent A",
+                                            "parent_id" => null,
+                                            "country" => "es"
+                                        ],
+                                        [
+                                            "id" => 211170,
+                                            "tin_value" => "ES77777777P",
+                                            "name" => "Parent B",
                                             "parent_id" => null,
                                             "country" => "es"
                                         ],
                                         [
                                             "id" => 211163,
                                             "tin_value" => "ES99999999R",
-                                            "name" => "Child Unit A",
+                                            "name" => "Child of A",
                                             "parent_id" => 211162,
                                             "country" => "es"
                                         ],
                                         [
-                                            "id" => 211164,
+                                            "id" => 211171,
                                             "tin_value" => "ES88888888Q",
-                                            "name" => "Child Unit B",
-                                            "parent_id" => 211162,
+                                            "name" => "Child of B",
+                                            "parent_id" => 211170,
                                             "country" => "es"
                                         ]
                                     ],
-                                    "total_count" => 3,
+                                    "total_count" => 4,
                                     "offset" => 0,
                                     "limit" => 100
                                 ]),

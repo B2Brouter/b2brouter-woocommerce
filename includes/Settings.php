@@ -283,7 +283,7 @@ class Settings {
 
             // Create client with environment setting
             $options = array('api_base' => $this->get_api_base_url());
-            $client = new \B2BRouter\B2BRouterClient($api_key, $options);
+            $client = $this->build_b2brouter_client($api_key, $options);
 
             // Call GET /accounts to validate the key and retrieve all accounts
             $url = $client->getApiBase() . '/accounts?limit=100';
@@ -358,18 +358,19 @@ class Settings {
                 );
             }
 
-            // Sort: parents first, then children grouped by parent_id
+            // Sort: each parent immediately followed by its children.
+            // Group key is parent_id for children and own id for parents,
+            // so both share the same key and end up adjacent.
             usort($account_list, function($a, $b) {
+                $a_group = !empty($a['parent_id']) ? (string) $a['parent_id'] : (string) $a['id'];
+                $b_group = !empty($b['parent_id']) ? (string) $b['parent_id'] : (string) $b['id'];
+                if ($a_group !== $b_group) {
+                    return strcmp($a_group, $b_group);
+                }
                 $a_is_child = !empty($a['parent_id']) ? 1 : 0;
                 $b_is_child = !empty($b['parent_id']) ? 1 : 0;
                 if ($a_is_child !== $b_is_child) {
                     return $a_is_child - $b_is_child;
-                }
-                if ($a_is_child && $b_is_child) {
-                    $parent_cmp = strcmp((string) $a['parent_id'], (string) $b['parent_id']);
-                    if ($parent_cmp !== 0) {
-                        return $parent_cmp;
-                    }
                 }
                 return strcmp($a['name'], $b['name']);
             });
@@ -396,6 +397,19 @@ class Settings {
                 )
             );
         }
+    }
+
+    /**
+     * Build the B2Brouter SDK client. Extracted as a seam so tests can
+     * substitute a client wired with a mock HTTP transport.
+     *
+     * @since 1.0.0
+     * @param string $api_key The API key
+     * @param array  $options SDK options
+     * @return \B2BRouter\B2BRouterClient
+     */
+    protected function build_b2brouter_client($api_key, array $options) {
+        return new \B2BRouter\B2BRouterClient($api_key, $options);
     }
 
     /**
