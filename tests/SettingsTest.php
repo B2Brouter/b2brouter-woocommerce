@@ -33,8 +33,9 @@ class SettingsTest extends TestCase {
         parent::setUp();
 
         // Reset static options before each test
-        global $wp_options;
+        global $wp_options, $wp_transients;
         $wp_options = array();
+        $wp_transients = array();
 
         // Create Settings instance (no dependencies needed!)
         $this->settings = new Settings();
@@ -49,8 +50,9 @@ class SettingsTest extends TestCase {
         parent::tearDown();
 
         // Clean up
-        global $wp_options;
+        global $wp_options, $wp_transients;
         $wp_options = array();
+        $wp_transients = array();
     }
 
     /**
@@ -177,6 +179,38 @@ class SettingsTest extends TestCase {
         $this->settings->set_account_id('  211162  ');
         $stored = $this->settings->get_account_id();
         $this->assertEquals('211162', $stored);
+    }
+
+    // ========== Account Name Tests ==========
+
+    /**
+     * Test get_account_name returns empty string by default
+     *
+     * @return void
+     */
+    public function test_get_account_name_returns_empty_by_default() {
+        $this->assertEquals('', $this->settings->get_account_name());
+    }
+
+    /**
+     * Test set_account_name stores value
+     *
+     * @return void
+     */
+    public function test_set_account_name_stores_value() {
+        $result = $this->settings->set_account_name('Test Company');
+        $this->assertTrue($result);
+        $this->assertEquals('Test Company', $this->settings->get_account_name());
+    }
+
+    /**
+     * Test set_account_name sanitizes input
+     *
+     * @return void
+     */
+    public function test_set_account_name_sanitizes_input() {
+        $this->settings->set_account_name('  Company Name  ');
+        $this->assertEquals('Company Name', $this->settings->get_account_name());
     }
 
     // ========== Environment Tests ==========
@@ -403,6 +437,83 @@ class SettingsTest extends TestCase {
     // ========== API Key Validation Tests ==========
 
     /**
+     * Build a Settings instance whose SDK client is wired with a stub HTTP
+     * transport. The stub mirrors the routes in tests/bootstrap.php mock and
+     * lets tests exercise validate_api_key deterministically with the real
+     * SDK installed (where the bootstrap mock B2BRouterClient never runs).
+     *
+     * @return Settings
+     */
+    private function settings_with_stubbed_sdk() {
+        $stub_http = new class {
+            private $apiKey;
+            public function setApiKey($apiKey) { $this->apiKey = $apiKey; }
+            public function request($method, $url, $headers, $body, $timeout) {
+                foreach ($headers as $header) {
+                    if (strpos($header, 'X-B2B-API-Key:') === 0) {
+                        $this->apiKey = trim(substr($header, strlen('X-B2B-API-Key:')));
+                        break;
+                    }
+                }
+                if (is_array($headers) && isset($headers['X-B2B-API-Key'])) {
+                    $this->apiKey = $headers['X-B2B-API-Key'];
+                }
+
+                if ($method !== 'GET' || strpos($url, '/accounts') === false) {
+                    throw new \RuntimeException("Unexpected request: $method $url");
+                }
+
+                if ($this->apiKey === 'invalid-key') {
+                    return [
+                        'status' => 401,
+                        'body' => json_encode(['message' => 'Invalid API key']),
+                        'headers' => [],
+                    ];
+                }
+
+                if ($this->apiKey === 'multi-account-key') {
+                    return [
+                        'status' => 200,
+                        'body' => json_encode([
+                            'accounts' => [
+                                ['id' => 211162, 'tin_value' => 'ES01738726H', 'name' => 'Parent A', 'parent_id' => null, 'country' => 'es'],
+                                ['id' => 211170, 'tin_value' => 'ES77777777P', 'name' => 'Parent B', 'parent_id' => null, 'country' => 'es'],
+                                ['id' => 211163, 'tin_value' => 'ES99999999R', 'name' => 'Child of A', 'parent_id' => 211162, 'country' => 'es'],
+                                ['id' => 211171, 'tin_value' => 'ES88888888Q', 'name' => 'Child of B', 'parent_id' => 211170, 'country' => 'es'],
+                            ],
+                            'total_count' => 4, 'offset' => 0, 'limit' => 100,
+                        ]),
+                        'headers' => [],
+                    ];
+                }
+
+                return [
+                    'status' => 200,
+                    'body' => json_encode([
+                        'accounts' => [
+                            ['id' => 211162, 'tin_value' => 'ES01738726H', 'name' => 'WP test', 'parent_id' => null, 'country' => 'es'],
+                        ],
+                        'total_count' => 1, 'offset' => 0, 'limit' => 100,
+                    ]),
+                    'headers' => [],
+                ];
+            }
+        };
+
+        return new class($stub_http) extends Settings {
+            private $stub_http;
+            public function __construct($stub_http) {
+                parent::__construct();
+                $this->stub_http = $stub_http;
+            }
+            protected function build_b2brouter_client($api_key, array $options) {
+                $options['http_client'] = $this->stub_http;
+                return new \B2BRouter\B2BRouterClient($api_key, $options);
+            }
+        };
+    }
+
+    /**
      * Test validate_api_key rejects empty key
      *
      * @return void
@@ -434,7 +545,8 @@ class SettingsTest extends TestCase {
      * @return void
      */
     public function test_validate_api_key_returns_proper_structure() {
-        $result = $this->settings->validate_api_key('test-key');
+        $settings = $this->settings_with_stubbed_sdk();
+        $result = $settings->validate_api_key('test-key');
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('valid', $result);
@@ -446,16 +558,106 @@ class SettingsTest extends TestCase {
     /**
      * Test validate_api_key with invalid key returns error
      *
-     * Note: With real SDK installed, this makes actual API calls
-     *
      * @return void
      */
     public function test_validate_api_key_with_invalid_key() {
-        $result = $this->settings->validate_api_key('invalid-key');
+        $settings = $this->settings_with_stubbed_sdk();
+        $result = $settings->validate_api_key('invalid-key');
 
         $this->assertIsArray($result);
         $this->assertFalse($result['valid']);
         $this->assertIsString($result['message']);
+    }
+
+    /**
+     * Test validate_api_key with valid single-account key auto-selects and stores account name
+     *
+     * Note: Uses the real SDK against mock/staging API.
+     * The mock bootstrap SDK is used when real SDK is not available.
+     *
+     * @return void
+     */
+    public function test_validate_api_key_single_account_stores_account_name() {
+        $settings = $this->settings_with_stubbed_sdk();
+        $result = $settings->validate_api_key('test-key');
+
+        $this->assertTrue($result['valid']);
+        $this->assertArrayNotHasKey('multiple_accounts', $result);
+        $this->assertNotEmpty($settings->get_account_id());
+        $this->assertNotEmpty($settings->get_account_name());
+    }
+
+    /**
+     * Test validate_api_key with a multi-account key returns the selection payload
+     *
+     * @return void
+     */
+    public function test_validate_api_key_multi_account_returns_accounts_list() {
+        $settings = $this->settings_with_stubbed_sdk();
+        $result = $settings->validate_api_key('multi-account-key');
+
+        $this->assertTrue($result['valid']);
+        $this->assertTrue($result['multiple_accounts']);
+        $this->assertArrayHasKey('accounts', $result);
+        $this->assertCount(4, $result['accounts']);
+
+        foreach ($result['accounts'] as $account) {
+            $this->assertArrayHasKey('id', $account);
+            $this->assertArrayHasKey('name', $account);
+            $this->assertArrayHasKey('label', $account);
+            $this->assertArrayHasKey('parent_id', $account);
+            $this->assertIsString($account['id']);
+        }
+    }
+
+    /**
+     * Test validate_api_key with multi-account key does not auto-select an account
+     *
+     * @return void
+     */
+    public function test_validate_api_key_multi_account_does_not_save_account() {
+        $settings = $this->settings_with_stubbed_sdk();
+        $result = $settings->validate_api_key('multi-account-key');
+
+        $this->assertTrue($result['valid']);
+        $this->assertEmpty($settings->get_account_id());
+        $this->assertEmpty($settings->get_account_name());
+    }
+
+    /**
+     * Test validate_api_key with multi-account key stores a verified-accounts transient
+     *
+     * @return void
+     */
+    public function test_validate_api_key_multi_account_stores_transient() {
+        $settings = $this->settings_with_stubbed_sdk();
+        $settings->validate_api_key('multi-account-key');
+
+        $verified = get_transient('b2brouter_validated_accounts');
+        $this->assertIsArray($verified);
+        $this->assertSame('Parent A', $verified['211162']);
+        $this->assertSame('Parent B', $verified['211170']);
+        $this->assertSame('Child of A', $verified['211163']);
+        $this->assertSame('Child of B', $verified['211171']);
+    }
+
+    /**
+     * Test multi-account sorting places each child immediately after its parent
+     *
+     * @return void
+     */
+    public function test_validate_api_key_multi_account_groups_children_under_parents() {
+        $settings = $this->settings_with_stubbed_sdk();
+        $result = $settings->validate_api_key('multi-account-key');
+
+        $ids = array_column($result['accounts'], 'id');
+        $this->assertSame(['211162', '211163', '211170', '211171'], $ids);
+
+        // Child labels are prefixed with the breadcrumb arrow, parents are not.
+        $this->assertStringStartsNotWith('↳', $result['accounts'][0]['label']);
+        $this->assertStringStartsWith('↳', $result['accounts'][1]['label']);
+        $this->assertStringStartsNotWith('↳', $result['accounts'][2]['label']);
+        $this->assertStringStartsWith('↳', $result['accounts'][3]['label']);
     }
 
     // ========== Integration Tests ==========
@@ -816,6 +1018,8 @@ class SettingsTest extends TestCase {
             'set_api_key',
             'get_account_id',
             'set_account_id',
+            'get_account_name',
+            'set_account_name',
             'get_environment',
             'set_environment',
             'get_api_base_url',

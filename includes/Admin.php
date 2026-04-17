@@ -78,6 +78,7 @@ class Admin {
 
         // Handle AJAX requests
         add_action('wp_ajax_b2brouter_validate_api_key', array($this, 'ajax_validate_api_key'));
+        add_action('wp_ajax_b2brouter_select_account', array($this, 'ajax_select_account'));
         add_action('wp_ajax_b2brouter_generate_invoice', array($this, 'ajax_generate_invoice'));
         add_action('wp_ajax_b2brouter_download_pdf', array($this, 'ajax_download_pdf'));
     }
@@ -258,6 +259,12 @@ class Admin {
                 'generating' => __('Generating invoice...', 'b2brouter-woocommerce'),
                 'success' => __('Success!', 'b2brouter-woocommerce'),
                 'error' => __('Error', 'b2brouter-woocommerce'),
+                'validate_key' => __('Validate Key', 'b2brouter-woocommerce'),
+                'api_key_required' => __('API key is required', 'b2brouter-woocommerce'),
+                'downloading' => __('Downloading...', 'b2brouter-woocommerce'),
+                'loading' => __('Loading...', 'b2brouter-woocommerce'),
+                /* translators: %1$s: account name, %2$s: account ID */
+                'current_account' => __('Current account: %1$s (ID: %2$s)', 'b2brouter-woocommerce'),
             ),
         ));
     }
@@ -284,6 +291,44 @@ class Admin {
         } else {
             wp_send_json_error($result);
         }
+    }
+
+    /**
+     * AJAX: Select account from multiple accounts
+     *
+     * @since 1.0.0
+     * @return void
+     */
+    public function ajax_select_account() {
+        check_ajax_referer('b2brouter_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-woocommerce')));
+        }
+
+        $account_id = isset($_POST['account_id']) ? sanitize_text_field($_POST['account_id']) : '';
+
+        if (empty($account_id)) {
+            wp_send_json_error(array('message' => __('No account selected', 'b2brouter-woocommerce')));
+        }
+
+        // Verify account_id against server-validated account list
+        $verified_accounts = get_transient('b2brouter_validated_accounts');
+        if (empty($verified_accounts) || !isset($verified_accounts[$account_id])) {
+            wp_send_json_error(array('message' => __('Invalid account. Please re-validate your API key.', 'b2brouter-woocommerce')));
+        }
+
+        $account_name = $verified_accounts[$account_id];
+
+        $this->settings->set_account_id($account_id);
+        $this->settings->set_account_name($account_name);
+
+        wp_send_json_success(array(
+            'message' => sprintf(
+                __('Account selected: %s', 'b2brouter-woocommerce'),
+                $account_name
+            )
+        ));
     }
 
     /**
@@ -560,6 +605,26 @@ class Admin {
                                 <?php esc_html_e('Validate Key', 'b2brouter-woocommerce'); ?>
                             </button>
                             <span id="b2brouter_validation_result"></span>
+                            <div id="b2brouter_account_selector" style="display:none; margin-top: 10px;">
+                                <select id="b2brouter_account_select" class="regular-text"></select>
+                                <button type="button" id="b2brouter_select_account" class="button button-primary">
+                                    <?php esc_html_e('Use this account', 'b2brouter-woocommerce'); ?>
+                                </button>
+                                <span id="b2brouter_account_select_result"></span>
+                            </div>
+                            <?php
+                            $current_account_name = $this->settings->get_account_name();
+                            $current_account_id = $this->settings->get_account_id();
+                            if (!empty($current_account_id)) : ?>
+                                <p class="description" id="b2brouter_current_account">
+                                    <?php echo esc_html(sprintf(
+                                        /* translators: %1$s: account name, %2$s: account ID */
+                                        __('Current account: %1$s (ID: %2$s)', 'b2brouter-woocommerce'),
+                                        !empty($current_account_name) ? $current_account_name : __('Unknown', 'b2brouter-woocommerce'),
+                                        $current_account_id
+                                    )); ?>
+                                </p>
+                            <?php endif; ?>
                             <p class="description">
                                 <?php esc_html_e('Enter your B2Brouter API key to enable invoice generation.', 'b2brouter-woocommerce'); ?>
                                 <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-woocommerce'); ?></a>
