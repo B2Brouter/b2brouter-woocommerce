@@ -131,7 +131,7 @@ class Customer {
         // If invoice exists, show download button
         if (!empty($invoice_id)) {
             $actions['b2brouter_download_invoice'] = array(
-                'url' => 'javascript:void(0);',
+                'url' => '#b2brouter-invoice-' . $order->get_id() . '-' . $order->get_order_key(),
                 'name' => __('Download Invoice', 'b2brouter-woocommerce'),
             );
         }
