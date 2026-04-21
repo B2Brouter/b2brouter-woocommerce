@@ -118,9 +118,8 @@ msgid "No account selected"
 msgstr "Kein Konto ausgewählt"
 
 #: includes/Admin.php:318
-#, fuzzy
 msgid "Invalid account. Please re-validate your API key."
-msgstr "Konto-ID nicht konfiguriert. Bitte überprüfen Sie Ihren API-Schlüssel."
+msgstr "Ungültiges Konto. Bitte validieren Sie Ihren API-Schlüssel erneut."
 
 #: includes/Admin.php:328
 #, php-format
@@ -133,7 +132,6 @@ msgid "Invalid order ID"
 msgstr "Ungültige Bestell-ID"
 
 #: includes/Admin.php:376
-#, fuzzy
 msgid ""
 "The B2Brouter plugin allows you to automatically generate and send "
 "electronic invoices for your WooCommerce orders."

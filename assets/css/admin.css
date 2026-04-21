@@ -115,13 +115,13 @@
     padding-bottom: 4px;
 }
 
-.b2brouter-ckecklist li {
+.b2brouter-checklist li {
     list-style: none!important;
     padding: 8px 10px 10px 22px;
     position: relative;
 }
 
-.b2brouter-ckecklist li:before {
+.b2brouter-checklist li:before {
     content: "✓";
     position: absolute;
     left: 0px;
