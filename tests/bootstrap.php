@@ -756,11 +756,14 @@ if (!class_exists('WC_Order')) {
                 'order_number' => $order_id,
                 'shipping_total' => 0,
                 'shipping_tax' => 0,
+                'status' => 'pending',
             );
         }
 
         public function get_id() { return $this->id; }
         public function get_type() { return 'shop_order'; }
+        public function get_status() { return $this->data['status']; }
+        public function set_status($value) { $this->data['status'] = $value; }
         public function get_billing_first_name() { return $this->data['billing_first_name']; }
         public function get_billing_last_name() { return $this->data['billing_last_name']; }
         public function get_billing_company() { return $this->data['billing_company']; }
