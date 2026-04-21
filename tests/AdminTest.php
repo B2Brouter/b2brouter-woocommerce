@@ -197,7 +197,7 @@ class AdminTest extends TestCase {
         $this->admin->render_welcome_page();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('Welcome to B2Brouter', $output);
+        $this->assertStringContainsString('B2Brouter for WooCommerce', $output);
         $this->assertStringContainsString('electronic invoices', $output);
     }
 
