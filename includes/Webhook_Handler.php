@@ -88,7 +88,7 @@ class Webhook_Handler {
 
         // Verify webhook signature
         if (!$this->verify_webhook_signature($request, $raw_body)) {
-            error_log('B2Brouter webhook signature verification failed');
+            Logger::error('B2Brouter webhook signature verification failed');
             return new \WP_REST_Response(array(
                 'error' => 'Invalid signature'
             ), 401);
@@ -98,7 +98,7 @@ class Webhook_Handler {
         $payload = json_decode($raw_body, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log('B2Brouter webhook invalid JSON payload');
+            Logger::error('B2Brouter webhook invalid JSON payload');
             return new \WP_REST_Response(array(
                 'error' => 'Invalid JSON payload'
             ), 400);
@@ -106,7 +106,7 @@ class Webhook_Handler {
 
         // Validate payload structure
         if (!isset($payload['code']) || !isset($payload['data'])) {
-            error_log('B2Brouter webhook missing required fields');
+            Logger::error('B2Brouter webhook missing required fields');
             return new \WP_REST_Response(array(
                 'error' => 'Missing required fields'
             ), 400);
@@ -139,7 +139,7 @@ class Webhook_Handler {
         $webhook_secret = $this->settings->get_webhook_secret();
 
         if (empty($webhook_secret)) {
-            error_log('B2Brouter webhook secret not configured');
+            Logger::error('B2Brouter webhook secret not configured');
             return false;
         }
 
@@ -147,7 +147,7 @@ class Webhook_Handler {
         $signature_header = $request->get_header('X-B2Brouter-Signature');
 
         if (empty($signature_header)) {
-            error_log('B2Brouter webhook missing X-B2Brouter-Signature header');
+            Logger::error('B2Brouter webhook missing X-B2Brouter-Signature header');
             return false;
         }
 
@@ -161,7 +161,7 @@ class Webhook_Handler {
         }
 
         if (!isset($parts['t']) || !isset($parts['s'])) {
-            error_log('B2Brouter webhook invalid signature header format');
+            Logger::error('B2Brouter webhook invalid signature header format');
             return false;
         }
 
@@ -170,7 +170,7 @@ class Webhook_Handler {
 
         // Verify timestamp is within 5 minutes (prevent replay attacks)
         if (abs(time() - $timestamp) > 300) {
-            error_log('B2Brouter webhook timestamp outside valid window');
+            Logger::error('B2Brouter webhook timestamp outside valid window');
             return false;
         }
 
@@ -199,7 +199,7 @@ class Webhook_Handler {
                 return $this->process_invoice_status_change($payload['data']);
 
             default:
-                error_log(sprintf('B2Brouter webhook unsupported event type: %s', $event_code));
+                Logger::warning(sprintf('B2Brouter webhook unsupported event type: %s', $event_code));
                 return array(
                     'success' => false,
                     'message' => 'Unsupported event type',
@@ -233,7 +233,7 @@ class Webhook_Handler {
         $order_id = $this->find_order_by_invoice_id($invoice_id);
 
         if (!$order_id) {
-            error_log(sprintf(
+            Logger::warning(sprintf(
                 'B2Brouter webhook received for unknown invoice ID: %d',
                 $invoice_id
             ));

@@ -213,6 +213,34 @@ if (!function_exists('error_log')) {
     }
 }
 
+if (!function_exists('wc_get_logger')) {
+    /**
+     * Mock wc_get_logger function
+     *
+     * Returns a no-op logger with error/warning/info/log methods so calls
+     * from B2Brouter\WooCommerce\Logger don't fail under test.
+     *
+     * @return object Logger stub
+     */
+    function wc_get_logger() {
+        static $logger = null;
+        if ($logger === null) {
+            $logger = new class {
+                public function log($level, $message, $context = array()) {}
+                public function error($message, $context = array()) {}
+                public function warning($message, $context = array()) {}
+                public function info($message, $context = array()) {}
+                public function debug($message, $context = array()) {}
+                public function notice($message, $context = array()) {}
+                public function critical($message, $context = array()) {}
+                public function alert($message, $context = array()) {}
+                public function emergency($message, $context = array()) {}
+            };
+        }
+        return $logger;
+    }
+}
+
 if (!function_exists('wp_die')) {
     /**
      * Mock wp_die function

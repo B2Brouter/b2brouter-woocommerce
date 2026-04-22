@@ -249,7 +249,7 @@ class Invoice_Generator {
                 } catch (\Exception $e) {
                     // PDF download failed after retries, but invoice was created successfully
                     // Log the error but don't fail the entire operation
-                    error_log('B2Brouter auto-save PDF failed after retries: ' . $e->getMessage());
+                    Logger::error('B2Brouter auto-save PDF failed after retries: ' . $e->getMessage());
                 }
             }
 
@@ -267,7 +267,7 @@ class Invoice_Generator {
 
         } catch (\Exception $e) {
             // Log error
-            error_log('B2Brouter Invoice Generation Error: ' . $e->getMessage());
+            Logger::error('B2Brouter Invoice Generation Error: ' . $e->getMessage());
 
             // Add order note with error
             if (isset($order) && $order) {
@@ -715,28 +715,28 @@ class Invoice_Generator {
             );
 
         } catch (\B2BRouter\Exception\ResourceNotFoundException $e) {
-            error_log('B2Brouter PDF Download - Invoice not found: ' . $invoice_id);
+            Logger::error('B2Brouter PDF Download - Invoice not found: ' . $invoice_id);
             return array(
                 'success' => false,
                 'message' => __('Invoice not found', 'b2brouter-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\AuthenticationException $e) {
-            error_log('B2Brouter PDF Download - Authentication failed: ' . $e->getMessage());
+            Logger::error('B2Brouter PDF Download - Authentication failed: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => __('API authentication failed. Please check your API key.', 'b2brouter-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\PermissionException $e) {
-            error_log('B2Brouter PDF Download - Permission denied: ' . $e->getMessage());
+            Logger::error('B2Brouter PDF Download - Permission denied: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => __('You do not have permission to download this invoice.', 'b2brouter-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\ApiErrorException $e) {
-            error_log('B2Brouter PDF Download - API error: ' . $e->getMessage());
+            Logger::error('B2Brouter PDF Download - API error: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => sprintf(
@@ -746,7 +746,7 @@ class Invoice_Generator {
             );
 
         } catch (\Exception $e) {
-            error_log('B2Brouter PDF Download - Error: ' . $e->getMessage());
+            Logger::error('B2Brouter PDF Download - Error: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => $e->getMessage()
@@ -844,7 +844,7 @@ class Invoice_Generator {
             );
 
         } catch (\Exception $e) {
-            error_log('B2Brouter Save PDF Error: ' . $e->getMessage());
+            Logger::error('B2Brouter Save PDF Error: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => $e->getMessage()
@@ -978,7 +978,7 @@ class Invoice_Generator {
             exit;
 
         } catch (\Exception $e) {
-            error_log('B2Brouter Stream PDF Error: ' . $e->getMessage());
+            Logger::error('B2Brouter Stream PDF Error: ' . $e->getMessage());
             wp_die(
                 esc_html($e->getMessage()),
                 esc_html__('Error', 'b2brouter-woocommerce'),
@@ -1160,7 +1160,7 @@ class Invoice_Generator {
             if ($save_result['success']) {
                 $pdf_path = $save_result['file_path'];
             } else {
-                error_log('B2Brouter Email Attachment: Failed to get PDF for order ' . $order->get_id());
+                Logger::warning('B2Brouter Email Attachment: Failed to get PDF for order ' . $order->get_id());
                 return $attachments;
             }
         }
@@ -1208,7 +1208,7 @@ class Invoice_Generator {
                     $this->cleanup_order_metadata_for_file($file);
                 } else {
                     $errors++;
-                    error_log('B2Brouter Cleanup: Failed to delete ' . $file);
+                    Logger::warning('B2Brouter Cleanup: Failed to delete ' . $file);
                 }
             }
         }

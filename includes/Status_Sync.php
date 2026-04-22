@@ -397,24 +397,28 @@ class Status_Sync {
             );
 
         } catch (\B2BRouter\Exception\ResourceNotFoundException $e) {
+            Logger::warning('B2Brouter Status Sync - Invoice not found for order ' . $order_id . ' (invoice ' . $invoice_id . ')');
             return array(
                 'success' => false,
                 'message' => __('Invoice not found in B2Brouter', 'b2brouter-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\AuthenticationException $e) {
+            Logger::error('B2Brouter Status Sync - Authentication failed: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => __('API authentication failed', 'b2brouter-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\ApiErrorException $e) {
+            Logger::error('B2Brouter Status Sync - API error for order ' . $order_id . ': ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => sprintf(__('API error: %s', 'b2brouter-woocommerce'), $e->getMessage())
             );
 
         } catch (\Exception $e) {
+            Logger::error('B2Brouter Status Sync - Error for order ' . $order_id . ': ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => $e->getMessage()
