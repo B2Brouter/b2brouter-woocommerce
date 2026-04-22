@@ -156,6 +156,23 @@ if (!function_exists('current_time')) {
     }
 }
 
+if (!function_exists('wp_timezone')) {
+    /**
+     * Mock wp_timezone function
+     *
+     * Tests may override via $GLOBALS['mock_wp_timezone'] to exercise
+     * non-UTC site behaviour.
+     *
+     * @return DateTimeZone
+     */
+    function wp_timezone() {
+        if (!empty($GLOBALS['mock_wp_timezone']) && $GLOBALS['mock_wp_timezone'] instanceof DateTimeZone) {
+            return $GLOBALS['mock_wp_timezone'];
+        }
+        return new DateTimeZone('UTC');
+    }
+}
+
 if (!function_exists('get_locale')) {
     /**
      * Mock get_locale function

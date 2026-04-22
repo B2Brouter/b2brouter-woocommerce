@@ -78,6 +78,7 @@ class StatusSyncTest extends TestCase {
         $wp_options = array();
         $wp_cron_events = array();
         $wc_mock_orders = array();
+        unset($GLOBALS['mock_wp_timezone']);
     }
 
     // ========== Final States Tests ==========
@@ -242,6 +243,53 @@ class StatusSyncTest extends TestCase {
         );
         $this->assertTrue(
             $this->status_sync->should_sync('draft', $now - (DAY_IN_SECONDS + 1), $at_7d, $now)
+        );
+    }
+
+    // ========== parse_invoice_date_meta (timezone) Tests ==========
+
+    public function test_parse_invoice_date_meta_empty_returns_zero() {
+        $this->assertSame(0, $this->status_sync->parse_invoice_date_meta(''));
+        $this->assertSame(0, $this->status_sync->parse_invoice_date_meta(null));
+    }
+
+    public function test_parse_invoice_date_meta_malformed_returns_zero() {
+        $this->assertSame(0, $this->status_sync->parse_invoice_date_meta('not a date'));
+        $this->assertSame(0, $this->status_sync->parse_invoice_date_meta('2025-13-40 99:99:99'));
+    }
+
+    /**
+     * Regression: current_time('mysql') writes site-local time. Parsing it
+     * naively with strtotime() (PHP default tz = UTC) would offset the
+     * resulting timestamp by the site's UTC offset. Verify the helper parses
+     * the same string in wp_timezone() and produces a UTC-comparable ts.
+     *
+     * @return void
+     */
+    public function test_parse_invoice_date_meta_honours_wp_timezone() {
+        $GLOBALS['mock_wp_timezone'] = new DateTimeZone('Europe/Madrid');
+
+        // Europe/Madrid is UTC+1 in January (no DST).
+        // "2025-01-15 12:00:00" in Madrid == "2025-01-15 11:00:00" UTC.
+        $expected = (new DateTime('2025-01-15 11:00:00', new DateTimeZone('UTC')))->getTimestamp();
+        $actual = $this->status_sync->parse_invoice_date_meta('2025-01-15 12:00:00');
+
+        $this->assertSame($expected, $actual);
+
+        // And confirm it does NOT match the naive strtotime() result, which
+        // would interpret the string in PHP's default (UTC) timezone.
+        $naive = strtotime('2025-01-15 12:00:00');
+        $this->assertNotSame($naive, $actual, 'Helper must not fall back to PHP default tz');
+        $this->assertSame(3600, $naive - $actual, 'Offset should match Madrid UTC+1');
+    }
+
+    public function test_parse_invoice_date_meta_utc_roundtrip() {
+        $GLOBALS['mock_wp_timezone'] = new DateTimeZone('UTC');
+
+        $expected = (new DateTime('2025-06-01 09:30:00', new DateTimeZone('UTC')))->getTimestamp();
+        $this->assertSame(
+            $expected,
+            $this->status_sync->parse_invoice_date_meta('2025-06-01 09:30:00')
         );
     }
 

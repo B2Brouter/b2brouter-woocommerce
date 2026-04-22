@@ -252,8 +252,7 @@ class Status_Sync {
 
             $status = $order->get_meta('_b2brouter_invoice_status');
             $status_updated = (int) $order->get_meta('_b2brouter_invoice_status_updated');
-            $invoice_date_str = $order->get_meta('_b2brouter_invoice_date');
-            $invoice_created = !empty($invoice_date_str) ? (int) strtotime($invoice_date_str) : 0;
+            $invoice_created = $this->parse_invoice_date_meta($order->get_meta('_b2brouter_invoice_date'));
 
             if ($this->should_sync($status, $status_updated, $invoice_created, $now)) {
                 $orders_needing_sync[] = $order_id;
@@ -301,6 +300,38 @@ class Status_Sync {
         }
 
         return ($now - $status_updated) >= $min_interval;
+    }
+
+    /**
+     * Parse the stored `_b2brouter_invoice_date` meta into a Unix timestamp.
+     *
+     * The meta is written via current_time('mysql'), which returns site-local
+     * time with no timezone suffix. Parsing it with strtotime() interprets the
+     * string in PHP's default timezone (often UTC), skewing the result by the
+     * site's UTC offset. Parse explicitly in wp_timezone() so the returned
+     * timestamp is comparable to time().
+     *
+     * @since 1.0.0
+     * @param string $date_str Raw meta value (may be empty or malformed).
+     * @return int Unix timestamp, or 0 if missing/unparseable.
+     */
+    public function parse_invoice_date_meta($date_str) {
+        if (empty($date_str) || !is_string($date_str)) {
+            return 0;
+        }
+        // Strict format match — the meta is always written via
+        // current_time('mysql'), which emits exactly 'Y-m-d H:i:s'.
+        // Using createFromFormat avoids DateTime's lenient parser (and the
+        // xdebug/PHP 8.2+ dynamic-property interaction when it throws).
+        $dt = \DateTimeImmutable::createFromFormat('!Y-m-d H:i:s', $date_str, wp_timezone());
+        if ($dt === false) {
+            return 0;
+        }
+        $errors = \DateTimeImmutable::getLastErrors();
+        if (is_array($errors) && ($errors['error_count'] > 0 || $errors['warning_count'] > 0)) {
+            return 0;
+        }
+        return $dt->getTimestamp();
     }
 
     /**
