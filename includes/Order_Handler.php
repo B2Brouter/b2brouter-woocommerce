@@ -710,8 +710,8 @@ class Order_Handler {
             echo '<div class="notice notice-warning is-dismissible"><p>';
             echo sprintf(
                 _n(
-                    '%d order was skipped because it is not in the completed status. Only completed orders can be invoiced.',
-                    '%d orders were skipped because they are not in the completed status. Only completed orders can be invoiced.',
+                    '%d order was skipped because it is not in the completed status. Only completed orders can be invoiced from the bulk action.',
+                    '%d orders were skipped because they are not in the completed status. Only completed orders can be invoiced from the bulk action.',
                     $skipped_count,
                     'b2brouter-woocommerce'
                 ),

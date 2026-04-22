@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: B2Brouter for WooCommerce 0.9.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/b2brouter-"
 "woocommerce\n"
-"POT-Creation-Date: 2026-04-17T11:29:46+00:00\n"
+"POT-Creation-Date: 2026-04-22T11:23:29+00:00\n"
 "PO-Revision-Date: 2026-03-31 13:56+0200\n"
 "Last-Translator: B2Brouter <support@b2brouter.net>\n"
 "Language-Team: Spanish (Spain)\n"
@@ -699,7 +699,7 @@ msgid "Generating..."
 msgstr "Generando..."
 
 #: includes/Customer.php:114 includes/Customer.php:143
-#: includes/Order_Handler.php:367
+#: includes/Order_Handler.php:372
 msgid "Generate Invoice"
 msgstr "Generar factura"
 
@@ -712,11 +712,11 @@ msgid "Download Credit Note"
 msgstr "Descargar factura rectificativa"
 
 #: includes/Customer.php:193 includes/Invoice_List_Table.php:57
-#: includes/Order_Handler.php:482
+#: includes/Order_Handler.php:487
 msgid "Invoice"
 msgstr "Factura"
 
-#: includes/Customer.php:198 includes/Order_Handler.php:238
+#: includes/Customer.php:198 includes/Order_Handler.php:243
 msgid "Invoice Number:"
 msgstr "Número de factura:"
 
@@ -949,23 +949,23 @@ msgstr "del pedido"
 msgid "Guest"
 msgstr "Invitado"
 
-#: includes/Invoice_List_Table.php:306 includes/Order_Handler.php:457
+#: includes/Invoice_List_Table.php:306 includes/Order_Handler.php:462
 msgid "View in B2Brouter"
 msgstr "Ver en B2Brouter"
 
-#: includes/Invoice_List_Table.php:382 includes/Order_Handler.php:303
+#: includes/Invoice_List_Table.php:382 includes/Order_Handler.php:308
 msgid "View PDF"
 msgstr "Ver PDF"
 
-#: includes/Invoice_List_Table.php:383 includes/Order_Handler.php:418
+#: includes/Invoice_List_Table.php:383 includes/Order_Handler.php:423
 msgid "View"
 msgstr "Ver"
 
-#: includes/Invoice_List_Table.php:392 includes/Order_Handler.php:313
+#: includes/Invoice_List_Table.php:392 includes/Order_Handler.php:318
 msgid "Download PDF"
 msgstr "Descargar PDF"
 
-#: includes/Invoice_List_Table.php:393 includes/Order_Handler.php:426
+#: includes/Invoice_List_Table.php:393 includes/Order_Handler.php:431
 msgid "Download"
 msgstr "Descargar"
 
@@ -984,150 +984,161 @@ msgstr[1] "Preparando la descarga de %d PDFs de facturas."
 msgid "No invoices found."
 msgstr "No se encontraron facturas."
 
-#: includes/Order_Handler.php:120 includes/Order_Handler.php:142
+#: includes/Order_Handler.php:125 includes/Order_Handler.php:147
 msgid "B2Brouter Invoice"
 msgstr "Factura B2Brouter"
 
-#: includes/Order_Handler.php:130
+#: includes/Order_Handler.php:135
 msgid "B2Brouter Credit Note"
 msgstr "Factura rectificativa B2Brouter"
 
-#: includes/Order_Handler.php:180
+#: includes/Order_Handler.php:185
 msgid "Parent Order:"
 msgstr "Pedido original:"
 
-#: includes/Order_Handler.php:190
+#: includes/Order_Handler.php:195
 msgid "Parent has invoice"
 msgstr "El pedido original tiene factura"
 
-#: includes/Order_Handler.php:193
+#: includes/Order_Handler.php:198
 msgid "Parent Invoice:"
 msgstr "Factura del pedido original:"
 
-#: includes/Order_Handler.php:199
+#: includes/Order_Handler.php:204
 msgid "Parent has no invoice"
 msgstr "El pedido original no tiene factura"
 
-#: includes/Order_Handler.php:202
+#: includes/Order_Handler.php:207
 msgid "Generate invoice for parent order first."
 msgstr "Genere primero la factura del pedido original."
 
-#: includes/Order_Handler.php:214
+#: includes/Order_Handler.php:219
 msgid "Credit Note Generated"
 msgstr "Factura rectificativa generada"
 
-#: includes/Order_Handler.php:216
+#: includes/Order_Handler.php:221
 msgid "Invoice Generated"
 msgstr "Factura generada"
 
-#: includes/Order_Handler.php:224
+#: includes/Order_Handler.php:229
 msgid "Credit Note ID:"
 msgstr "ID de factura rectificativa:"
 
-#: includes/Order_Handler.php:226
+#: includes/Order_Handler.php:231
 msgid "Invoice ID:"
 msgstr "ID de factura:"
 
-#: includes/Order_Handler.php:236
+#: includes/Order_Handler.php:241
 msgid "Credit Note Number:"
 msgstr "Número de factura rectificativa:"
 
-#: includes/Order_Handler.php:245
+#: includes/Order_Handler.php:250
 msgid "Generated Date:"
 msgstr "Fecha de generación:"
 
-#: includes/Order_Handler.php:257
+#: includes/Order_Handler.php:262
 msgid "Status:"
 msgstr "Estado:"
 
-#: includes/Order_Handler.php:267
+#: includes/Order_Handler.php:272
 #, php-format
 msgid "Last checked: %s"
 msgstr "Última comprobación: %s"
 
-#: includes/Order_Handler.php:268 includes/Order_Handler.php:330
+#: includes/Order_Handler.php:273 includes/Order_Handler.php:335
 msgid "ago"
 msgstr "atrás"
 
-#: includes/Order_Handler.php:283
+#: includes/Order_Handler.php:288
 msgid "Error:"
 msgstr "Error:"
 
-#: includes/Order_Handler.php:328
+#: includes/Order_Handler.php:333
 #, php-format
 msgid "PDF cached (%s, %s)"
 msgstr "PDF en caché (%s, %s)"
 
-#: includes/Order_Handler.php:340
+#: includes/Order_Handler.php:345
 msgid "Credit Note Not Generated"
 msgstr "Factura rectificativa no generada"
 
-#: includes/Order_Handler.php:342
+#: includes/Order_Handler.php:347
 msgid "Invoice Not Generated"
 msgstr "Factura no generada"
 
-#: includes/Order_Handler.php:349
+#: includes/Order_Handler.php:354
 msgid "API key not configured."
 msgstr "Clave API no configurada."
 
-#: includes/Order_Handler.php:351
+#: includes/Order_Handler.php:356
 msgid "Configure now"
 msgstr "Configurar ahora"
 
-#: includes/Order_Handler.php:356
+#: includes/Order_Handler.php:361
 msgid "Cannot generate credit note: parent order has no invoice."
 msgstr ""
 "No se puede generar la factura rectificativa: el pedido original no tiene "
 "factura."
 
-#: includes/Order_Handler.php:365
+#: includes/Order_Handler.php:370
 msgid "Generate Credit Note"
 msgstr "Generar factura rectificativa"
 
-#: includes/Order_Handler.php:375
+#: includes/Order_Handler.php:380
 msgid "Click to manually generate a credit note for this refund."
 msgstr ""
 "Haga clic para generar manualmente una factura rectificativa para este "
 "reembolso."
 
-#: includes/Order_Handler.php:377
+#: includes/Order_Handler.php:382
 msgid "Click to manually generate an invoice for this order."
 msgstr "Haga clic para generar manualmente una factura para este pedido."
 
-#: includes/Order_Handler.php:391
+#: includes/Order_Handler.php:396
 msgid "Refund Invoices"
 msgstr "Facturas de reembolso"
 
-#: includes/Order_Handler.php:400
+#: includes/Order_Handler.php:405
 #, php-format
 msgid "Refund #%s"
 msgstr "Reembolso #%s"
 
-#: includes/Order_Handler.php:432
+#: includes/Order_Handler.php:437
 msgid "No credit note"
 msgstr "Sin factura rectificativa"
 
-#: includes/Order_Handler.php:456
+#: includes/Order_Handler.php:461
 msgid "Manage from B2Brouter"
 msgstr "Gestionar desde B2Brouter"
 
-#: includes/Order_Handler.php:606
+#: includes/Order_Handler.php:611
 msgid "Generate B2Brouter Invoices"
 msgstr "Generar facturas B2Brouter"
 
-#: includes/Order_Handler.php:661
+#: includes/Order_Handler.php:684
 #, php-format
 msgid "%d invoice generated successfully."
 msgid_plural "%d invoices generated successfully."
 msgstr[0] "%d factura generada correctamente."
 msgstr[1] "%d facturas generadas correctamente."
 
-#: includes/Order_Handler.php:675
+#: includes/Order_Handler.php:698
 #, php-format
 msgid "%d invoice failed to generate."
 msgid_plural "%d invoices failed to generate."
 msgstr[0] "%d factura no se pudo generar."
 msgstr[1] "%d facturas no se pudieron generar."
+
+#: includes/Order_Handler.php:712
+#, php-format
+msgid ""
+"%d order was skipped because it is not in the completed status. Only "
+"completed orders can be invoiced from the bulk action."
+msgid_plural ""
+"%d orders were skipped because they are not in the completed status. Only "
+"completed orders can be invoiced from the bulk action."
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/Settings.php:272
 msgid "API key cannot be empty"
