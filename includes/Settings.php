@@ -562,7 +562,7 @@ class Settings {
      * @return string
      */
     public function get_invoice_series_code() {
-        return get_option(self::OPTION_INVOICE_SERIES_CODE, '');
+        return get_option(self::OPTION_INVOICE_SERIES_CODE, 'INV');
     }
 
     /**
@@ -570,10 +570,14 @@ class Settings {
      *
      * @since 1.0.0
      * @param string $code
-     * @return bool
+     * @return bool False if the code is empty after sanitization.
      */
     public function set_invoice_series_code($code) {
-        return update_option(self::OPTION_INVOICE_SERIES_CODE, sanitize_text_field($code));
+        $code = sanitize_text_field($code);
+        if (trim($code) === '') {
+            return false;
+        }
+        return update_option(self::OPTION_INVOICE_SERIES_CODE, $code);
     }
 
     /**
@@ -583,7 +587,7 @@ class Settings {
      * @return string
      */
     public function get_credit_note_series_code() {
-        return get_option(self::OPTION_CREDIT_NOTE_SERIES_CODE, '');
+        return get_option(self::OPTION_CREDIT_NOTE_SERIES_CODE, 'CN');
     }
 
     /**
@@ -591,10 +595,14 @@ class Settings {
      *
      * @since 1.0.0
      * @param string $code
-     * @return bool
+     * @return bool False if the code is empty after sanitization.
      */
     public function set_credit_note_series_code($code) {
-        return update_option(self::OPTION_CREDIT_NOTE_SERIES_CODE, sanitize_text_field($code));
+        $code = sanitize_text_field($code);
+        if (trim($code) === '') {
+            return false;
+        }
+        return update_option(self::OPTION_CREDIT_NOTE_SERIES_CODE, $code);
     }
 
     /**
@@ -615,47 +623,11 @@ class Settings {
      * @return bool
      */
     public function set_invoice_numbering_pattern($pattern) {
-        $valid_patterns = array('automatic', 'woocommerce', 'sequential', 'custom');
+        $valid_patterns = array('automatic', 'woocommerce');
         if (in_array($pattern, $valid_patterns)) {
             return update_option(self::OPTION_INVOICE_NUMBERING_PATTERN, $pattern);
         }
         return false;
-    }
-
-    /**
-     * Get custom numbering pattern
-     *
-     * @since 1.0.0
-     * @return string
-     */
-    public function get_custom_numbering_pattern() {
-        return get_option('b2brouter_custom_numbering_pattern', '{order_id}');
-    }
-
-    /**
-     * Set custom numbering pattern
-     *
-     * @since 1.0.0
-     * @param string $pattern
-     * @return bool
-     */
-    public function set_custom_numbering_pattern($pattern) {
-        return update_option('b2brouter_custom_numbering_pattern', sanitize_text_field($pattern));
-    }
-
-    /**
-     * Get next sequential number for a series
-     *
-     * @since 1.0.0
-     * @param string $series_code
-     * @return int
-     */
-    public function get_next_sequential_number($series_code) {
-        $option_name = 'b2brouter_seq_counter_' . sanitize_text_field($series_code);
-        $current = intval(get_option($option_name, 0));
-        $next = $current + 1;
-        update_option($option_name, $next);
-        return $next;
     }
 
     /**

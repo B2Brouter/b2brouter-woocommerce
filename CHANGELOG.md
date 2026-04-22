@@ -5,6 +5,21 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.4] - 2026-04-22
+
+### Removed
+- Sequential invoice numbering mode (plugin-managed counter). Existing installs using this mode are automatically migrated to the WooCommerce order number mode (the default for fresh installs). The underlying counter had a race condition under concurrent invoice generation (reported in #7); removed rather than fixed because usage did not justify the complexity.
+- Custom pattern numbering mode and all pattern placeholders (`{order_id}`, `{order_number}`, `{year}`, `{month}`, `{day}`). Existing installs using this mode are automatically migrated to the WooCommerce order number mode.
+
+### Changed
+- Invoice and credit-note series codes are now **required** and default to `INV` and `CN` respectively. On upgrade, installs with empty series codes receive these defaults. The settings UI rejects empty values.
+
+### Migration
+- One-time upgrade migration rewrites the stored numbering mode from `sequential`/`custom` to `woocommerce`.
+- Orphaned options are deleted: `b2brouter_custom_numbering_pattern` and all `b2brouter_seq_counter_*` counters.
+- Empty series codes are backfilled to `INV` / `CN`.
+- Migration is gated by a new `b2brouter_installed_version` option so it runs exactly once.
+
 ## [0.9.3] - 2025-12-11
 
 ### Added
