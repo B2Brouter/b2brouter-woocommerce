@@ -473,6 +473,7 @@ class Admin {
         $attach_to_refunded = $this->settings->get_attach_to_refunded_order();
         $auto_cleanup_enabled = $this->settings->get_auto_cleanup_enabled();
         $auto_cleanup_days = $this->settings->get_auto_cleanup_days();
+        $delete_archival_data = $this->settings->get_delete_archival_data();
         $transaction_count = $this->settings->get_transaction_count();
         $api_configured = $this->settings->is_api_key_configured();
         $invoice_series_code = $this->settings->get_invoice_series_code();
@@ -586,6 +587,12 @@ class Admin {
                 $custom_pattern = $this->settings->get_custom_numbering_pattern();
             }
 
+            // Save uninstall behavior
+            $this->settings->set_delete_archival_data(
+                isset($_POST['b2brouter_delete_archival_data']) && $_POST['b2brouter_delete_archival_data'] === '1'
+            );
+            $delete_archival_data = $this->settings->get_delete_archival_data();
+
             echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved successfully.', 'b2brouter-woocommerce') . '</p></div>';
         }
 
@@ -604,6 +611,23 @@ class Admin {
 
             <form method="post" action="" class="b2brouter-form">
                 <?php wp_nonce_field('b2brouter_settings'); ?>
+
+                <div class="b2brouter-uninstall-card">
+                    <h2><?php esc_html_e('Uninstall behavior', 'b2brouter-woocommerce'); ?></h2>
+                    <p>
+                        <?php esc_html_e('When this plugin is deleted from WordPress, it always removes its settings, cached PDF files, and scheduled sync tasks. Invoice identifiers stored on each order (B2Brouter invoice ID, invoice number, series code, and issue date) are preserved by default so your tax audit trail stays intact.', 'b2brouter-woocommerce'); ?>
+                    </p>
+                    <label class="b2brouter-uninstall-toggle">
+                        <input type="checkbox"
+                               name="b2brouter_delete_archival_data"
+                               value="1"
+                               <?php checked($delete_archival_data); ?>>
+                        <?php esc_html_e('Also delete invoice identifiers from orders on uninstall', 'b2brouter-woocommerce'); ?>
+                    </label>
+                    <p class="description">
+                        <?php esc_html_e('Warning: this cannot be undone. Customer VAT / TIN numbers are never removed by uninstall.', 'b2brouter-woocommerce'); ?>
+                    </p>
+                </div>
 
                 <table class="form-table">
                     <tr>

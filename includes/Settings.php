@@ -42,6 +42,7 @@ class Settings {
     const OPTION_WEBHOOK_SECRET = 'b2brouter_webhook_secret';
     const OPTION_WEBHOOK_ENABLED = 'b2brouter_webhook_enabled';
     const OPTION_WEBHOOK_FALLBACK_POLLING = 'b2brouter_webhook_fallback_polling';
+    const OPTION_DELETE_ARCHIVAL_DATA = 'b2brouter_delete_archival_data';
 
     /**
      * Constructor
@@ -729,5 +730,26 @@ class Settings {
      */
     public function get_webhook_url() {
         return rest_url('b2brouter/v1/webhook');
+    }
+
+    /**
+     * Get whether archival invoice data should be deleted on uninstall
+     *
+     * @since 1.0.0
+     * @return bool True if archival data should be deleted, false to preserve it
+     */
+    public function get_delete_archival_data() {
+        return get_option(self::OPTION_DELETE_ARCHIVAL_DATA, '0') === '1';
+    }
+
+    /**
+     * Set whether archival invoice data should be deleted on uninstall
+     *
+     * @since 1.0.0
+     * @param bool $enabled Whether to delete archival data on uninstall
+     * @return bool True on success, false on failure
+     */
+    public function set_delete_archival_data($enabled) {
+        return update_option(self::OPTION_DELETE_ARCHIVAL_DATA, $enabled ? '1' : '0');
     }
 }
