@@ -41,6 +41,18 @@
                 }
             }
 
+            // Invoice fragment: #b2brouter-invoice-{order_id}-{order_key}
+            if (href && href.indexOf('#b2brouter-invoice-') === 0) {
+                var invoiceMatch = href.match(/#b2brouter-invoice-(\d+)-(.+)$/);
+                if (invoiceMatch) {
+                    orderId = invoiceMatch[1];
+                    orderKey = invoiceMatch[2];
+                    if (b2brouterCustomer.debug) {
+                        console.log('Extracted order ID and key from invoice fragment:', orderId, orderKey);
+                    }
+                }
+            }
+
             // Get order ID from My Account table if not set
             if (!orderId) {
                 // Try to extract from aria-label first (e.g., "Download Invoice PDF order number 70")
