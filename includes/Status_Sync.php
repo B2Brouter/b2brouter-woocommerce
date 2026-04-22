@@ -228,8 +228,8 @@ class Status_Sync {
             return array();
         }
 
-        $one_hour_ago = time() - HOUR_IN_SECONDS;
-        $webhook_cutoff = time() - (6 * HOUR_IN_SECONDS); // 6 hours
+        $now = time();
+        $webhook_cutoff = $now - (6 * HOUR_IN_SECONDS);
         $orders_needing_sync = array();
 
         foreach ($order_ids as $order_id) {
@@ -242,30 +242,96 @@ class Status_Sync {
                 continue;
             }
 
-            $status = $order->get_meta('_b2brouter_invoice_status');
-            $status_updated = $order->get_meta('_b2brouter_invoice_status_updated');
-
             // Skip if recently updated via webhook
             if ($this->settings->get_webhook_enabled()) {
                 $last_webhook = $order->get_meta('_b2brouter_last_webhook_received');
                 if (!empty($last_webhook) && $last_webhook > $webhook_cutoff) {
-                    continue; // Skip - webhook is working
+                    continue;
                 }
             }
 
-            // Include if:
-            // - No status set yet
-            // - Status is not in final states
-            // - Status hasn't been updated in the last hour
-            if (empty($status) ||
-                !$this->is_final_state($status) ||
-                empty($status_updated) ||
-                $status_updated < $one_hour_ago) {
+            $status = $order->get_meta('_b2brouter_invoice_status');
+            $status_updated = (int) $order->get_meta('_b2brouter_invoice_status_updated');
+            $invoice_created = $this->parse_invoice_date_meta($order->get_meta('_b2brouter_invoice_date'));
+
+            if ($this->should_sync($status, $status_updated, $invoice_created, $now)) {
                 $orders_needing_sync[] = $order_id;
             }
         }
 
         return $orders_needing_sync;
+    }
+
+    /**
+     * Decide whether an order's B2Brouter status should be polled now.
+     *
+     * Non-final invoices poll on exponential backoff keyed to invoice age:
+     * <24h hourly, 1-7d every 6h, >7d daily. Final states never poll — a
+     * webhook will fire if one ever changes.
+     *
+     * @since 1.0.0
+     * @param string $status          Cached status ('' if never synced).
+     * @param int    $status_updated  Unix ts of last successful poll (0 if never).
+     * @param int    $invoice_created Unix ts of invoice creation (0 if unknown —
+     *                                treated as age 0, i.e. shortest interval).
+     * @param int    $now             Current time (injected for testability).
+     * @return bool
+     */
+    public function should_sync($status, $status_updated, $invoice_created, $now) {
+        if (empty($status)) {
+            return true;
+        }
+
+        if ($this->is_final_state($status)) {
+            return false;
+        }
+
+        $age = ($invoice_created > 0) ? max(0, $now - $invoice_created) : 0;
+        if ($age < DAY_IN_SECONDS) {
+            $min_interval = HOUR_IN_SECONDS;
+        } elseif ($age < 7 * DAY_IN_SECONDS) {
+            $min_interval = 6 * HOUR_IN_SECONDS;
+        } else {
+            $min_interval = DAY_IN_SECONDS;
+        }
+
+        if (empty($status_updated)) {
+            return true;
+        }
+
+        return ($now - $status_updated) >= $min_interval;
+    }
+
+    /**
+     * Parse the stored `_b2brouter_invoice_date` meta into a Unix timestamp.
+     *
+     * The meta is written via current_time('mysql'), which returns site-local
+     * time with no timezone suffix. Parsing it with strtotime() interprets the
+     * string in PHP's default timezone (often UTC), skewing the result by the
+     * site's UTC offset. Parse explicitly in wp_timezone() so the returned
+     * timestamp is comparable to time().
+     *
+     * @since 1.0.0
+     * @param string $date_str Raw meta value (may be empty or malformed).
+     * @return int Unix timestamp, or 0 if missing/unparseable.
+     */
+    public function parse_invoice_date_meta($date_str) {
+        if (empty($date_str) || !is_string($date_str)) {
+            return 0;
+        }
+        // Strict format match — the meta is always written via
+        // current_time('mysql'), which emits exactly 'Y-m-d H:i:s'.
+        // Using createFromFormat avoids DateTime's lenient parser (and the
+        // xdebug/PHP 8.2+ dynamic-property interaction when it throws).
+        $dt = \DateTimeImmutable::createFromFormat('!Y-m-d H:i:s', $date_str, wp_timezone());
+        if ($dt === false) {
+            return 0;
+        }
+        $errors = \DateTimeImmutable::getLastErrors();
+        if (is_array($errors) && ($errors['error_count'] > 0 || $errors['warning_count'] > 0)) {
+            return 0;
+        }
+        return $dt->getTimestamp();
     }
 
     /**
