@@ -46,19 +46,12 @@ B2Brouter for WooCommerce integrates your WooCommerce store with B2Brouter's ele
 - **Merchant Country Detection**: Automatically extracts merchant country from WooCommerce settings
 - **EU Country Detection**: Built-in detection of 27 EU member states for compliance logic
 
-### Custom Invoice Numbering
+### Invoice Numbering
 
-- **Series Codes**: Configure different prefixes for invoices and credit notes (e.g., INV, CN)
-- **Multiple Numbering Patterns**:
-  - **Automatic**: B2Brouter generates sequential numbers
+- **Series Codes**: Configure series codes for invoices and credit notes (required; default `INV` and `CN`)
+- **Numbering modes**:
+  - **Automatic**: B2Brouter assigns the invoice number
   - **WooCommerce Order Number**: Use WooCommerce's native order numbering
-  - **Sequential**: Independent sequential counter per series code
-  - **Custom Pattern**: Define patterns using placeholders:
-    - `{order_id}`: WooCommerce order ID
-    - `{order_number}`: WooCommerce order number
-    - `{year}`: Current year (YYYY)
-    - `{month}`: Current month (MM)
-    - `{day}`: Current day (DD)
 
 ### TIN/VAT Number Collection
 
@@ -214,20 +207,13 @@ See [DISTRIBUTION.md](docs/DISTRIBUTION.md) for release procedures.
 
 ### Invoice Numbering
 
-**Series Codes**:
-- **Invoice Series Code**: Prefix for regular invoices (e.g., "INV")
-- **Credit Note Series Code**: Prefix for credit notes (e.g., "CN")
+**Series Codes** (required):
+- **Invoice Series Code**: Series for regular invoices (default: `INV`)
+- **Credit Note Series Code**: Series for credit notes (default: `CN`)
 
-**Numbering Pattern**:
-- **Automatic**: B2Brouter generates sequential numbers
+**Numbering Mode**:
+- **Automatic**: B2Brouter assigns the invoice number
 - **WooCommerce Order Number**: Use WooCommerce order number as invoice number
-- **Sequential**: Plugin maintains independent sequential counter per series
-- **Custom Pattern**: Define custom format using placeholders
-
-Example patterns:
-- `INV-{year}-{order_id}` → `INV-2025-123`
-- `{order_number}` → `1234`
-- Sequential → `00001`, `00002`, `00003`
 
 ### Webhook Configuration (Optional - Recommended)
 
