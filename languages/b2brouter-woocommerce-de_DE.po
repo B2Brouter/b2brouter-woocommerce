@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: B2Brouter for WooCommerce 0.9.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/b2brouter-"
 "woocommerce\n"
-"POT-Creation-Date: 2026-04-17T11:29:46+00:00\n"
+"POT-Creation-Date: 2026-04-22T11:23:29+00:00\n"
 "PO-Revision-Date: 2026-03-31 13:56+0200\n"
 "Last-Translator: B2Brouter <support@b2brouter.net>\n"
 "Language-Team: German (Germany)\n"
@@ -705,7 +705,7 @@ msgid "Generating..."
 msgstr "Wird erstellt..."
 
 #: includes/Customer.php:114 includes/Customer.php:143
-#: includes/Order_Handler.php:367
+#: includes/Order_Handler.php:372
 msgid "Generate Invoice"
 msgstr "Rechnung erstellen"
 
@@ -718,11 +718,11 @@ msgid "Download Credit Note"
 msgstr "Gutschrift herunterladen"
 
 #: includes/Customer.php:193 includes/Invoice_List_Table.php:57
-#: includes/Order_Handler.php:482
+#: includes/Order_Handler.php:487
 msgid "Invoice"
 msgstr "Rechnung"
 
-#: includes/Customer.php:198 includes/Order_Handler.php:238
+#: includes/Customer.php:198 includes/Order_Handler.php:243
 msgid "Invoice Number:"
 msgstr "Rechnungsnummer:"
 
@@ -960,23 +960,23 @@ msgstr "für Bestellung"
 msgid "Guest"
 msgstr "Gast"
 
-#: includes/Invoice_List_Table.php:306 includes/Order_Handler.php:457
+#: includes/Invoice_List_Table.php:306 includes/Order_Handler.php:462
 msgid "View in B2Brouter"
 msgstr "In B2Brouter anzeigen"
 
-#: includes/Invoice_List_Table.php:382 includes/Order_Handler.php:303
+#: includes/Invoice_List_Table.php:382 includes/Order_Handler.php:308
 msgid "View PDF"
 msgstr "PDF anzeigen"
 
-#: includes/Invoice_List_Table.php:383 includes/Order_Handler.php:418
+#: includes/Invoice_List_Table.php:383 includes/Order_Handler.php:423
 msgid "View"
 msgstr "Anzeigen"
 
-#: includes/Invoice_List_Table.php:392 includes/Order_Handler.php:313
+#: includes/Invoice_List_Table.php:392 includes/Order_Handler.php:318
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
-#: includes/Invoice_List_Table.php:393 includes/Order_Handler.php:426
+#: includes/Invoice_List_Table.php:393 includes/Order_Handler.php:431
 msgid "Download"
 msgstr "Herunterladen"
 
@@ -995,151 +995,162 @@ msgstr[1] "Vorbereitung zum Herunterladen von %d Rechnungs-PDFs."
 msgid "No invoices found."
 msgstr "Keine Rechnungen gefunden."
 
-#: includes/Order_Handler.php:120 includes/Order_Handler.php:142
+#: includes/Order_Handler.php:125 includes/Order_Handler.php:147
 msgid "B2Brouter Invoice"
 msgstr "B2Brouter-Rechnung"
 
-#: includes/Order_Handler.php:130
+#: includes/Order_Handler.php:135
 msgid "B2Brouter Credit Note"
 msgstr "B2Brouter-Gutschrift"
 
-#: includes/Order_Handler.php:180
+#: includes/Order_Handler.php:185
 msgid "Parent Order:"
 msgstr "Ursprungsbestellung:"
 
-#: includes/Order_Handler.php:190
+#: includes/Order_Handler.php:195
 msgid "Parent has invoice"
 msgstr "Ursprungsbestellung hat Rechnung"
 
-#: includes/Order_Handler.php:193
+#: includes/Order_Handler.php:198
 msgid "Parent Invoice:"
 msgstr "Ursprungsrechnung:"
 
-#: includes/Order_Handler.php:199
+#: includes/Order_Handler.php:204
 msgid "Parent has no invoice"
 msgstr "Ursprungsbestellung hat keine Rechnung"
 
-#: includes/Order_Handler.php:202
+#: includes/Order_Handler.php:207
 msgid "Generate invoice for parent order first."
 msgstr "Erstellen Sie zuerst die Rechnung für die Ursprungsbestellung."
 
-#: includes/Order_Handler.php:214
+#: includes/Order_Handler.php:219
 msgid "Credit Note Generated"
 msgstr "Gutschrift erstellt"
 
-#: includes/Order_Handler.php:216
+#: includes/Order_Handler.php:221
 msgid "Invoice Generated"
 msgstr "Rechnung erstellt"
 
-#: includes/Order_Handler.php:224
+#: includes/Order_Handler.php:229
 msgid "Credit Note ID:"
 msgstr "Gutschrift-ID:"
 
-#: includes/Order_Handler.php:226
+#: includes/Order_Handler.php:231
 msgid "Invoice ID:"
 msgstr "Rechnungs-ID:"
 
-#: includes/Order_Handler.php:236
+#: includes/Order_Handler.php:241
 msgid "Credit Note Number:"
 msgstr "Gutschriftnummer:"
 
-#: includes/Order_Handler.php:245
+#: includes/Order_Handler.php:250
 msgid "Generated Date:"
 msgstr "Erstellungsdatum:"
 
-#: includes/Order_Handler.php:257
+#: includes/Order_Handler.php:262
 msgid "Status:"
 msgstr "Status:"
 
-#: includes/Order_Handler.php:267
+#: includes/Order_Handler.php:272
 #, php-format
 msgid "Last checked: %s"
 msgstr "Zuletzt geprüft: %s"
 
-#: includes/Order_Handler.php:268 includes/Order_Handler.php:330
+#: includes/Order_Handler.php:273 includes/Order_Handler.php:335
 msgid "ago"
 msgstr "her"
 
-#: includes/Order_Handler.php:283
+#: includes/Order_Handler.php:288
 msgid "Error:"
 msgstr "Fehler:"
 
-#: includes/Order_Handler.php:328
+#: includes/Order_Handler.php:333
 #, php-format
 msgid "PDF cached (%s, %s)"
 msgstr "PDF zwischengespeichert (%s, %s)"
 
-#: includes/Order_Handler.php:340
+#: includes/Order_Handler.php:345
 msgid "Credit Note Not Generated"
 msgstr "Gutschrift nicht erstellt"
 
-#: includes/Order_Handler.php:342
+#: includes/Order_Handler.php:347
 msgid "Invoice Not Generated"
 msgstr "Rechnung nicht erstellt"
 
-#: includes/Order_Handler.php:349
+#: includes/Order_Handler.php:354
 msgid "API key not configured."
 msgstr "API-Schlüssel nicht konfiguriert."
 
-#: includes/Order_Handler.php:351
+#: includes/Order_Handler.php:356
 msgid "Configure now"
 msgstr "Jetzt konfigurieren"
 
-#: includes/Order_Handler.php:356
+#: includes/Order_Handler.php:361
 msgid "Cannot generate credit note: parent order has no invoice."
 msgstr ""
 "Gutschrift kann nicht erstellt werden: Die Ursprungsbestellung hat keine "
 "Rechnung."
 
-#: includes/Order_Handler.php:365
+#: includes/Order_Handler.php:370
 msgid "Generate Credit Note"
 msgstr "Gutschrift erstellen"
 
-#: includes/Order_Handler.php:375
+#: includes/Order_Handler.php:380
 msgid "Click to manually generate a credit note for this refund."
 msgstr ""
 "Klicken Sie, um manuell eine Gutschrift für diese Rückerstattung zu "
 "erstellen."
 
-#: includes/Order_Handler.php:377
+#: includes/Order_Handler.php:382
 msgid "Click to manually generate an invoice for this order."
 msgstr ""
 "Klicken Sie, um manuell eine Rechnung für diese Bestellung zu erstellen."
 
-#: includes/Order_Handler.php:391
+#: includes/Order_Handler.php:396
 msgid "Refund Invoices"
 msgstr "Rückerstattungsrechnungen"
 
-#: includes/Order_Handler.php:400
+#: includes/Order_Handler.php:405
 #, php-format
 msgid "Refund #%s"
 msgstr "Rückerstattung Nr. %s"
 
-#: includes/Order_Handler.php:432
+#: includes/Order_Handler.php:437
 msgid "No credit note"
 msgstr "Keine Gutschrift"
 
-#: includes/Order_Handler.php:456
+#: includes/Order_Handler.php:461
 msgid "Manage from B2Brouter"
 msgstr "Von B2Brouter aus verwalten"
 
-#: includes/Order_Handler.php:606
+#: includes/Order_Handler.php:611
 msgid "Generate B2Brouter Invoices"
 msgstr "B2Brouter-Rechnungen erstellen"
 
-#: includes/Order_Handler.php:661
+#: includes/Order_Handler.php:684
 #, php-format
 msgid "%d invoice generated successfully."
 msgid_plural "%d invoices generated successfully."
 msgstr[0] "%d Rechnung erfolgreich erstellt."
 msgstr[1] "%d Rechnungen erfolgreich erstellt."
 
-#: includes/Order_Handler.php:675
+#: includes/Order_Handler.php:698
 #, php-format
 msgid "%d invoice failed to generate."
 msgid_plural "%d invoices failed to generate."
 msgstr[0] "%d Rechnung konnte nicht erstellt werden."
 msgstr[1] "%d Rechnungen konnten nicht erstellt werden."
+
+#: includes/Order_Handler.php:712
+#, php-format
+msgid ""
+"%d order was skipped because it is not in the completed status. Only "
+"completed orders can be invoiced from the bulk action."
+msgid_plural ""
+"%d orders were skipped because they are not in the completed status. Only "
+"completed orders can be invoiced from the bulk action."
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/Settings.php:272
 msgid "API key cannot be empty"

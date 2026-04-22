@@ -65,9 +65,14 @@ class Order_Handler {
         add_filter('manage_woocommerce_page_wc-orders_columns', array($this, 'add_invoice_column'), 20);
         add_action('manage_woocommerce_page_wc-orders_custom_column', array($this, 'render_invoice_column_hpos'), 20, 2);
 
-        // Add bulk action for generating invoices
+        // Add bulk action for generating invoices (legacy orders screen)
         add_filter('bulk_actions-edit-shop_order', array($this, 'add_bulk_action'));
         add_filter('handle_bulk_actions-edit-shop_order', array($this, 'handle_bulk_action'), 10, 3);
+
+        // HPOS orders screen (WooCommerce 7.1+ with custom order tables)
+        add_filter('bulk_actions-woocommerce_page_wc-orders', array($this, 'add_bulk_action'));
+        add_filter('handle_bulk_actions-woocommerce_page_wc-orders', array($this, 'handle_bulk_action'), 10, 3);
+
         add_action('admin_notices', array($this, 'bulk_action_notices'));
 
         // Email PDF attachments
@@ -623,8 +628,22 @@ class Order_Handler {
 
         $success_count = 0;
         $error_count = 0;
+        $skipped_count = 0;
 
         foreach ($post_ids as $post_id) {
+            $order = wc_get_order($post_id);
+
+            if (!$order) {
+                $error_count++;
+                continue;
+            }
+
+            // Only completed orders are eligible for invoice generation
+            if ($order->get_status() !== 'completed') {
+                $skipped_count++;
+                continue;
+            }
+
             $result = $this->invoice_generator->generate_invoice($post_id);
             if ($result['success']) {
                 $success_count++;
@@ -636,6 +655,7 @@ class Order_Handler {
         $redirect_to = add_query_arg(array(
             'b2brouter_bulk_success' => $success_count,
             'b2brouter_bulk_error' => $error_count,
+            'b2brouter_bulk_skipped' => $skipped_count,
         ), $redirect_to);
 
         return $redirect_to;
@@ -648,12 +668,15 @@ class Order_Handler {
      * @return void
      */
     public function bulk_action_notices() {
-        if (!isset($_GET['b2brouter_bulk_success']) && !isset($_GET['b2brouter_bulk_error'])) {
+        if (!isset($_GET['b2brouter_bulk_success'])
+            && !isset($_GET['b2brouter_bulk_error'])
+            && !isset($_GET['b2brouter_bulk_skipped'])) {
             return;
         }
 
         $success_count = isset($_GET['b2brouter_bulk_success']) ? intval($_GET['b2brouter_bulk_success']) : 0;
         $error_count = isset($_GET['b2brouter_bulk_error']) ? intval($_GET['b2brouter_bulk_error']) : 0;
+        $skipped_count = isset($_GET['b2brouter_bulk_skipped']) ? intval($_GET['b2brouter_bulk_skipped']) : 0;
 
         if ($success_count > 0) {
             echo '<div class="notice notice-success is-dismissible"><p>';
@@ -679,6 +702,20 @@ class Order_Handler {
                     'b2brouter-woocommerce'
                 ),
                 $error_count
+            );
+            echo '</p></div>';
+        }
+
+        if ($skipped_count > 0) {
+            echo '<div class="notice notice-warning is-dismissible"><p>';
+            echo sprintf(
+                _n(
+                    '%d order was skipped because it is not in the completed status. Only completed orders can be invoiced from the bulk action.',
+                    '%d orders were skipped because they are not in the completed status. Only completed orders can be invoiced from the bulk action.',
+                    $skipped_count,
+                    'b2brouter-woocommerce'
+                ),
+                $skipped_count
             );
             echo '</p></div>';
         }

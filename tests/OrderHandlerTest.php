@@ -88,6 +88,8 @@ class OrderHandlerTest extends TestCase {
         $this->assertArrayHasKey('manage_edit-shop_order_columns', $wp_filters);
         $this->assertArrayHasKey('bulk_actions-edit-shop_order', $wp_filters);
         $this->assertArrayHasKey('handle_bulk_actions-edit-shop_order', $wp_filters);
+        $this->assertArrayHasKey('bulk_actions-woocommerce_page_wc-orders', $wp_filters);
+        $this->assertArrayHasKey('handle_bulk_actions-woocommerce_page_wc-orders', $wp_filters);
     }
 
     /**
@@ -377,6 +379,14 @@ class OrderHandlerTest extends TestCase {
      * @return void
      */
     public function test_handle_bulk_action_generates_invoices() {
+        global $wc_mock_orders;
+
+        foreach (array(100, 101, 102) as $id) {
+            $order = new WC_Order($id);
+            $order->set_status('completed');
+            $wc_mock_orders[$id] = $order;
+        }
+
         $this->mock_invoice_generator->method('generate_invoice')
                                     ->willReturn(array('success' => true));
 
@@ -385,6 +395,11 @@ class OrderHandlerTest extends TestCase {
 
         $this->assertStringContainsString('b2brouter_bulk_success=3', $result);
         $this->assertStringContainsString('b2brouter_bulk_error=0', $result);
+        $this->assertStringContainsString('b2brouter_bulk_skipped=0', $result);
+
+        foreach (array(100, 101, 102) as $id) {
+            unset($wc_mock_orders[$id]);
+        }
     }
 
     /**
@@ -393,6 +408,14 @@ class OrderHandlerTest extends TestCase {
      * @return void
      */
     public function test_handle_bulk_action_counts_errors() {
+        global $wc_mock_orders;
+
+        foreach (array(100, 101, 102) as $id) {
+            $order = new WC_Order($id);
+            $order->set_status('completed');
+            $wc_mock_orders[$id] = $order;
+        }
+
         $this->mock_invoice_generator->method('generate_invoice')
                                     ->willReturnOnConsecutiveCalls(
                                         array('success' => true),
@@ -405,6 +428,62 @@ class OrderHandlerTest extends TestCase {
 
         $this->assertStringContainsString('b2brouter_bulk_success=2', $result);
         $this->assertStringContainsString('b2brouter_bulk_error=1', $result);
+
+        foreach (array(100, 101, 102) as $id) {
+            unset($wc_mock_orders[$id]);
+        }
+    }
+
+    /**
+     * Test handle_bulk_action skips non-completed orders and does not invoice them
+     *
+     * @return void
+     */
+    public function test_handle_bulk_action_skips_non_completed_orders() {
+        global $wc_mock_orders;
+
+        $completed = new WC_Order(200);
+        $completed->set_status('completed');
+        $wc_mock_orders[200] = $completed;
+
+        $processing = new WC_Order(201);
+        $processing->set_status('processing');
+        $wc_mock_orders[201] = $processing;
+
+        $pending = new WC_Order(202);
+        $pending->set_status('pending');
+        $wc_mock_orders[202] = $pending;
+
+        // Only the completed order should reach the generator
+        $this->mock_invoice_generator->expects($this->once())
+                                    ->method('generate_invoice')
+                                    ->with(200)
+                                    ->willReturn(array('success' => true));
+
+        $redirect_to = 'http://example.com/wp-admin/edit.php';
+        $result = $this->handler->handle_bulk_action($redirect_to, 'b2brouter_generate_invoices', array(200, 201, 202));
+
+        $this->assertStringContainsString('b2brouter_bulk_success=1', $result);
+        $this->assertStringContainsString('b2brouter_bulk_error=0', $result);
+        $this->assertStringContainsString('b2brouter_bulk_skipped=2', $result);
+
+        unset($wc_mock_orders[200], $wc_mock_orders[201], $wc_mock_orders[202]);
+    }
+
+    /**
+     * Test handle_bulk_action counts missing orders as errors
+     *
+     * @return void
+     */
+    public function test_handle_bulk_action_counts_missing_orders_as_errors() {
+        $this->mock_invoice_generator->expects($this->never())
+                                    ->method('generate_invoice');
+
+        $redirect_to = 'http://example.com/wp-admin/edit.php';
+        $result = $this->handler->handle_bulk_action($redirect_to, 'b2brouter_generate_invoices', array(9999));
+
+        $this->assertStringContainsString('b2brouter_bulk_error=1', $result);
+        $this->assertStringContainsString('b2brouter_bulk_success=0', $result);
     }
 
     /**
@@ -483,6 +562,42 @@ class OrderHandlerTest extends TestCase {
         $output = ob_get_clean();
 
         $this->assertEmpty($output);
+    }
+
+    /**
+     * Test bulk_action_notices shows warning for skipped non-completed orders
+     *
+     * @return void
+     */
+    public function test_bulk_action_notices_shows_skipped_message() {
+        $_GET['b2brouter_bulk_skipped'] = '2';
+
+        ob_start();
+        $this->handler->bulk_action_notices();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString('notice-warning', $output);
+        $this->assertStringContainsString('2 orders were skipped', $output);
+        $this->assertStringContainsString('completed status', $output);
+
+        unset($_GET['b2brouter_bulk_skipped']);
+    }
+
+    /**
+     * Test bulk_action_notices uses singular for one skipped order
+     *
+     * @return void
+     */
+    public function test_bulk_action_notices_uses_singular_for_one_skipped() {
+        $_GET['b2brouter_bulk_skipped'] = '1';
+
+        ob_start();
+        $this->handler->bulk_action_notices();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString('1 order was skipped', $output);
+
+        unset($_GET['b2brouter_bulk_skipped']);
     }
 
     // ========== Phase 5 Tests ==========
