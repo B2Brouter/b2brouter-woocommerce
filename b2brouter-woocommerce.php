@@ -3,7 +3,7 @@
  * Plugin Name: B2Brouter for WooCommerce
  * Plugin URI: https://b2brouter.net
  * Description: Generate and send electronic invoices from WooCommerce orders using B2Brouter
- * Version: 0.9.4
+ * Version: 0.9.3
  * Author: B2Brouter
  * Author URI: https://b2brouter.net
  * License: MIT
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('B2BROUTER_WC_VERSION', '0.9.4');
+define('B2BROUTER_WC_VERSION', '0.9.3');
 define('B2BROUTER_WC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('B2BROUTER_WC_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('B2BROUTER_WC_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -133,58 +133,8 @@ class B2Brouter_WooCommerce {
             return;
         }
 
-        // Run version-gated data migrations before classes are instantiated
-        $this->maybe_migrate();
-
         // Initialize plugin
         $this->init_plugin();
-    }
-
-    /**
-     * Run version-gated data migrations on plugin upgrade.
-     *
-     * @since 0.9.4
-     * @return void
-     */
-    private function maybe_migrate() {
-        $installed = get_option('b2brouter_installed_version', '0');
-        if (version_compare($installed, '0.9.4', '<')) {
-            $this->migrate_to_0_9_4();
-        }
-        if (version_compare($installed, B2BROUTER_WC_VERSION, '<')) {
-            update_option('b2brouter_installed_version', B2BROUTER_WC_VERSION);
-        }
-    }
-
-    /**
-     * Migrate to 0.9.4: remove sequential and custom numbering modes,
-     * backfill default series codes. Installs on sequential/custom modes
-     * are migrated to 'woocommerce' — matching the default for fresh
-     * installs.
-     *
-     * @since 0.9.4
-     * @return void
-     */
-    private function migrate_to_0_9_4() {
-        global $wpdb;
-
-        $pattern = get_option('b2brouter_invoice_numbering_pattern', 'woocommerce');
-        if (in_array($pattern, array('sequential', 'custom'), true)) {
-            update_option('b2brouter_invoice_numbering_pattern', 'woocommerce');
-        }
-
-        delete_option('b2brouter_custom_numbering_pattern');
-
-        $wpdb->query(
-            "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'b2brouter_seq_counter_%'"
-        );
-
-        if (trim((string) get_option('b2brouter_invoice_series_code', '')) === '') {
-            update_option('b2brouter_invoice_series_code', 'INV');
-        }
-        if (trim((string) get_option('b2brouter_credit_note_series_code', '')) === '') {
-            update_option('b2brouter_credit_note_series_code', 'CN');
-        }
     }
 
     /**
