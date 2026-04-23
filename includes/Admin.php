@@ -479,7 +479,6 @@ class Admin {
         $invoice_series_code = $this->settings->get_invoice_series_code();
         $credit_note_series_code = $this->settings->get_credit_note_series_code();
         $numbering_pattern = $this->settings->get_invoice_numbering_pattern();
-        $custom_pattern = $this->settings->get_custom_numbering_pattern();
 
         if (isset($_POST['b2brouter_save_settings']) && check_admin_referer('b2brouter_settings')) {
             // Save API key
@@ -563,16 +562,36 @@ class Admin {
                 $auto_cleanup_days = $this->settings->get_auto_cleanup_days();
             }
 
-            // Save invoice series code
+            // Save invoice series code (required, non-empty)
             if (isset($_POST['b2brouter_invoice_series_code'])) {
-                $this->settings->set_invoice_series_code(sanitize_text_field($_POST['b2brouter_invoice_series_code']));
-                $invoice_series_code = $this->settings->get_invoice_series_code();
+                $submitted = sanitize_text_field($_POST['b2brouter_invoice_series_code']);
+                if (trim($submitted) === '') {
+                    add_settings_error(
+                        'b2brouter_invoice_series_code',
+                        'empty_invoice_series_code',
+                        __('Invoice series code is required and cannot be empty.', 'b2brouter-woocommerce'),
+                        'error'
+                    );
+                } else {
+                    $this->settings->set_invoice_series_code($submitted);
+                    $invoice_series_code = $this->settings->get_invoice_series_code();
+                }
             }
 
-            // Save credit note series code
+            // Save credit note series code (required, non-empty)
             if (isset($_POST['b2brouter_credit_note_series_code'])) {
-                $this->settings->set_credit_note_series_code(sanitize_text_field($_POST['b2brouter_credit_note_series_code']));
-                $credit_note_series_code = $this->settings->get_credit_note_series_code();
+                $submitted = sanitize_text_field($_POST['b2brouter_credit_note_series_code']);
+                if (trim($submitted) === '') {
+                    add_settings_error(
+                        'b2brouter_credit_note_series_code',
+                        'empty_credit_note_series_code',
+                        __('Credit note series code is required and cannot be empty.', 'b2brouter-woocommerce'),
+                        'error'
+                    );
+                } else {
+                    $this->settings->set_credit_note_series_code($submitted);
+                    $credit_note_series_code = $this->settings->get_credit_note_series_code();
+                }
             }
 
             // Save numbering pattern
@@ -581,10 +600,18 @@ class Admin {
                 $numbering_pattern = $this->settings->get_invoice_numbering_pattern();
             }
 
-            // Save custom pattern
-            if (isset($_POST['b2brouter_custom_numbering_pattern'])) {
-                $this->settings->set_custom_numbering_pattern(sanitize_text_field($_POST['b2brouter_custom_numbering_pattern']));
-                $custom_pattern = $this->settings->get_custom_numbering_pattern();
+            // Render accumulated validation messages. Show success only if no blocking errors
+            // were added (warnings still allow a save-confirmation message).
+            $has_blocking_error = false;
+            foreach (get_settings_errors() as $settings_error) {
+                if (isset($settings_error['type']) && $settings_error['type'] === 'error') {
+                    $has_blocking_error = true;
+                    break;
+                }
+            }
+            settings_errors();
+            if (!$has_blocking_error) {
+                echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved successfully.', 'b2brouter-woocommerce') . '</p></div>';
             }
 
             // Save uninstall behavior
@@ -823,9 +850,11 @@ class Admin {
                                    name="b2brouter_invoice_series_code"
                                    value="<?php echo esc_attr($invoice_series_code); ?>"
                                    class="regular-text"
-                                   placeholder="<?php esc_attr_e('e.g., INV, S01', 'b2brouter-woocommerce'); ?>">
+                                   placeholder="INV"
+                                   required
+                                   aria-required="true">
                             <p class="description">
-                                <?php esc_html_e('Define one invoice series code for all invoices. B2Brouter allows one series per invoice type. Leave empty to use B2Brouter default.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Series code used for all invoices (required). B2Brouter allows one series per invoice type. Defaults to INV.', 'b2brouter-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
@@ -840,9 +869,11 @@ class Admin {
                                    name="b2brouter_credit_note_series_code"
                                    value="<?php echo esc_attr($credit_note_series_code); ?>"
                                    class="regular-text"
-                                   placeholder="<?php esc_attr_e('e.g., CN, R01', 'b2brouter-woocommerce'); ?>">
+                                   placeholder="CN"
+                                   required
+                                   aria-required="true">
                             <p class="description">
-                                <?php esc_html_e('Define one credit note series code for all credit notes. B2Brouter allows one series per type. Leave empty to use the same series as invoices.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Series code used for all credit notes (required). B2Brouter allows one series per type. Defaults to CN.', 'b2brouter-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
@@ -870,33 +901,6 @@ class Admin {
                                     <?php esc_html_e('WooCommerce Order Number', 'b2brouter-woocommerce'); ?>
                                 </label>
                                 <p class="description"><?php esc_html_e('Use the WooCommerce order number as the invoice number', 'b2brouter-woocommerce'); ?></p>
-
-                                <label>
-                                    <input type="radio"
-                                           name="b2brouter_invoice_numbering_pattern"
-                                           value="sequential"
-                                           <?php checked($numbering_pattern, 'sequential'); ?>>
-                                    <?php esc_html_e('Sequential (plugin-managed)', 'b2brouter-woocommerce'); ?>
-                                </label>
-                                <p class="description"><?php esc_html_e('Plugin maintains sequential numbering per series (starts at 1)', 'b2brouter-woocommerce'); ?></p>
-
-                                <label>
-                                    <input type="radio"
-                                           name="b2brouter_invoice_numbering_pattern"
-                                           value="custom"
-                                           <?php checked($numbering_pattern, 'custom'); ?>>
-                                    <?php esc_html_e('Custom Pattern', 'b2brouter-woocommerce'); ?>
-                                </label>
-                                <br>
-                                <input type="text"
-                                       name="b2brouter_custom_numbering_pattern"
-                                       value="<?php echo esc_attr($custom_pattern); ?>"
-                                       class="regular-text"
-                                       placeholder="{order_id}"
-                                       style="margin-left: 25px; margin-top: 5px;">
-                                <p class="description" style="margin-left: 25px;">
-                                    <?php esc_html_e('Available placeholders: {order_id}, {order_number}, {year}, {month}, {day}. Note: Series code is defined separately above and will be prefixed automatically.', 'b2brouter-woocommerce'); ?>
-                                </p>
                             </fieldset>
                         </td>
                     </tr>

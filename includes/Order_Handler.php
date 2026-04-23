@@ -751,7 +751,7 @@ class Order_Handler {
 
         // Log the cleanup
         if ($result['deleted'] > 0 || $result['errors'] > 0) {
-            error_log(sprintf(
+            Logger::info(sprintf(
                 'B2Brouter PDF Cleanup: Deleted %d files, %d errors (older than %d days)',
                 $result['deleted'],
                 $result['errors'],

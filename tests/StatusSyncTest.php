@@ -78,6 +78,7 @@ class StatusSyncTest extends TestCase {
         $wp_options = array();
         $wp_cron_events = array();
         $wc_mock_orders = array();
+        unset($GLOBALS['mock_wp_timezone']);
     }
 
     // ========== Final States Tests ==========
@@ -129,6 +130,167 @@ class StatusSyncTest extends TestCase {
         $this->assertNotContains('draft', $final_states);
         $this->assertNotContains('error', $final_states);
         $this->assertNotContains('pending', $final_states);
+    }
+
+    // ========== should_sync (polling eligibility) Tests ==========
+
+    /**
+     * Regression for #8: finalized invoices are never re-polled, regardless
+     * of how long ago they were last checked.
+     *
+     * @return void
+     */
+    public function test_should_sync_final_state_never_polled() {
+        $now = 1_700_000_000;
+        $two_hours_ago = $now - (2 * HOUR_IN_SECONDS);
+        $one_day_ago = $now - DAY_IN_SECONDS;
+
+        foreach (Status_Sync::FINAL_STATES as $state) {
+            $this->assertFalse(
+                $this->status_sync->should_sync($state, $two_hours_ago, $one_day_ago, $now),
+                "Final state '{$state}' must not be re-polled"
+            );
+        }
+    }
+
+    public function test_should_sync_empty_status_always_polled() {
+        $now = 1_700_000_000;
+        $this->assertTrue($this->status_sync->should_sync('', 0, 0, $now));
+        $this->assertTrue($this->status_sync->should_sync('', $now - 60, $now - 60, $now));
+    }
+
+    public function test_should_sync_non_final_never_synced_polls_immediately() {
+        $now = 1_700_000_000;
+        // status_updated = 0 means we've never polled for status
+        $this->assertTrue($this->status_sync->should_sync('draft', 0, $now, $now));
+    }
+
+    public function test_should_sync_young_invoice_hourly_tier() {
+        $now = 1_700_000_000;
+        $created = $now - (6 * HOUR_IN_SECONDS); // 6h old → hourly tier
+
+        // Polled 30 min ago → skip
+        $this->assertFalse(
+            $this->status_sync->should_sync('draft', $now - 1800, $created, $now)
+        );
+        // Polled 61 min ago → poll
+        $this->assertTrue(
+            $this->status_sync->should_sync('draft', $now - (HOUR_IN_SECONDS + 60), $created, $now)
+        );
+    }
+
+    public function test_should_sync_mid_age_invoice_six_hourly_tier() {
+        $now = 1_700_000_000;
+        $created = $now - (3 * DAY_IN_SECONDS); // 3 days old → 6h tier
+
+        // Polled 3h ago → skip
+        $this->assertFalse(
+            $this->status_sync->should_sync('draft', $now - (3 * HOUR_IN_SECONDS), $created, $now)
+        );
+        // Polled 7h ago → poll
+        $this->assertTrue(
+            $this->status_sync->should_sync('draft', $now - (7 * HOUR_IN_SECONDS), $created, $now)
+        );
+    }
+
+    public function test_should_sync_old_invoice_daily_tier() {
+        $now = 1_700_000_000;
+        $created = $now - (30 * DAY_IN_SECONDS); // 30 days old → daily tier
+
+        // Polled 12h ago → skip
+        $this->assertFalse(
+            $this->status_sync->should_sync('error', $now - (12 * HOUR_IN_SECONDS), $created, $now)
+        );
+        // Polled 25h ago → poll
+        $this->assertTrue(
+            $this->status_sync->should_sync('error', $now - (25 * HOUR_IN_SECONDS), $created, $now)
+        );
+    }
+
+    /**
+     * If invoice_created is unknown (0), behaviour must not silently skip
+     * forever — treat as youngest tier so it still gets checked hourly.
+     *
+     * @return void
+     */
+    public function test_should_sync_missing_invoice_created_falls_back_to_hourly() {
+        $now = 1_700_000_000;
+
+        $this->assertFalse(
+            $this->status_sync->should_sync('draft', $now - 1800, 0, $now)
+        );
+        $this->assertTrue(
+            $this->status_sync->should_sync('draft', $now - (HOUR_IN_SECONDS + 60), 0, $now)
+        );
+    }
+
+    public function test_should_sync_tier_boundaries() {
+        $now = 1_700_000_000;
+
+        // Exactly 24h old → crosses into 6h tier
+        $at_24h = $now - DAY_IN_SECONDS;
+        $this->assertFalse(
+            $this->status_sync->should_sync('draft', $now - (5 * HOUR_IN_SECONDS), $at_24h, $now)
+        );
+        $this->assertTrue(
+            $this->status_sync->should_sync('draft', $now - (6 * HOUR_IN_SECONDS + 1), $at_24h, $now)
+        );
+
+        // Exactly 7d old → crosses into daily tier
+        $at_7d = $now - (7 * DAY_IN_SECONDS);
+        $this->assertFalse(
+            $this->status_sync->should_sync('draft', $now - (23 * HOUR_IN_SECONDS), $at_7d, $now)
+        );
+        $this->assertTrue(
+            $this->status_sync->should_sync('draft', $now - (DAY_IN_SECONDS + 1), $at_7d, $now)
+        );
+    }
+
+    // ========== parse_invoice_date_meta (timezone) Tests ==========
+
+    public function test_parse_invoice_date_meta_empty_returns_zero() {
+        $this->assertSame(0, $this->status_sync->parse_invoice_date_meta(''));
+        $this->assertSame(0, $this->status_sync->parse_invoice_date_meta(null));
+    }
+
+    public function test_parse_invoice_date_meta_malformed_returns_zero() {
+        $this->assertSame(0, $this->status_sync->parse_invoice_date_meta('not a date'));
+        $this->assertSame(0, $this->status_sync->parse_invoice_date_meta('2025-13-40 99:99:99'));
+    }
+
+    /**
+     * Regression: current_time('mysql') writes site-local time. Parsing it
+     * naively with strtotime() (PHP default tz = UTC) would offset the
+     * resulting timestamp by the site's UTC offset. Verify the helper parses
+     * the same string in wp_timezone() and produces a UTC-comparable ts.
+     *
+     * @return void
+     */
+    public function test_parse_invoice_date_meta_honours_wp_timezone() {
+        $GLOBALS['mock_wp_timezone'] = new DateTimeZone('Europe/Madrid');
+
+        // Europe/Madrid is UTC+1 in January (no DST).
+        // "2025-01-15 12:00:00" in Madrid == "2025-01-15 11:00:00" UTC.
+        $expected = (new DateTime('2025-01-15 11:00:00', new DateTimeZone('UTC')))->getTimestamp();
+        $actual = $this->status_sync->parse_invoice_date_meta('2025-01-15 12:00:00');
+
+        $this->assertSame($expected, $actual);
+
+        // And confirm it does NOT match the naive strtotime() result, which
+        // would interpret the string in PHP's default (UTC) timezone.
+        $naive = strtotime('2025-01-15 12:00:00');
+        $this->assertNotSame($naive, $actual, 'Helper must not fall back to PHP default tz');
+        $this->assertSame(3600, $naive - $actual, 'Offset should match Madrid UTC+1');
+    }
+
+    public function test_parse_invoice_date_meta_utc_roundtrip() {
+        $GLOBALS['mock_wp_timezone'] = new DateTimeZone('UTC');
+
+        $expected = (new DateTime('2025-06-01 09:30:00', new DateTimeZone('UTC')))->getTimestamp();
+        $this->assertSame(
+            $expected,
+            $this->status_sync->parse_invoice_date_meta('2025-06-01 09:30:00')
+        );
     }
 
     // ========== Cron Scheduling Tests ==========
