@@ -769,6 +769,10 @@ if (!defined('B2BROUTER_WC_PLUGIN_URL')) {
     define('B2BROUTER_WC_PLUGIN_URL', 'https://example.com/wp-content/plugins/b2brouter-woocommerce/');
 }
 
+if (!defined('B2BROUTER_WC_VERSION')) {
+    define('B2BROUTER_WC_VERSION', 'test');
+}
+
 // Global storage for mock orders
 global $mock_orders;
 $mock_orders = array();
@@ -807,7 +811,11 @@ if (!class_exists('WC_Order')) {
 
         public function get_id() { return $this->id; }
         public function get_type() { return 'shop_order'; }
-        public function get_status() { return $this->data['status']; }
+        public function get_customer_id() { return isset($this->data['customer_id']) ? $this->data['customer_id'] : 0; }
+        public function get_order_key() { return isset($this->data['order_key']) ? $this->data['order_key'] : ''; }
+        public function get_status() { return isset($this->data['status']) ? $this->data['status'] : ''; }
+        public function set_customer_id($value) { $this->data['customer_id'] = (int) $value; }
+        public function set_order_key($value) { $this->data['order_key'] = $value; }
         public function set_status($value) { $this->data['status'] = $value; }
         public function get_billing_first_name() { return $this->data['billing_first_name']; }
         public function get_billing_last_name() { return $this->data['billing_last_name']; }
@@ -1517,10 +1525,15 @@ if (!function_exists('get_current_user_id')) {
     /**
      * Mock get_current_user_id function
      *
+     * Reads from the $wp_current_user_id global so tests can simulate
+     * different users (including guests via 0). Defaults to 1 for
+     * backward compatibility with tests that don't set it.
+     *
      * @return int User ID
      */
     function get_current_user_id() {
-        return 1;
+        global $wp_current_user_id;
+        return isset($wp_current_user_id) ? (int) $wp_current_user_id : 1;
     }
 }
 
@@ -1709,5 +1722,74 @@ if (!function_exists('do_action')) {
                 call_user_func_array($action['callback'], $args);
             }
         }
+    }
+}
+
+// Page-state mocks used by Customer::enqueue_scripts
+if (!function_exists('is_account_page')) {
+    function is_account_page() {
+        global $wp_is_account_page;
+        return !empty($wp_is_account_page);
+    }
+}
+
+if (!function_exists('is_order_received_page')) {
+    function is_order_received_page() {
+        global $wp_is_order_received_page;
+        return !empty($wp_is_order_received_page);
+    }
+}
+
+if (!function_exists('is_wc_endpoint_url')) {
+    function is_wc_endpoint_url($endpoint = '') {
+        global $wp_wc_endpoint_url;
+        if (empty($wp_wc_endpoint_url)) {
+            return false;
+        }
+        return $endpoint === '' ? true : ($wp_wc_endpoint_url === $endpoint);
+    }
+}
+
+// Asset enqueueing mocks — record into globals so tests can assert
+global $wp_enqueued_styles, $wp_enqueued_scripts, $wp_localized_scripts;
+$wp_enqueued_styles = array();
+$wp_enqueued_scripts = array();
+$wp_localized_scripts = array();
+
+if (!function_exists('wp_enqueue_style')) {
+    function wp_enqueue_style($handle, $src = '', $deps = array(), $ver = false, $media = 'all') {
+        global $wp_enqueued_styles;
+        $wp_enqueued_styles[$handle] = compact('src', 'deps', 'ver', 'media');
+    }
+}
+
+if (!function_exists('wp_enqueue_script')) {
+    function wp_enqueue_script($handle, $src = '', $deps = array(), $ver = false, $in_footer = false) {
+        global $wp_enqueued_scripts;
+        $wp_enqueued_scripts[$handle] = compact('src', 'deps', 'ver', 'in_footer');
+    }
+}
+
+if (!function_exists('wp_localize_script')) {
+    function wp_localize_script($handle, $object_name, $l10n) {
+        global $wp_localized_scripts;
+        $wp_localized_scripts[$handle] = array('name' => $object_name, 'data' => $l10n);
+        return true;
+    }
+}
+
+if (!function_exists('size_format')) {
+    function size_format($bytes, $decimals = 0) {
+        $bytes = (float) $bytes;
+        if ($bytes >= 1073741824) {
+            return number_format($bytes / 1073741824, $decimals) . ' GB';
+        }
+        if ($bytes >= 1048576) {
+            return number_format($bytes / 1048576, $decimals) . ' MB';
+        }
+        if ($bytes >= 1024) {
+            return number_format($bytes / 1024, $decimals) . ' KB';
+        }
+        return $bytes . ' B';
     }
 }
