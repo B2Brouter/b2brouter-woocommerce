@@ -249,7 +249,7 @@ class Invoice_Generator {
                 } catch (\Exception $e) {
                     // PDF download failed after retries, but invoice was created successfully
                     // Log the error but don't fail the entire operation
-                    error_log('B2Brouter auto-save PDF failed after retries: ' . $e->getMessage());
+                    Logger::error('B2Brouter auto-save PDF failed after retries: ' . $e->getMessage());
                 }
             }
 
@@ -267,7 +267,7 @@ class Invoice_Generator {
 
         } catch (\Exception $e) {
             // Log error
-            error_log('B2Brouter Invoice Generation Error: ' . $e->getMessage());
+            Logger::error('B2Brouter Invoice Generation Error: ' . $e->getMessage());
 
             // Add order note with error
             if (isset($order) && $order) {
@@ -473,7 +473,7 @@ class Invoice_Generator {
 
         // Get series code and invoice number based on settings
         $series_code = $this->get_series_code_for_invoice($is_refund);
-        $invoice_number = $this->generate_invoice_number($order, $series_code, $is_refund);
+        $invoice_number = $this->generate_invoice_number($order, $is_refund);
 
         // Prepare base invoice data
         $invoice_data = array(
@@ -715,28 +715,28 @@ class Invoice_Generator {
             );
 
         } catch (\B2BRouter\Exception\ResourceNotFoundException $e) {
-            error_log('B2Brouter PDF Download - Invoice not found: ' . $invoice_id);
+            Logger::error('B2Brouter PDF Download - Invoice not found: ' . $invoice_id);
             return array(
                 'success' => false,
                 'message' => __('Invoice not found', 'b2brouter-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\AuthenticationException $e) {
-            error_log('B2Brouter PDF Download - Authentication failed: ' . $e->getMessage());
+            Logger::error('B2Brouter PDF Download - Authentication failed: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => __('API authentication failed. Please check your API key.', 'b2brouter-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\PermissionException $e) {
-            error_log('B2Brouter PDF Download - Permission denied: ' . $e->getMessage());
+            Logger::error('B2Brouter PDF Download - Permission denied: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => __('You do not have permission to download this invoice.', 'b2brouter-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\ApiErrorException $e) {
-            error_log('B2Brouter PDF Download - API error: ' . $e->getMessage());
+            Logger::error('B2Brouter PDF Download - API error: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => sprintf(
@@ -746,7 +746,7 @@ class Invoice_Generator {
             );
 
         } catch (\Exception $e) {
-            error_log('B2Brouter PDF Download - Error: ' . $e->getMessage());
+            Logger::error('B2Brouter PDF Download - Error: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => $e->getMessage()
@@ -844,7 +844,7 @@ class Invoice_Generator {
             );
 
         } catch (\Exception $e) {
-            error_log('B2Brouter Save PDF Error: ' . $e->getMessage());
+            Logger::error('B2Brouter Save PDF Error: ' . $e->getMessage());
             return array(
                 'success' => false,
                 'message' => $e->getMessage()
@@ -978,7 +978,7 @@ class Invoice_Generator {
             exit;
 
         } catch (\Exception $e) {
-            error_log('B2Brouter Stream PDF Error: ' . $e->getMessage());
+            Logger::error('B2Brouter Stream PDF Error: ' . $e->getMessage());
             wp_die(
                 esc_html($e->getMessage()),
                 esc_html__('Error', 'b2brouter-woocommerce'),
@@ -1160,7 +1160,7 @@ class Invoice_Generator {
             if ($save_result['success']) {
                 $pdf_path = $save_result['file_path'];
             } else {
-                error_log('B2Brouter Email Attachment: Failed to get PDF for order ' . $order->get_id());
+                Logger::warning('B2Brouter Email Attachment: Failed to get PDF for order ' . $order->get_id());
                 return $attachments;
             }
         }
@@ -1208,7 +1208,7 @@ class Invoice_Generator {
                     $this->cleanup_order_metadata_for_file($file);
                 } else {
                     $errors++;
-                    error_log('B2Brouter Cleanup: Failed to delete ' . $file);
+                    Logger::warning('B2Brouter Cleanup: Failed to delete ' . $file);
                 }
             }
         }
@@ -1300,11 +1300,10 @@ class Invoice_Generator {
      *
      * @since 1.0.0
      * @param \WC_Order|\WC_Order_Refund $order The order or refund object
-     * @param string $series_code The series code being used
      * @param bool $is_credit_note Whether this is a credit note
      * @return string|null The invoice number, or null for automatic numbering
      */
-    private function generate_invoice_number($order, $series_code, $is_credit_note) {
+    private function generate_invoice_number($order, $is_credit_note) {
         $pattern = $this->settings->get_invoice_numbering_pattern();
 
         switch ($pattern) {
@@ -1313,50 +1312,14 @@ class Invoice_Generator {
                 return null;
 
             case 'woocommerce':
+            default:
                 // Use WooCommerce order number
                 // For credit notes (refunds), use the refund ID to ensure uniqueness
                 if ($is_credit_note) {
                     return (string) $order->get_id();
                 }
                 return $order->get_order_number();
-
-            case 'sequential':
-                // Get next sequential number for this series
-                return (string) $this->settings->get_next_sequential_number($series_code);
-
-            case 'custom':
-                // Apply custom pattern
-                $custom_pattern = $this->settings->get_custom_numbering_pattern();
-                return $this->apply_custom_pattern($custom_pattern, $order);
-
-            default:
-                // Default to WooCommerce order number
-                // For credit notes (refunds), use the refund ID to ensure uniqueness
-                if ($is_credit_note) {
-                    return (string) $order->get_id();
-                }
-                return $order->get_order_number();
         }
-    }
-
-    /**
-     * Apply custom pattern to generate invoice number
-     *
-     * @since 1.0.0
-     * @param string $pattern The pattern with placeholders
-     * @param \WC_Order|\WC_Order_Refund $order The order or refund object
-     * @return string The generated invoice number
-     */
-    private function apply_custom_pattern($pattern, $order) {
-        $replacements = array(
-            '{order_id}' => $order->get_id(),
-            '{order_number}' => $order->get_order_number(),
-            '{year}' => date('Y'),
-            '{month}' => date('m'),
-            '{day}' => date('d'),
-        );
-
-        return str_replace(array_keys($replacements), array_values($replacements), $pattern);
     }
 
     /**
