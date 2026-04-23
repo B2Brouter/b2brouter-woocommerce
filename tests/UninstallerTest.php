@@ -163,6 +163,7 @@ class UninstallerTest extends TestCase {
             'b2brouter_environment'             => 'production',
             'b2brouter_invoice_mode'            => 'automatic',
             'b2brouter_webhook_secret'          => 'wh-secret',
+            'b2brouter_status_sync_last_run'    => 1700000000,
             'b2brouter_delete_archival_data'    => '1',
             'some_other_plugin_option'          => 'keep-me',
         );

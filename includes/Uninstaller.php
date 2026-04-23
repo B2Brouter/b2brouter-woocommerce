@@ -89,6 +89,7 @@ class Uninstaller {
         'b2brouter_webhook_secret',
         'b2brouter_webhook_enabled',
         'b2brouter_webhook_fallback_polling',
+        'b2brouter_status_sync_last_run',
         'b2brouter_delete_archival_data',
     );
 

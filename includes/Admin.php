@@ -600,6 +600,12 @@ class Admin {
                 $numbering_pattern = $this->settings->get_invoice_numbering_pattern();
             }
 
+            // Save uninstall behavior
+            $this->settings->set_delete_archival_data(
+                isset($_POST['b2brouter_delete_archival_data']) && $_POST['b2brouter_delete_archival_data'] === '1'
+            );
+            $delete_archival_data = $this->settings->get_delete_archival_data();
+
             // Render accumulated validation messages. Show success only if no blocking errors
             // were added (warnings still allow a save-confirmation message).
             $has_blocking_error = false;
@@ -613,14 +619,6 @@ class Admin {
             if (!$has_blocking_error) {
                 echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved successfully.', 'b2brouter-woocommerce') . '</p></div>';
             }
-
-            // Save uninstall behavior
-            $this->settings->set_delete_archival_data(
-                isset($_POST['b2brouter_delete_archival_data']) && $_POST['b2brouter_delete_archival_data'] === '1'
-            );
-            $delete_archival_data = $this->settings->get_delete_archival_data();
-
-            echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved successfully.', 'b2brouter-woocommerce') . '</p></div>';
         }
 
         ?>
