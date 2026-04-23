@@ -169,14 +169,22 @@ class B2Brouter_WooCommerce {
         // Initialize dependency container
         $this->init_container();
 
-        // Initialize classes (instantiate them)
-        $this->get('settings');
-        $this->get('admin');
+        // Services that register hooks spanning frontend, admin, REST, and cron contexts
         $this->get('order_handler');
-        $this->get('customer');
         $this->get('customer_fields');
         $this->get('status_sync');
         $this->get('webhook_handler');
+
+        // Admin registers only admin_*, wp_ajax_*, and admin_bar hooks — skip on frontend
+        if (is_admin()) {
+            $this->get('admin');
+        }
+
+        // Customer registers frontend hooks plus wp_ajax_* handlers. AJAX requests run in
+        // admin context, so wp_doing_ajax() is needed to still register them there.
+        if (!is_admin() || wp_doing_ajax()) {
+            $this->get('customer');
+        }
     }
 
     /**
