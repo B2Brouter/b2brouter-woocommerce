@@ -801,6 +801,18 @@ class Invoice_Generator {
                 throw new \Exception($result['message']);
             }
 
+            // Webhook and cron contexts don't auto-load wp-admin, so the
+            // Filesystem API must be pulled in on demand.
+            if (!function_exists('WP_Filesystem')) {
+                require_once ABSPATH . 'wp-admin/includes/file.php';
+            }
+
+            global $wp_filesystem;
+
+            if (!WP_Filesystem()) {
+                throw new \Exception(__('WordPress Filesystem API is not available. On FTP-only hosts, please define FTP_USER, FTP_PASS, and FTP_HOST in wp-config.php.', 'b2brouter-woocommerce'));
+            }
+
             // Create storage directory
             $storage_path = $this->settings->get_pdf_storage_path();
 
@@ -810,7 +822,7 @@ class Invoice_Generator {
                 }
 
                 // Add security files
-                $this->secure_pdf_directory($storage_path);
+                $this->secure_pdf_directory($wp_filesystem, $storage_path);
             }
 
             // Generate unique filename
@@ -818,11 +830,11 @@ class Invoice_Generator {
             $file_path = $storage_path . '/' . $filename;
 
             // Save PDF file
-            $bytes_written = file_put_contents($file_path, $result['pdf_data']);
-
-            if ($bytes_written === false) {
+            if (!$wp_filesystem->put_contents($file_path, $result['pdf_data'], FS_CHMOD_FILE)) {
                 throw new \Exception(__('Failed to save PDF file', 'b2brouter-woocommerce'));
             }
+
+            $bytes_written = strlen($result['pdf_data']);
 
             // Store metadata in order
             $order->update_meta_data('_b2brouter_invoice_pdf_path', $file_path);
@@ -856,10 +868,11 @@ class Invoice_Generator {
      * Secure PDF storage directory
      *
      * @since 1.0.0
+     * @param \WP_Filesystem_Base $filesystem Initialized WP Filesystem instance
      * @param string $directory_path Directory to secure
      * @return void
      */
-    private function secure_pdf_directory($directory_path) {
+    private function secure_pdf_directory($filesystem, $directory_path) {
         // Add .htaccess to prevent direct access
         $htaccess_path = $directory_path . '/.htaccess';
         $htaccess_content = "# B2Brouter Invoice PDFs - Access Denied\n";
@@ -868,11 +881,11 @@ class Invoice_Generator {
         $htaccess_content .= "    Require all denied\n";
         $htaccess_content .= "</Files>\n";
 
-        file_put_contents($htaccess_path, $htaccess_content);
+        $filesystem->put_contents($htaccess_path, $htaccess_content, FS_CHMOD_FILE);
 
         // Add index.php to prevent directory listing
         $index_path = $directory_path . '/index.php';
-        file_put_contents($index_path, "<?php\n// Silence is golden.");
+        $filesystem->put_contents($index_path, "<?php\n// Silence is golden.", FS_CHMOD_FILE);
     }
 
     /**
@@ -1043,20 +1056,33 @@ class Invoice_Generator {
 
         $pdf_path = $order->get_meta('_b2brouter_invoice_pdf_path');
 
-        if (!empty($pdf_path) && file_exists($pdf_path)) {
-            if (unlink($pdf_path)) {
-                // Clear metadata
-                $order->delete_meta_data('_b2brouter_invoice_pdf_path');
-                $order->delete_meta_data('_b2brouter_invoice_pdf_filename');
-                $order->delete_meta_data('_b2brouter_invoice_pdf_size');
-                $order->delete_meta_data('_b2brouter_invoice_pdf_date');
-                $order->save();
-
-                return true;
-            }
+        if (empty($pdf_path) || !file_exists($pdf_path)) {
+            return false;
         }
 
-        return false;
+        if (!function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        global $wp_filesystem;
+
+        if (!WP_Filesystem()) {
+            Logger::warning('B2Brouter: WordPress Filesystem API unavailable; cannot delete PDF ' . $pdf_path);
+            return false;
+        }
+
+        if (!$wp_filesystem->delete($pdf_path)) {
+            return false;
+        }
+
+        // Clear metadata
+        $order->delete_meta_data('_b2brouter_invoice_pdf_path');
+        $order->delete_meta_data('_b2brouter_invoice_pdf_filename');
+        $order->delete_meta_data('_b2brouter_invoice_pdf_size');
+        $order->delete_meta_data('_b2brouter_invoice_pdf_date');
+        $order->save();
+
+        return true;
     }
 
     /**
@@ -1195,13 +1221,24 @@ class Invoice_Generator {
             return array('deleted' => 0, 'errors' => 0);
         }
 
+        if (!function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        global $wp_filesystem;
+
+        if (!WP_Filesystem()) {
+            Logger::warning('B2Brouter Cleanup: WordPress Filesystem API unavailable; skipping cleanup');
+            return array('deleted' => 0, 'errors' => 0);
+        }
+
         $cutoff_time = time() - ($days * DAY_IN_SECONDS);
 
         foreach ($pdf_files as $file) {
             $file_time = filemtime($file);
 
             if ($file_time && $file_time < $cutoff_time) {
-                if (unlink($file)) {
+                if ($wp_filesystem->delete($file)) {
                     $deleted++;
 
                     // Try to clean up order metadata
