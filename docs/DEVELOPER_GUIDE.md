@@ -939,4 +939,44 @@ apply_filters('b2brouter_pdf_storage_path', $path, $order_id);
 
 ---
 
+## Uninstall Behavior
+
+When a merchant deletes the plugin through the WordPress admin, `uninstall.php`
+(which delegates to `B2Brouter\WooCommerce\Uninstaller`) performs cleanup.
+
+**Always removed:**
+
+- All `b2brouter_*` rows in `wp_options` — API key, account, environment,
+  invoice-numbering config, webhook secret, etc. The list is explicit
+  (`Uninstaller::OPTION_KEYS`) rather than a `LIKE` wildcard, so an unrelated
+  option that happens to share the prefix is never touched.
+- The `b2brouter_validated_accounts` transient.
+- Scheduled cron events: `b2brouter_sync_invoice_status`,
+  `b2brouter_cleanup_old_pdfs`, `b2brouter_sync_single_invoice`.
+- Cached invoice PDFs and the enclosing directory (respects a custom
+  `b2brouter_pdf_storage_path` setting if one is configured).
+- Ephemeral order meta: live sync state (`_b2brouter_invoice_status`,
+  `_status_updated`, `_status_error`, `_last_webhook_received`) and PDF
+  pointers (`_b2brouter_invoice_pdf_path`, `_pdf_filename`, `_pdf_size`,
+  `_pdf_date`).
+
+**Preserved by default (tax audit trail):**
+
+- Archival order meta: `_b2brouter_invoice_id`, `_b2brouter_invoice_number`,
+  `_b2brouter_invoice_series_code`, `_b2brouter_invoice_date`.
+
+Merchants who want a full wipe can opt in via the "Also delete invoice
+identifiers from orders on uninstall" checkbox on the settings page
+(`b2brouter_delete_archival_data`).
+
+Order meta is deleted order-by-order through `wc_get_orders()` — HPOS-safe and
+lifecycle-correct — rather than via direct SQL. Pagination keeps memory bounded
+on large stores. Refunds (`shop_order_refund`) are processed alongside orders
+because they can carry their own `_b2brouter_invoice_id` / `_pdf_path`.
+
+Multisite: the uninstaller operates on the current site only. Network-activated
+installs are out of scope.
+
+---
+
 **Questions?** Check the troubleshooting section or open an issue on GitHub.

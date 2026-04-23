@@ -632,8 +632,8 @@ if (!function_exists('checked')) {
      * @param bool $echo Echo or return
      * @return string Checked attribute
      */
-    function checked($checked, $current, $echo = true) {
-        $result = ($checked == $current) ? ' checked="checked"' : '';
+    function checked($checked, $current = true, $echo = true) {
+        $result = ((string) $checked === (string) $current) ? ' checked="checked"' : '';
         if ($echo) {
             echo $result;
         }
@@ -699,6 +699,25 @@ if (!function_exists('wp_unschedule_event')) {
             return true;
         }
         return false;
+    }
+}
+
+if (!function_exists('wp_clear_scheduled_hook')) {
+    /**
+     * Mock wp_clear_scheduled_hook function
+     *
+     * @param string $hook Hook name
+     * @param array $args Arguments
+     * @return int Number of events cleared
+     */
+    function wp_clear_scheduled_hook($hook, $args = array()) {
+        global $wp_cron_events;
+        $cleared = 0;
+        if (isset($wp_cron_events[$hook])) {
+            unset($wp_cron_events[$hook]);
+            $cleared++;
+        }
+        return $cleared;
     }
 }
 
@@ -852,6 +871,10 @@ if (!class_exists('WC_Order')) {
 
         public function delete_meta_data($key) {
             unset($this->meta_data[$key]);
+        }
+
+        public function meta_exists($key) {
+            return array_key_exists($key, $this->meta_data);
         }
 
         public function get_meta_data() {
