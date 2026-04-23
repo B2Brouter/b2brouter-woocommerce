@@ -5,6 +5,40 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.4] - 2026-04-23
+
+Final pre-release before 1.0. Focused on stability, operational polish, and preparing the plugin for distribution via the WordPress.org plugin directory and the WooCommerce Marketplace.
+
+### Added
+
+- **Internationalization**: Initial translation files for Catalan (ca), German (de_DE), Spanish (es_ES), French (fr_FR), English (en_US), plus `.pot` template
+- **Bulk "Generate Invoice" Action**: Added to the HPOS orders screen; non-completed orders are skipped with a scoped admin notice
+- **Organizational Unit Selector**: When the connected B2Brouter account has multiple organizational units, admins can pick which one to use
+- **`uninstall.php`**: Cleans up `b2brouter_*` options, sync timestamps, and cached PDFs when the plugin is deleted
+
+### Changed
+
+- **Invoice Numbering**: Removed sequential and custom numbering modes. Remaining modes are WooCommerce order number and automatic B2Brouter numbering. Resolves a race condition in the sequential counter (closes #7)
+- **Status Sync**: Finalized invoices (sent, paid, closed) are no longer re-polled. Stale non-final invoices use exponential backoff instead of hourly re-polling (closes #8)
+- **Service Loading**: Admin services are now instantiated only in admin context and Customer services only on the frontend, reducing overhead on every page load (closes #14)
+- **Logging**: Replaced all `error_log()` calls with `wc_get_logger()`. Plugin messages now appear under **WooCommerce → Status → Logs** with source `b2brouter-woocommerce` (closes #12)
+- **Filesystem Operations**: PDF reads, writes, deletions, and directory operations now use the WP Filesystem API instead of direct `file_*` calls — prerequisite for wp.org submission (closes #15)
+- **Welcome Page**: Redesigned landing page with updated copy, branding, and regenerated translations
+- **Admin Menu**: Removed duplicate "Invoices" submenu; Welcome is now the default landing page (closes #4)
+
+### Fixed
+
+- **Customer Invoice Download**: Improved reliability of invoice downloads from the My Account → Orders page (closes #6)
+- **Invoice Date Timezone**: `_b2brouter_invoice_date` is now parsed in the site timezone rather than the PHP default
+- **Duplicate Save Notice**: Eliminated the duplicate save-success notice on the settings page
+
+### Technical
+
+- **Customer Class Test Coverage**: Previously 0%, now covered — exercises PDF download, manual invoice generation, access control, and AJAX handlers (closes #9)
+- **Translations**: Fuzzy entries cleared and `.po`/`.mo` files regenerated after UI changes
+
+---
+
 ## [0.9.3] - 2025-12-11
 
 ### Added
@@ -296,6 +330,7 @@ We welcome feedback on all aspects of the plugin. Please test in a staging envir
 
 ---
 
+[0.9.4]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.4
 [0.9.3]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.3
 [0.9.2]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.2
 [0.9.1]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.1
