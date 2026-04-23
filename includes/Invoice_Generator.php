@@ -1056,20 +1056,33 @@ class Invoice_Generator {
 
         $pdf_path = $order->get_meta('_b2brouter_invoice_pdf_path');
 
-        if (!empty($pdf_path) && file_exists($pdf_path)) {
-            if (unlink($pdf_path)) {
-                // Clear metadata
-                $order->delete_meta_data('_b2brouter_invoice_pdf_path');
-                $order->delete_meta_data('_b2brouter_invoice_pdf_filename');
-                $order->delete_meta_data('_b2brouter_invoice_pdf_size');
-                $order->delete_meta_data('_b2brouter_invoice_pdf_date');
-                $order->save();
-
-                return true;
-            }
+        if (empty($pdf_path) || !file_exists($pdf_path)) {
+            return false;
         }
 
-        return false;
+        if (!function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        global $wp_filesystem;
+
+        if (!WP_Filesystem()) {
+            Logger::warning('B2Brouter: WordPress Filesystem API unavailable; cannot delete PDF ' . $pdf_path);
+            return false;
+        }
+
+        if (!$wp_filesystem->delete($pdf_path)) {
+            return false;
+        }
+
+        // Clear metadata
+        $order->delete_meta_data('_b2brouter_invoice_pdf_path');
+        $order->delete_meta_data('_b2brouter_invoice_pdf_filename');
+        $order->delete_meta_data('_b2brouter_invoice_pdf_size');
+        $order->delete_meta_data('_b2brouter_invoice_pdf_date');
+        $order->save();
+
+        return true;
     }
 
     /**
@@ -1208,13 +1221,24 @@ class Invoice_Generator {
             return array('deleted' => 0, 'errors' => 0);
         }
 
+        if (!function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        global $wp_filesystem;
+
+        if (!WP_Filesystem()) {
+            Logger::warning('B2Brouter Cleanup: WordPress Filesystem API unavailable; skipping cleanup');
+            return array('deleted' => 0, 'errors' => 0);
+        }
+
         $cutoff_time = time() - ($days * DAY_IN_SECONDS);
 
         foreach ($pdf_files as $file) {
             $file_time = filemtime($file);
 
             if ($file_time && $file_time < $cutoff_time) {
-                if (unlink($file)) {
+                if ($wp_filesystem->delete($file)) {
                     $deleted++;
 
                     // Try to clean up order metadata
