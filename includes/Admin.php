@@ -458,6 +458,53 @@ class Admin {
     }
 
     /**
+     * Get PDF cache statistics for the settings-page summary.
+     *
+     * Returns null when the storage directory is missing or the WordPress
+     * Filesystem API cannot be initialised — the caller renders the
+     * "directory will be created" placeholder for both cases.
+     *
+     * @since 1.0.0
+     * @return array{count: int, total_size: int}|null
+     */
+    public function get_pdf_storage_stats() {
+        $storage_path = $this->settings->get_pdf_storage_path();
+
+        if (!file_exists($storage_path)) {
+            return null;
+        }
+
+        if (!function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        global $wp_filesystem;
+
+        if (!WP_Filesystem()) {
+            return null;
+        }
+
+        $entries = $wp_filesystem->dirlist($storage_path);
+
+        if (empty($entries)) {
+            return array('count' => 0, 'total_size' => 0);
+        }
+
+        $count = 0;
+        $total_size = 0;
+
+        foreach ($entries as $entry) {
+            if ($entry['type'] !== 'f' || substr($entry['name'], -4) !== '.pdf') {
+                continue;
+            }
+            $count++;
+            $total_size += (int) $entry['size'];
+        }
+
+        return array('count' => $count, 'total_size' => $total_size);
+    }
+
+    /**
      * Render settings page
      *
      * @since 1.0.0
@@ -936,24 +983,16 @@ class Admin {
                                 <?php esc_html_e('Invoice PDFs are stored in this directory. Files are protected from direct access via .htaccess rules.', 'b2brouter-woocommerce'); ?>
                             </p>
                             <?php
-                            $storage_path = $this->settings->get_pdf_storage_path();
-                            if (file_exists($storage_path)) {
-                                $pdf_files = glob($storage_path . '/*.pdf');
-                                $pdf_count = $pdf_files ? count($pdf_files) : 0;
-                                $total_size = 0;
-                                if ($pdf_files) {
-                                    foreach ($pdf_files as $file) {
-                                        $total_size += filesize($file);
-                                    }
-                                }
+                            $stats = $this->get_pdf_storage_stats();
+                            if ($stats !== null) {
                                 ?>
                                 <p class="description">
                                     <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
                                     <?php
                                     printf(
                                         esc_html__('Currently storing %d PDF(s) using %s of disk space', 'b2brouter-woocommerce'),
-                                        $pdf_count,
-                                        size_format($total_size, 2)
+                                        $stats['count'],
+                                        size_format($stats['total_size'], 2)
                                     );
                                     ?>
                                 </p>

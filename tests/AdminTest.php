@@ -433,4 +433,81 @@ class AdminTest extends TestCase {
         $this->assertCount(1, $params);
         $this->assertEquals('hook', $params[0]->getName());
     }
+
+    // ========== PDF Storage Stats (Phase: WP_Filesystem migration) ==========
+
+    public function test_get_pdf_storage_stats_returns_null_when_directory_missing() {
+        $this->mock_settings->method('get_pdf_storage_path')
+                            ->willReturn('/nonexistent/path-' . uniqid());
+
+        $this->assertNull($this->admin->get_pdf_storage_stats());
+    }
+
+    public function test_get_pdf_storage_stats_returns_zero_for_empty_directory() {
+        $temp_dir = sys_get_temp_dir() . '/b2brouter-stats-empty-' . uniqid();
+        mkdir($temp_dir);
+
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($temp_dir);
+
+        $stats = $this->admin->get_pdf_storage_stats();
+
+        $this->assertSame(array('count' => 0, 'total_size' => 0), $stats);
+
+        rmdir($temp_dir);
+    }
+
+    public function test_get_pdf_storage_stats_counts_pdfs_and_sums_sizes() {
+        $temp_dir = sys_get_temp_dir() . '/b2brouter-stats-' . uniqid();
+        mkdir($temp_dir);
+
+        file_put_contents($temp_dir . '/a.pdf', str_repeat('A', 100));
+        file_put_contents($temp_dir . '/b.pdf', str_repeat('B', 250));
+
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($temp_dir);
+
+        $stats = $this->admin->get_pdf_storage_stats();
+
+        $this->assertSame(2, $stats['count']);
+        $this->assertSame(350, $stats['total_size']);
+
+        @unlink($temp_dir . '/a.pdf');
+        @unlink($temp_dir . '/b.pdf');
+        rmdir($temp_dir);
+    }
+
+    public function test_get_pdf_storage_stats_ignores_non_pdf_files() {
+        $temp_dir = sys_get_temp_dir() . '/b2brouter-stats-mixed-' . uniqid();
+        mkdir($temp_dir);
+
+        file_put_contents($temp_dir . '/invoice.pdf', str_repeat('X', 100));
+        file_put_contents($temp_dir . '/notes.txt', str_repeat('Y', 999));
+        file_put_contents($temp_dir . '/.htaccess', 'deny from all');
+
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($temp_dir);
+
+        $stats = $this->admin->get_pdf_storage_stats();
+
+        $this->assertSame(1, $stats['count']);
+        $this->assertSame(100, $stats['total_size']);
+
+        @unlink($temp_dir . '/invoice.pdf');
+        @unlink($temp_dir . '/notes.txt');
+        @unlink($temp_dir . '/.htaccess');
+        rmdir($temp_dir);
+    }
+
+    public function test_get_pdf_storage_stats_returns_null_when_filesystem_init_fails() {
+        $temp_dir = sys_get_temp_dir() . '/b2brouter-stats-fsfail-' . uniqid();
+        mkdir($temp_dir);
+
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($temp_dir);
+
+        $GLOBALS['wp_filesystem_init_failure'] = true;
+        try {
+            $this->assertNull($this->admin->get_pdf_storage_stats());
+        } finally {
+            unset($GLOBALS['wp_filesystem_init_failure']);
+            rmdir($temp_dir);
+        }
+    }
 }

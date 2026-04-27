@@ -154,6 +154,35 @@ class UninstallerTest extends TestCase {
         $this->assertTrue(true); // no exception
     }
 
+    public function test_remove_directory_logs_warning_when_unlink_fails(): void {
+        if (DIRECTORY_SEPARATOR === '\\' || (function_exists('posix_geteuid') && posix_geteuid() === 0)) {
+            $this->markTestSkipped('Filesystem permission test requires non-root POSIX');
+        }
+
+        mkdir($this->tmp_pdf_dir, 0777, true);
+        $blocked_file = $this->tmp_pdf_dir . '/blocked.pdf';
+        file_put_contents($blocked_file, 'cannot delete me');
+        chmod($this->tmp_pdf_dir, 0555); // r-x: prevents unlink/rmdir inside
+
+        update_option('b2brouter_pdf_storage_path', $this->tmp_pdf_dir);
+        $GLOBALS['wc_logger_calls'] = array();
+
+        try {
+            $this->uninstaller->delete_pdf_directory();
+        } finally {
+            chmod($this->tmp_pdf_dir, 0777);
+            @unlink($blocked_file);
+            @rmdir($this->tmp_pdf_dir);
+        }
+
+        $this->assertArrayHasKey('warning', $GLOBALS['wc_logger_calls']);
+        $messages = array_column($GLOBALS['wc_logger_calls']['warning'], 'message');
+        $matched = array_filter($messages, function ($m) use ($blocked_file) {
+            return strpos($m, $blocked_file) !== false;
+        });
+        $this->assertNotEmpty($matched, 'expected a warning mentioning the blocked file');
+    }
+
     public function test_delete_options_and_transients_clears_plugin_options(): void {
         global $wp_options, $wp_transients;
 

@@ -943,12 +943,26 @@ class Invoice_Generator {
                 );
             }
 
+            if (!function_exists('WP_Filesystem')) {
+                require_once ABSPATH . 'wp-admin/includes/file.php';
+            }
+
+            global $wp_filesystem;
+
+            if (!WP_Filesystem()) {
+                wp_die(
+                    esc_html__('Filesystem unavailable. Please try again later.', 'b2brouter-woocommerce'),
+                    esc_html__('Error', 'b2brouter-woocommerce'),
+                    array('response' => 500)
+                );
+            }
+
             // Check if PDF exists locally
             $pdf_path = $order->get_meta('_b2brouter_invoice_pdf_path');
 
             if (!empty($pdf_path) && file_exists($pdf_path)) {
                 // Use cached PDF
-                $pdf_data = file_get_contents($pdf_path);
+                $pdf_data = $wp_filesystem->get_contents($pdf_path);
                 $filename = basename($pdf_path);
             } else {
                 // Download and save PDF (this will cache it)
@@ -963,8 +977,16 @@ class Invoice_Generator {
                 }
 
                 // Read the saved PDF file
-                $pdf_data = file_get_contents($save_result['file_path']);
+                $pdf_data = $wp_filesystem->get_contents($save_result['file_path']);
                 $filename = basename($save_result['file_path']);
+            }
+
+            if ($pdf_data === false) {
+                wp_die(
+                    esc_html__('Failed to read invoice PDF.', 'b2brouter-woocommerce'),
+                    esc_html__('Error', 'b2brouter-woocommerce'),
+                    array('response' => 500)
+                );
             }
 
             // Clear any previous output
@@ -1215,12 +1237,6 @@ class Invoice_Generator {
             return array('deleted' => 0, 'errors' => 0);
         }
 
-        $pdf_files = glob($storage_path . '/*.pdf');
-
-        if (empty($pdf_files)) {
-            return array('deleted' => 0, 'errors' => 0);
-        }
-
         if (!function_exists('WP_Filesystem')) {
             require_once ABSPATH . 'wp-admin/includes/file.php';
         }
@@ -1232,10 +1248,21 @@ class Invoice_Generator {
             return array('deleted' => 0, 'errors' => 0);
         }
 
+        $entries = $wp_filesystem->dirlist($storage_path);
+
+        if (empty($entries)) {
+            return array('deleted' => 0, 'errors' => 0);
+        }
+
         $cutoff_time = time() - ($days * DAY_IN_SECONDS);
 
-        foreach ($pdf_files as $file) {
-            $file_time = filemtime($file);
+        foreach ($entries as $entry) {
+            if ($entry['type'] !== 'f' || substr($entry['name'], -4) !== '.pdf') {
+                continue;
+            }
+
+            $file = $storage_path . '/' . $entry['name'];
+            $file_time = (int) $entry['lastmodunix'];
 
             if ($file_time && $file_time < $cutoff_time) {
                 if ($wp_filesystem->delete($file)) {
