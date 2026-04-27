@@ -286,8 +286,12 @@ class Uninstaller {
      * @return void
      */
     protected function remove_directory($path) {
+        // @ suppresses PHP warnings at the syscall boundary; failures are
+        // surfaced through Logger::warning so leaked PDFs are visible in
+        // WooCommerce logs instead of silently dropped.
         $entries = @scandir($path);
         if ($entries === false) {
+            Logger::warning('B2Brouter Uninstall: scandir() failed for ' . $path);
             return;
         }
 
@@ -300,11 +304,15 @@ class Uninstaller {
             if (is_dir($full) && !is_link($full)) {
                 $this->remove_directory($full);
             } else {
-                @unlink($full);
+                if (!@unlink($full)) {
+                    Logger::warning('B2Brouter Uninstall: failed to delete ' . $full);
+                }
             }
         }
 
-        @rmdir($path);
+        if (!@rmdir($path)) {
+            Logger::warning('B2Brouter Uninstall: failed to remove directory ' . $path);
+        }
     }
 
     /**

@@ -213,12 +213,17 @@ if (!function_exists('error_log')) {
     }
 }
 
+// Recording logger: tests can inspect $GLOBALS['wc_logger_calls'] to assert
+// which levels were logged with which messages. Reset between tests as needed.
+global $wc_logger_calls;
+$wc_logger_calls = array();
+
 if (!function_exists('wc_get_logger')) {
     /**
      * Mock wc_get_logger function
      *
-     * Returns a no-op logger with error/warning/info/log methods so calls
-     * from B2Brouter\WooCommerce\Logger don't fail under test.
+     * Returns a recording logger that captures every call into
+     * $GLOBALS['wc_logger_calls'] keyed by level.
      *
      * @return object Logger stub
      */
@@ -226,15 +231,27 @@ if (!function_exists('wc_get_logger')) {
         static $logger = null;
         if ($logger === null) {
             $logger = new class {
-                public function log($level, $message, $context = array()) {}
-                public function error($message, $context = array()) {}
-                public function warning($message, $context = array()) {}
-                public function info($message, $context = array()) {}
-                public function debug($message, $context = array()) {}
-                public function notice($message, $context = array()) {}
-                public function critical($message, $context = array()) {}
-                public function alert($message, $context = array()) {}
-                public function emergency($message, $context = array()) {}
+                private function record($level, $message, $context) {
+                    if (!isset($GLOBALS['wc_logger_calls'])) {
+                        $GLOBALS['wc_logger_calls'] = array();
+                    }
+                    if (!isset($GLOBALS['wc_logger_calls'][$level])) {
+                        $GLOBALS['wc_logger_calls'][$level] = array();
+                    }
+                    $GLOBALS['wc_logger_calls'][$level][] = array(
+                        'message' => $message,
+                        'context' => $context,
+                    );
+                }
+                public function log($level, $message, $context = array()) { $this->record($level, $message, $context); }
+                public function error($message, $context = array()) { $this->record('error', $message, $context); }
+                public function warning($message, $context = array()) { $this->record('warning', $message, $context); }
+                public function info($message, $context = array()) { $this->record('info', $message, $context); }
+                public function debug($message, $context = array()) { $this->record('debug', $message, $context); }
+                public function notice($message, $context = array()) { $this->record('notice', $message, $context); }
+                public function critical($message, $context = array()) { $this->record('critical', $message, $context); }
+                public function alert($message, $context = array()) { $this->record('alert', $message, $context); }
+                public function emergency($message, $context = array()) { $this->record('emergency', $message, $context); }
             };
         }
         return $logger;
@@ -1814,5 +1831,158 @@ if (!function_exists('size_format')) {
             return number_format($bytes / 1024, $decimals) . ' KB';
         }
         return $bytes . ' B';
+    }
+}
+
+// WP Filesystem mock: passthrough to real PHP filesystem.
+// Mirrors WP_Filesystem_Direct so migrated code runs end-to-end against
+// real temp directories. Tests inject failures via globals:
+//   $GLOBALS['wp_filesystem_init_failure'] = true   // WP_Filesystem() returns false
+//   $GLOBALS['wp_filesystem_fail_methods'] = ['delete', 'get_contents', ...]
+
+if (!defined('FS_CHMOD_FILE')) {
+    define('FS_CHMOD_FILE', 0644);
+}
+if (!defined('FS_CHMOD_DIR')) {
+    define('FS_CHMOD_DIR', 0755);
+}
+
+if (!class_exists('B2BRouter_Test_WP_Filesystem_Stub')) {
+    class B2BRouter_Test_WP_Filesystem_Stub {
+        private function should_fail($method) {
+            return !empty($GLOBALS['wp_filesystem_fail_methods'])
+                && in_array($method, (array) $GLOBALS['wp_filesystem_fail_methods'], true);
+        }
+
+        public function get_contents($file) {
+            if ($this->should_fail('get_contents')) {
+                return false;
+            }
+            $contents = @file_get_contents($file);
+            return $contents === false ? false : $contents;
+        }
+
+        public function put_contents($file, $contents, $mode = false) {
+            if ($this->should_fail('put_contents')) {
+                return false;
+            }
+            $bytes = @file_put_contents($file, $contents);
+            if ($bytes === false) {
+                return false;
+            }
+            if ($mode !== false) {
+                @chmod($file, $mode);
+            }
+            return true;
+        }
+
+        public function delete($file, $recursive = false, $type = false) {
+            if ($this->should_fail('delete')) {
+                return false;
+            }
+            if (!file_exists($file) && !is_link($file)) {
+                return false;
+            }
+            if (is_dir($file) && !is_link($file)) {
+                if ($recursive) {
+                    $entries = @scandir($file);
+                    if ($entries !== false) {
+                        foreach ($entries as $entry) {
+                            if ($entry === '.' || $entry === '..') {
+                                continue;
+                            }
+                            $this->delete($file . '/' . $entry, true);
+                        }
+                    }
+                }
+                return @rmdir($file);
+            }
+            return @unlink($file);
+        }
+
+        public function exists($file) {
+            return file_exists($file);
+        }
+
+        public function is_dir($path) {
+            return is_dir($path);
+        }
+
+        public function is_file($file) {
+            return is_file($file);
+        }
+
+        public function mkdir($path, $chmod = false, $chown = false, $chgrp = false) {
+            if ($this->should_fail('mkdir')) {
+                return false;
+            }
+            if (is_dir($path)) {
+                return true;
+            }
+            $mode = $chmod === false ? FS_CHMOD_DIR : $chmod;
+            return @mkdir($path, $mode, true);
+        }
+
+        public function chmod($file, $mode = false, $recursive = false) {
+            if ($mode === false) {
+                $mode = is_file($file) ? FS_CHMOD_FILE : FS_CHMOD_DIR;
+            }
+            return @chmod($file, $mode);
+        }
+
+        public function dirlist($path, $include_hidden = true, $recursive = false) {
+            if ($this->should_fail('dirlist')) {
+                return false;
+            }
+            if (!is_dir($path)) {
+                return false;
+            }
+            $entries = @scandir($path);
+            if ($entries === false) {
+                return false;
+            }
+            $result = array();
+            foreach ($entries as $entry) {
+                if ($entry === '.' || $entry === '..') {
+                    continue;
+                }
+                if (!$include_hidden && $entry[0] === '.') {
+                    continue;
+                }
+                $full = $path . '/' . $entry;
+                $is_dir = is_dir($full);
+                $info = array(
+                    'name'        => $entry,
+                    'perms'       => '',
+                    'permsn'      => 0,
+                    'number'      => false,
+                    'owner'       => '',
+                    'group'       => '',
+                    'size'        => $is_dir ? 0 : (int) @filesize($full),
+                    'lastmodunix' => (int) @filemtime($full),
+                    'lastmod'     => '',
+                    'time'        => '',
+                    'type'        => $is_dir ? 'd' : 'f',
+                );
+                if ($is_dir && $recursive) {
+                    $info['files'] = $this->dirlist($full, $include_hidden, true);
+                }
+                $result[$entry] = $info;
+            }
+            return $result;
+        }
+    }
+}
+
+if (!function_exists('WP_Filesystem')) {
+    function WP_Filesystem($args = false, $context = false, $allow_relaxed_file_ownership = false) {
+        if (!empty($GLOBALS['wp_filesystem_init_failure'])) {
+            return false;
+        }
+        global $wp_filesystem;
+        if (!($wp_filesystem instanceof B2BRouter_Test_WP_Filesystem_Stub)) {
+            $wp_filesystem = new B2BRouter_Test_WP_Filesystem_Stub();
+        }
+        return true;
     }
 }

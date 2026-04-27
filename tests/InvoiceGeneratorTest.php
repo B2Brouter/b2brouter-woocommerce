@@ -771,6 +771,49 @@ class InvoiceGeneratorTest extends TestCase {
     }
 
     /**
+     * Cleanup must delete files older than the cutoff and keep newer ones.
+     *
+     * Exercises the WP_Filesystem dirlist+delete path with real PDFs in a
+     * temp dir. The legacy implementation used glob()+filemtime(); the
+     * migrated implementation uses $wp_filesystem->dirlist() and reads
+     * the lastmodunix metadata directly.
+     *
+     * @return void
+     */
+    public function test_cleanup_old_pdfs_deletes_only_old_files() {
+        global $wpdb;
+        $wpdb = new class {
+            public $prefix = 'wp_';
+            public function prepare($query, ...$args) { return $query; }
+            public function get_col($query) { return array(); }
+        };
+
+        $temp_dir = sys_get_temp_dir() . '/b2brouter-cleanup-' . uniqid();
+        mkdir($temp_dir);
+
+        $old_file = $temp_dir . '/old-invoice.pdf';
+        $new_file = $temp_dir . '/new-invoice.pdf';
+        file_put_contents($old_file, '%PDF old');
+        file_put_contents($new_file, '%PDF new');
+        touch($old_file, time() - 100 * DAY_IN_SECONDS);
+        touch($new_file, time() - 5 * DAY_IN_SECONDS);
+
+        $this->mock_settings->method('get_pdf_storage_path')
+                           ->willReturn($temp_dir);
+
+        $result = $this->generator->cleanup_old_pdfs(90);
+
+        $this->assertEquals(1, $result['deleted']);
+        $this->assertEquals(0, $result['errors']);
+        $this->assertFileDoesNotExist($old_file);
+        $this->assertFileExists($new_file);
+
+        @unlink($new_file);
+        @rmdir($temp_dir);
+        $wpdb = null;
+    }
+
+    /**
      * Test cleanup_old_pdfs result structure
      *
      * @return void
@@ -965,6 +1008,41 @@ class InvoiceGeneratorTest extends TestCase {
         $this->generator->stream_invoice_pdf(403, false);
 
         unset($wc_mock_orders[403]);
+    }
+
+    /**
+     * Stream cached PDF must read through WP_Filesystem, not file_get_contents.
+     *
+     * When $wp_filesystem->get_contents() returns false (fail-injected), the
+     * method must wp_die instead of echoing an empty body. The legacy code
+     * path uses file_get_contents directly, so it would echo+exit and never
+     * reach wp_die — runInSeparateProcess isolates the exit.
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_stream_invoice_pdf_reads_cached_pdf_via_filesystem() {
+        global $wc_mock_orders;
+
+        $temp_pdf = sys_get_temp_dir() . '/b2brouter-stream-' . uniqid() . '.pdf';
+        file_put_contents($temp_pdf, '%PDF-1.5 fake');
+
+        $order = new WC_Order(450);
+        $order->add_meta_data('_b2brouter_invoice_id', 'inv-450');
+        $order->add_meta_data('_b2brouter_invoice_pdf_path', $temp_pdf);
+        $wc_mock_orders[450] = $order;
+
+        $GLOBALS['wp_filesystem_fail_methods'] = array('get_contents');
+
+        try {
+            $this->expectException(Exception::class);
+            $this->expectExceptionMessage('wp_die called');
+            $this->generator->stream_invoice_pdf(450);
+        } finally {
+            unset($GLOBALS['wp_filesystem_fail_methods']);
+            @unlink($temp_pdf);
+            unset($wc_mock_orders[450]);
+        }
     }
 
     // ========== PDF Delete Tests (Phase 5) ==========
