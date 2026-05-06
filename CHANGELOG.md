@@ -5,6 +5,12 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Bulk Invoice Generation**: The "Generate B2Brouter Invoices" bulk action now enqueues background jobs via Action Scheduler instead of generating invoices synchronously. Eliminates 504 timeouts on large selections (worst case was ~12 minutes for 50 orders with auto-save PDF). Orders that already have an invoice are pre-filtered and counted as skipped. Progress and per-action logs are visible under **WooCommerce → Status → Scheduled Actions** (group `b2brouter`) (closes #37)
+
 ## [0.9.4] - 2026-04-23
 
 Final pre-release before 1.0. Focused on stability, operational polish, and preparing the plugin for distribution via the WordPress.org plugin directory and the WooCommerce Marketplace.

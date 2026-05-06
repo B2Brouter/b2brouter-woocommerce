@@ -770,6 +770,31 @@ if (!function_exists('wp_schedule_single_event')) {
     }
 }
 
+// Global storage for Action Scheduler async actions enqueued by the plugin.
+// Tests inspect $GLOBALS['as_async_actions'] to assert what was queued.
+global $as_async_actions;
+$as_async_actions = array();
+
+if (!function_exists('as_enqueue_async_action')) {
+    /**
+     * Mock as_enqueue_async_action function (Action Scheduler)
+     *
+     * @param string $hook  Hook name
+     * @param array  $args  Arguments passed to the hook
+     * @param string $group Group name
+     * @return int Mock action ID
+     */
+    function as_enqueue_async_action($hook, $args = array(), $group = '') {
+        global $as_async_actions;
+        $as_async_actions[] = array(
+            'hook' => $hook,
+            'args' => $args,
+            'group' => $group,
+        );
+        return count($as_async_actions); // mock action ID
+    }
+}
+
 if (!function_exists('wp_upload_dir')) {
     /**
      * Mock wp_upload_dir function
