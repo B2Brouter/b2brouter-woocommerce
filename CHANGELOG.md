@@ -5,6 +5,13 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Environment Selector**: Removed the staging/production environment radio from the settings page. The plugin now always defaults to production; developers can point at staging or a local B2Brouter instance via the `B2BROUTER_API_BASE` (and parallel `B2BROUTER_WEB_BASE`) constants in `wp-config.php` — replaces the previous `B2BROUTER_DEV_API_BASE` constant (closes #10)
+- **Order Meta Box**: The "View in B2Brouter" link now respects `Settings::get_web_app_base_url()` instead of hardcoding the production app URL
+
 ## [0.9.4] - 2026-04-23
 
 Final pre-release before 1.0. Focused on stability, operational polish, and preparing the plugin for distribution via the WordPress.org plugin directory and the WooCommerce Marketplace.

@@ -24,7 +24,6 @@ class Settings {
     const OPTION_API_KEY = 'b2brouter_api_key';
     const OPTION_ACCOUNT_ID = 'b2brouter_account_id';
     const OPTION_ACCOUNT_NAME = 'b2brouter_account_name';
-    const OPTION_ENVIRONMENT = 'b2brouter_environment';
     const OPTION_INVOICE_MODE = 'b2brouter_invoice_mode';
     const OPTION_TRANSACTION_COUNT = 'b2brouter_transaction_count';
     const OPTION_SHOW_WELCOME = 'b2brouter_show_welcome';
@@ -117,64 +116,38 @@ class Settings {
     }
 
     /**
-     * Get environment (staging or production)
+     * Get API base URL.
      *
-     * @since 1.0.0
-     * @return string The environment ('staging' or 'production')
-     */
-    public function get_environment() {
-        return get_option(self::OPTION_ENVIRONMENT, 'staging');
-    }
-
-    /**
-     * Set environment
-     *
-     * @since 1.0.0
-     * @param string $environment The environment ('staging' or 'production')
-     * @return bool True on success, false on failure
-     */
-    public function set_environment($environment) {
-        if (in_array($environment, array('staging', 'production'))) {
-            return update_option(self::OPTION_ENVIRONMENT, $environment);
-        }
-        return false;
-    }
-
-    /**
-     * Get API base URL for current environment
+     * Defaults to production. Developers can override via the
+     * B2BROUTER_API_BASE constant in wp-config.php (e.g. to point at staging
+     * or a local B2Brouter instance).
      *
      * @since 1.0.0
      * @return string The API base URL
      */
     public function get_api_base_url() {
-        // Allow developers to override via wp-config.php constant
-        if (defined('B2BROUTER_DEV_API_BASE') && B2BROUTER_DEV_API_BASE) {
-            return B2BROUTER_DEV_API_BASE;
+        if (defined('B2BROUTER_API_BASE') && B2BROUTER_API_BASE) {
+            return B2BROUTER_API_BASE;
         }
 
-        $environment = $this->get_environment();
-
-        if ($environment === 'production') {
-            return 'https://api.b2brouter.net';
-        }
-
-        return 'https://api-staging.b2brouter.net';
+        return 'https://api.b2brouter.net';
     }
 
     /**
-     * Get web app base URL for current environment
+     * Get web app base URL.
+     *
+     * Defaults to production. Developers can override via the
+     * B2BROUTER_WEB_BASE constant in wp-config.php.
      *
      * @since 1.0.0
      * @return string The web app base URL
      */
     public function get_web_app_base_url() {
-        $environment = $this->get_environment();
-
-        if ($environment === 'production') {
-            return 'https://app.b2brouter.net';
+        if (defined('B2BROUTER_WEB_BASE') && B2BROUTER_WEB_BASE) {
+            return B2BROUTER_WEB_BASE;
         }
 
-        return 'https://app-staging.b2brouter.net';
+        return 'https://app.b2brouter.net';
     }
 
     /**

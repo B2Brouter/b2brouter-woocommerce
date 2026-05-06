@@ -447,11 +447,11 @@ class Order_Handler {
             <p>
                 <?php
                 // Build B2Brouter dashboard URL
-                $dashboard_url = 'https://app.b2brouter.net';
+                $dashboard_url = $this->settings->get_web_app_base_url();
                 if ($has_invoice) {
                     $invoice_id = $order->get_meta('_b2brouter_invoice_id');
                     if (!empty($invoice_id)) {
-                        $dashboard_url = 'https://app.b2brouter.net/invoices/' . urlencode($invoice_id);
+                        $dashboard_url .= '/invoices/' . urlencode($invoice_id);
                     }
                 }
 

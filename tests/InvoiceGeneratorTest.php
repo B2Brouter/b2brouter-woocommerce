@@ -186,7 +186,7 @@ class InvoiceGeneratorTest extends TestCase {
         $this->mock_settings->method('get_auto_save_pdf')
                            ->willReturn(false); // Don't auto-save PDF in this test
         $this->mock_settings->method('get_api_base_url')
-                           ->willReturn('https://api-staging.b2brouter.net');
+                           ->willReturn('https://api.b2brouter.net');
         $this->mock_settings->expects($this->once())
                            ->method('increment_transaction_count');
 

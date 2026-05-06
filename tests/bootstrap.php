@@ -1121,7 +1121,7 @@ if (!class_exists('B2BRouter\B2BRouterClient')) {
         class B2BRouterClient {
             public $invoices;
             private $apiKey;
-            private $apiBase = "https://api-staging.b2brouter.net";
+            private $apiBase = "https://api.b2brouter.net";
             private $apiVersion = "2025-10-13";
             private $httpClient;
             private $timeout = 80;

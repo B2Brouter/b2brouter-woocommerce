@@ -98,7 +98,7 @@ If you're running a local instance of B2Brouter (not needed for most developers)
 
 ```php
 /* Set B2Brouter API URL for local development */
-define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
+define( 'B2BROUTER_API_BASE', 'http://api.b2brouter.local:3001' );
 ```
 
 See [Connecting to Local B2Brouter Instance](#connecting-to-local-b2brouter-instance) for complete setup instructions.
@@ -222,13 +222,13 @@ Add this line **before** the `/* That's all, stop editing! */` comment:
 
 ```php
 /* Set B2Brouter API URL for local development */
-define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
+define( 'B2BROUTER_API_BASE', 'http://api.b2brouter.local:3001' );
 ```
 
 **How it works:**
-- The plugin checks for the `B2BROUTER_DEV_API_BASE` constant in `Settings::get_api_base_url()` (Settings.php:127-129)
-- If defined, it overrides the environment-based API URL (production/staging)
-- This allows testing against your local B2Brouter instance without changing plugin code
+- `Settings::get_api_base_url()` defaults to production (`https://api.b2brouter.net`) and uses the `B2BROUTER_API_BASE` constant when it is defined
+- This allows testing against your local B2Brouter instance — or against staging — without changing plugin code
+- A parallel `B2BROUTER_WEB_BASE` constant overrides the web app URL used by admin links (e.g. the "View in B2Brouter" button on the order screen)
 
 ### Step 3: Set Up Local B2Brouter Account
 
@@ -332,24 +332,25 @@ define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
    - Check the order notes for "Status updated via webhook" message
    - Verify the status badge updates in the order meta box
 
-### Step 7: Switching Between Local and Staging
+### Step 7: Switching Between Local, Staging, and Production
 
-**To test against local B2Brouter:**
-- Keep `B2BROUTER_DEV_API_BASE` defined in `wp-config.php`
-- Use local API key and webhook secret
+The plugin always defaults to production (`https://api.b2brouter.net`). Override the target environment via the `B2BROUTER_API_BASE` constant in `wp-config.php`:
 
-**To test against staging B2Brouter:**
+**Local B2Brouter:**
 ```php
-// In wp-config.php, comment out or remove:
-// define( 'B2BROUTER_DEV_API_BASE', 'http://api.b2brouter.local:3001' );
+define( 'B2BROUTER_API_BASE', 'http://api.b2brouter.local:3001' );
+define( 'B2BROUTER_WEB_BASE', 'http://app.b2brouter.local' );
 ```
-- Go to **Invoices → Settings**
-- Select **Environment: Staging**
-- Enter staging API key
-- Configure staging webhook secret
-- Save settings
 
-The plugin will automatically use `https://api-staging.b2brouter.net` when the constant is not defined.
+**Staging:**
+```php
+define( 'B2BROUTER_API_BASE', 'https://api-staging.b2brouter.net' );
+define( 'B2BROUTER_WEB_BASE', 'https://app-staging.b2brouter.net' );
+```
+
+**Production:** remove (or comment out) both `B2BROUTER_API_BASE` and `B2BROUTER_WEB_BASE` — the plugin falls back to the production URLs.
+
+In each case, replace the API key and webhook secret in **Invoices → Settings** with credentials for the target environment.
 
 ### Debugging Local Development
 
@@ -406,7 +407,7 @@ curl -X POST "http://localhost:8000/index.php?rest_route=/b2brouter/v1/webhook" 
    - REST API is not enabled - check WordPress Settings → Permalinks
 
 2. **"API key not configured" or "Invalid API key"**
-   - Verify `B2BROUTER_DEV_API_BASE` is correctly defined
+   - Verify `B2BROUTER_API_BASE` is correctly defined
    - Check local B2Brouter API is running
    - Ensure API key is valid in local instance
 
@@ -422,11 +423,13 @@ curl -X POST "http://localhost:8000/index.php?rest_route=/b2brouter/v1/webhook" 
 
 ### Architecture Notes for Developers
 
-**API Base URL Priority (Settings.php:124-132):**
-1. `B2BROUTER_DEV_API_BASE` constant (if defined) - Highest priority
-2. Environment setting from admin:
-   - Production: `https://api.b2brouter.net`
-   - Staging: `https://staging.api.b2brouter.net`
+**API Base URL Resolution (`Settings::get_api_base_url()`):**
+1. `B2BROUTER_API_BASE` constant (if defined) - takes precedence
+2. Falls back to production: `https://api.b2brouter.net`
+
+**Web App URL Resolution (`Settings::get_web_app_base_url()`):**
+1. `B2BROUTER_WEB_BASE` constant (if defined) - takes precedence
+2. Falls back to production: `https://app.b2brouter.net`
 
 **Webhook Flow:**
 ```
