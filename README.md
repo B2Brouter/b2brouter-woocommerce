@@ -341,6 +341,9 @@ Get instant invoice status updates instead of waiting for hourly checks. This 5-
 - **Need to test on localhost?**
   - See [docs/LOCAL_DEVELOPMENT_SETUP.md](docs/LOCAL_DEVELOPMENT_SETUP.md) for detailed local testing instructions
 
+- **Bulk invoice generation stuck "queued"?**
+  - The "Generate B2Brouter Invoices" bulk action enqueues background jobs via Action Scheduler. Jobs are processed by WP-Cron. If your store has WP-Cron disabled (`define('DISABLE_WP_CRON', true)` without a system cron replacement), queued jobs will sit forever. Inspect and run pending actions under **WooCommerce → Status → Scheduled Actions** (filter by group `b2brouter`).
+
 **Security Notes:**
 
 - All webhook requests are cryptographically signed with HMAC-SHA256
