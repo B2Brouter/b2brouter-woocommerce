@@ -283,13 +283,10 @@ $accounts = $client->accounts->all(['limit' => 1]);
 
 ### API Endpoints
 
-**Staging Environment**:
-- Base URL: `https://api-staging.b2brouter.net`
-- Use for testing and development
+**Production**:
+- Base URL: `https://api.b2brouter.net` (default)
 
-**Production Environment**:
-- Base URL: `https://api.b2brouter.net`
-- Use for live transactions
+The base URL can be overridden in `wp-config.php` via the `B2BROUTER_API_BASE` constant — used to point local installs at staging (`https://api-staging.b2brouter.net`) or at a developer's local B2Brouter instance.
 
 **Webhook Endpoint**:
 - REST API: `/wp-json/b2brouter/v1/webhook`

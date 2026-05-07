@@ -116,9 +116,7 @@ Get real-time invoice status updates in your WooCommerce orders with two sync me
 ### API Integration
 
 - **B2Brouter PHP SDK**: Built on official B2Brouter PHP SDK (v1.0.0+)
-- **Environment Support**:
-  - Staging: `https://api-staging.b2brouter.net`
-  - Production: `https://api.b2brouter.net`
+- **Production API**: `https://api.b2brouter.net` (overridable for development via the `B2BROUTER_API_BASE` constant in `wp-config.php`)
 - **API Key Validation**: Real-time validation with account information retrieval
 - **Structured Data Exchange**: Sends structured invoice data (not just PDFs)
 - **Electronic Invoice Formats**: Supports UBL, Facturae, and other formats via B2Brouter
@@ -180,8 +178,7 @@ See [DISTRIBUTION.md](docs/DISTRIBUTION.md) for release procedures.
 1. Navigate to **Invoices → Settings** in WordPress admin
 2. Enter your B2Brouter API key
 3. Click **Validate Key** to verify connectivity and retrieve account information
-4. Select environment (Staging or Production)
-5. Save settings
+4. Save settings
 
 ### Invoice Generation
 

@@ -304,11 +304,8 @@ Test with real WordPress/WooCommerce:
 1. **Set up local environment** (see [LOCAL_DEVELOPMENT_SETUP.md](LOCAL_DEVELOPMENT_SETUP.md))
 
 2. **Configure API key:**
-   ```bash
-   # Use staging environment
-   export B2BROUTER_API_KEY="your-test-key"
-   export B2BROUTER_ENVIRONMENT="staging"
-   ```
+   - Add a staging key in **Invoices → Settings**
+   - Point the plugin at staging by defining `B2BROUTER_API_BASE` (and optionally `B2BROUTER_WEB_BASE`) in `wp-config.php` — see [LOCAL_DEVELOPMENT_SETUP.md](LOCAL_DEVELOPMENT_SETUP.md)
 
 3. **Create test order:**
    - WooCommerce → Orders → Add New
@@ -321,7 +318,7 @@ Test with real WordPress/WooCommerce:
    - Automatic: Set mode to automatic and complete order
 
 5. **Verify in B2Brouter:**
-   - Go to https://app-staging.b2brouter.net
+   - Open the staging web app (`https://app-staging.b2brouter.net`)
    - Check invoice was created
 
 ### Manual Testing Checklist
@@ -332,7 +329,6 @@ Before releasing:
 - [ ] Plugin activates without errors
 - [ ] Settings page loads correctly
 - [ ] API key validation works (both valid/invalid)
-- [ ] Environment switching works (staging/production)
 - [ ] Manual invoice generation works
 - [ ] Automatic invoice generation works
 - [ ] Bulk invoice generation works

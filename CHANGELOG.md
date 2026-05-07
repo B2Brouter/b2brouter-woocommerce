@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Environment Selector**: Removed the staging/production environment radio from the settings page. The plugin now always defaults to production; developers can point at staging or a local B2Brouter instance via the `B2BROUTER_API_BASE` (and parallel `B2BROUTER_WEB_BASE`) constants in `wp-config.php` — replaces the previous `B2BROUTER_DEV_API_BASE` constant (closes #10)
+- **Order Meta Box**: The "View in B2Brouter" link now respects `Settings::get_web_app_base_url()` instead of hardcoding the production app URL
 - **Bulk Invoice Generation**: The "Generate B2Brouter Invoices" bulk action now enqueues background jobs via Action Scheduler instead of generating invoices synchronously. Eliminates 504 timeouts on large selections (worst case was ~12 minutes for 50 orders with auto-save PDF). Orders that already have an invoice are pre-filtered and counted as skipped. Progress and per-action logs are visible under **WooCommerce → Status → Scheduled Actions** (group `b2brouter`) (closes #37)
 
 ## [0.9.4] - 2026-04-23
