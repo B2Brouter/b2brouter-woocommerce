@@ -1,6 +1,6 @@
 === B2Brouter for WooCommerce ===
 Contributors: B2Brouter
-Tags: woocommerce, e-invoicing, peppol, verifactu, ticketbai
+Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -8,7 +8,7 @@ Stable tag: 0.9.4
 License: MIT
 License URI: https://opensource.org/license/mit
 
-Electronic invoicing for WooCommerce. Compliance for Spain (Verifactu, TicketBAI), France (DGFiP) and Poland (KSeF). EU + UK invoicing.
+Electronic invoicing for WooCommerce. Compliance for Spain (Verifactu), France (DGFiP) and Poland (KSeF). EU + UK invoicing.
 
 == Description ==
 
@@ -18,14 +18,13 @@ Electronic invoicing for WooCommerce. Compliance for Spain (Verifactu, TicketBAI
 
 The plugin includes explicit support for the following e-invoicing regimes:
 
-* **Spain — Verifactu**: automatic AEAT reporting with QR verification on every issued invoice (state-wide regime).
-* **Spain (Basque Country) — TicketBAI**: automatic submission to the regional tax authorities of Bizkaia, Gipuzkoa and Araba, with the corresponding TBAI identifier and QR.
+* **Spain — Verifactu**: automatic AEAT reporting with QR verification on every issued invoice.
 * **France — DGFiP**: routing through the official PPF / Chorus Pro infrastructure.
 * **Poland — KSeF**: automatic submission of invoices to the national KSeF system.
 
 Beyond these explicit regimes, the plugin generates compliant electronic invoices in standard formats (UBL, Facturae, Peppol) for the rest of the EU, the UK, and other jurisdictions supported by B2Brouter.
 
-**Important:** Authority-specific configuration (Verifactu / TicketBAI certificates, KSeF tokens, Chorus Pro identifiers, etc.) is managed in the **B2Brouter dashboard**, not in the WordPress plugin UI. The plugin only needs your B2Brouter API key.
+**Important:** Authority-specific configuration (Verifactu certificates, KSeF tokens, Chorus Pro identifiers, etc.) is managed in the **B2Brouter dashboard**, not in the WordPress plugin UI. The plugin only needs your B2Brouter API key.
 
 = Key features =
 
@@ -61,7 +60,7 @@ Beyond these explicit regimes, the plugin generates compliant electronic invoice
 
 Yes. The plugin requires an active B2Brouter eDocExchange subscription. Sign up at [app.b2brouter.net](https://app.b2brouter.net) and obtain an API key under **Developers → API Keys**.
 
-= Where do I configure Verifactu, TicketBAI, KSeF or Chorus Pro? =
+= Where do I configure Verifactu, KSeF or Chorus Pro? =
 
 Authority-specific configuration (certificates, tokens, identifiers) is managed in your B2Brouter dashboard, not in the WordPress plugin UI. Once your dashboard is configured, the plugin transparently sends invoices through the appropriate regime.
 
@@ -106,7 +105,7 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 
 **Compliance scope:**
 
-* Documented explicit support for four national / regional e-invoicing regimes: Spain Verifactu, Spain TicketBAI (Basque Country), France DGFiP (PPF / Chorus Pro) and Poland KSeF. General electronic invoicing (UBL / Facturae / Peppol) continues to work for the rest of the EU, the UK, and other countries supported by B2Brouter. Authority-specific credentials and identifiers are managed in the B2Brouter dashboard, not in the WordPress plugin UI.
+* Documented explicit support for three national e-invoicing regimes: Spain Verifactu, France DGFiP (PPF / Chorus Pro) and Poland KSeF. General electronic invoicing (UBL / Facturae / Peppol) continues to work for the rest of the EU, the UK, and other countries supported by B2Brouter. Authority-specific credentials and identifiers are managed in the B2Brouter dashboard, not in the WordPress plugin UI.
 
 **Added:**
 
@@ -163,4 +162,4 @@ For the complete history, see `CHANGELOG.md` in the repository.
 
 = 0.9.4 =
 
-Final pre-release before 1.0. Filesystem API migration (required for wp.org), translations, and explicit compliance scope docs (Verifactu, TicketBAI, DGFiP, KSeF). Sequential and custom numbering modes removed — switch to Automatic or WooCommerce order number before upgrading.
+Final pre-release before 1.0. Filesystem API migration (required for wp.org), translations, and explicit compliance scope docs (Verifactu, DGFiP, KSeF). Sequential and custom numbering modes removed — switch to Automatic or WooCommerce order number before upgrading.
