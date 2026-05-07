@@ -19,7 +19,7 @@
         }
     },
     "require-dev": {
-        "php-stubs/woocommerce-stubs": "^10.3",
+        "php-stubs/woocommerce-stubs": "^10.7",
         "php-stubs/wordpress-stubs": "^6.8",
         "phpunit/phpunit": "^9.5"
     },
