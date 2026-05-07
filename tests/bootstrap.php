@@ -795,6 +795,38 @@ if (!function_exists('as_enqueue_async_action')) {
     }
 }
 
+if (!function_exists('as_has_scheduled_action')) {
+    /**
+     * Mock as_has_scheduled_action — returns true if a matching pending
+     * action is found in $as_async_actions. Tests that need to simulate
+     * an already-queued action push entries directly into the global.
+     *
+     * @param string     $hook
+     * @param array|null $args
+     * @param string     $group
+     * @return bool
+     */
+    function as_has_scheduled_action($hook, $args = null, $group = '') {
+        global $as_async_actions;
+        if (empty($as_async_actions)) {
+            return false;
+        }
+        foreach ($as_async_actions as $entry) {
+            if ($entry['hook'] !== $hook) {
+                continue;
+            }
+            if ($group !== '' && $entry['group'] !== $group) {
+                continue;
+            }
+            if ($args !== null && $entry['args'] !== $args) {
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
+}
+
 if (!function_exists('wp_upload_dir')) {
     /**
      * Mock wp_upload_dir function

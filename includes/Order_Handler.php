@@ -652,11 +652,18 @@ class Order_Handler {
                 continue;
             }
 
-            as_enqueue_async_action(
-                'b2brouter_bulk_generate_invoice',
-                array('order_id' => (int) $post_id),
-                'b2brouter'
-            );
+            $args = array('order_id' => (int) $post_id);
+
+            // Dedupe: if an action for this order is already pending (e.g. the
+            // merchant re-submitted the bulk form before the queue drained),
+            // don't enqueue a second copy. Still count it as queued so the
+            // notice reflects that the work is in flight.
+            if (as_has_scheduled_action('b2brouter_bulk_generate_invoice', $args, 'b2brouter')) {
+                $queued_count++;
+                continue;
+            }
+
+            as_enqueue_async_action('b2brouter_bulk_generate_invoice', $args, 'b2brouter');
             $queued_count++;
         }
 
@@ -676,7 +683,12 @@ class Order_Handler {
      * @return void
      */
     public function process_queued_invoice($order_id) {
-        $this->invoice_generator->generate_invoice((int) $order_id);
+        $result = $this->invoice_generator->generate_invoice((int) $order_id);
+        if (empty($result['success'])) {
+            throw new \RuntimeException(
+                isset($result['message']) ? $result['message'] : 'Invoice generation failed'
+            );
+        }
     }
 
     /**
