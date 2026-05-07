@@ -17,6 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Final pre-release before 1.0. Focused on stability, operational polish, and preparing the plugin for distribution via the WordPress.org plugin directory and the WooCommerce Marketplace.
 
+### Compliance scope
+
+Documented explicit support for three national e-invoicing regimes:
+
+- **Spain — Verifactu**: automatic AEAT reporting with QR verification.
+- **France — DGFiP**: routing via PPF / Chorus Pro.
+- **Poland — KSeF**: automatic submission to the national system.
+
+General electronic invoicing (UBL / Facturae / Peppol) continues to work for the rest of the EU, the UK, and other countries supported by B2Brouter. Authority-specific credentials and identifiers (Verifactu certificates, KSeF tokens, Chorus Pro IDs, etc.) are managed in the B2Brouter dashboard, not in the WordPress plugin UI.
+
 ### Added
 
 - **Internationalization**: Initial translation files for Catalan (ca), German (de_DE), Spanish (es_ES), French (fr_FR), English (en_US), plus `.pot` template
@@ -239,7 +249,7 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 
 #### Tax Compliance
 - Automatic tax category detection for order line items
-- PEPPOL tax category support (S, E, Z, NS, AE)
+- Peppol tax category support (S, E, Z, NS, AE)
 - Intra-EU reverse charge detection for B2B transactions
 - Dynamic tax name localization (IVA, TVA, VAT, MwSt, GST)
 - Automatic merchant country detection from WooCommerce settings

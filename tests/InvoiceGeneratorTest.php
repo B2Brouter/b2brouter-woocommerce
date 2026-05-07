@@ -1179,7 +1179,7 @@ class InvoiceGeneratorTest extends TestCase {
         $this->assertEquals('R01-222', Invoice_Generator::format_invoice_number('222', 'R01'));
     }
 
-    // ========== Tax Handling Tests (PEPPOL Compliance) ==========
+    // ========== Tax Handling Tests (Peppol Compliance) ==========
 
     /**
      * Test get_merchant_country extracts country from WooCommerce settings
