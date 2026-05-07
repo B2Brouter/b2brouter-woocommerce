@@ -234,6 +234,36 @@ class SettingsTest extends TestCase {
         $this->assertEquals('https://app.b2brouter.net', $url);
     }
 
+    /**
+     * Test get_api_base_url returns the value of B2BROUTER_API_BASE when defined.
+     *
+     * Run in a separate process because define() is process-global and one-shot.
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     * @return void
+     */
+    public function test_get_api_base_url_uses_constant_when_defined() {
+        define('B2BROUTER_API_BASE', 'https://api-staging.b2brouter.net');
+        $settings = new Settings();
+        $this->assertEquals('https://api-staging.b2brouter.net', $settings->get_api_base_url());
+    }
+
+    /**
+     * Test get_web_app_base_url returns the value of B2BROUTER_WEB_BASE when defined.
+     *
+     * Run in a separate process because define() is process-global and one-shot.
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     * @return void
+     */
+    public function test_get_web_app_base_url_uses_constant_when_defined() {
+        define('B2BROUTER_WEB_BASE', 'https://app-staging.b2brouter.net');
+        $settings = new Settings();
+        $this->assertEquals('https://app-staging.b2brouter.net', $settings->get_web_app_base_url());
+    }
+
     // ========== Invoice Mode Tests ==========
 
     /**
