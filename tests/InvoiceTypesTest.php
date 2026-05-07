@@ -152,7 +152,7 @@ class InvoiceTypesTest extends TestCase {
         // Assert contact has TIN
         $this->assertArrayHasKey('tin_value', $invoice_data['contact']);
         $this->assertEquals('ESB12345678', $invoice_data['contact']['tin_value']);
-        $this->assertEquals(9999, $invoice_data['contact']['tin_scheme']);
+        $this->assertSame('9999', $invoice_data['contact']['tin_scheme']);
 
         // Assert contact_email_override is set
         $this->assertArrayHasKey('contact_email_override', $invoice_data);

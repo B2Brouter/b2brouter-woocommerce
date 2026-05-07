@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c1757d5565841852731ec03cc5bde126",
+    "content-hash": "744938e1178170d68f96edb7bb47f395",
     "packages": [
         {
             "name": "b2brouter/b2brouter-php",
-            "version": "v1.0.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/B2Brouter/b2brouter-php.git",
-                "reference": "4be435a356e6d5753c7561413fdd88bfcc2cb94a"
+                "reference": "81146e0cc81468d8e250c293ed5b006e35dd7d77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/B2Brouter/b2brouter-php/zipball/4be435a356e6d5753c7561413fdd88bfcc2cb94a",
-                "reference": "4be435a356e6d5753c7561413fdd88bfcc2cb94a",
+                "url": "https://api.github.com/repos/B2Brouter/b2brouter-php/zipball/81146e0cc81468d8e250c293ed5b006e35dd7d77",
+                "reference": "81146e0cc81468d8e250c293ed5b006e35dd7d77",
                 "shasum": ""
             },
             "require": {
@@ -60,9 +60,9 @@
             ],
             "support": {
                 "issues": "https://github.com/B2Brouter/b2brouter-php/issues",
-                "source": "https://github.com/B2Brouter/b2brouter-php/tree/v1.0.0"
+                "source": "https://github.com/B2Brouter/b2brouter-php/tree/v1.2.0"
             },
-            "time": "2025-12-05T13:13:50+00:00"
+            "time": "2026-03-26T08:49:57+00:00"
         }
     ],
     "packages-dev": [
