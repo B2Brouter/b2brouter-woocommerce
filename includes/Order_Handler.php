@@ -75,6 +75,9 @@ class Order_Handler {
 
         add_action('admin_notices', array($this, 'bulk_action_notices'));
 
+        // Background worker for bulk-queued invoice generation (Action Scheduler)
+        add_action('b2brouter_bulk_generate_invoice', array($this, 'process_queued_invoice'), 10, 1);
+
         // Email PDF attachments
         add_filter('woocommerce_email_attachments', array($this, 'attach_pdf_to_email'), 10, 3);
 
@@ -626,39 +629,66 @@ class Order_Handler {
             return $redirect_to;
         }
 
-        $success_count = 0;
-        $error_count = 0;
+        $queued_count = 0;
         $skipped_count = 0;
 
         foreach ($post_ids as $post_id) {
             $order = wc_get_order($post_id);
 
             if (!$order) {
-                $error_count++;
                 continue;
             }
 
-            // Only completed orders are eligible for invoice generation
+            // Only completed orders are eligible for invoice generation.
             if ($order->get_status() !== 'completed') {
                 $skipped_count++;
                 continue;
             }
 
-            $result = $this->invoice_generator->generate_invoice($post_id);
-            if ($result['success']) {
-                $success_count++;
-            } else {
-                $error_count++;
+            // Already invoiced orders are skipped before enqueueing so they
+            // don't surface as run-time failures in Scheduled Actions.
+            if ($this->invoice_generator->has_invoice($post_id)) {
+                $skipped_count++;
+                continue;
             }
+
+            $args = array('order_id' => (int) $post_id);
+
+            // Dedupe: if an action for this order is already pending (e.g. the
+            // merchant re-submitted the bulk form before the queue drained),
+            // don't enqueue a second copy. Still count it as queued so the
+            // notice reflects that the work is in flight.
+            if (as_has_scheduled_action('b2brouter_bulk_generate_invoice', $args, 'b2brouter')) {
+                $queued_count++;
+                continue;
+            }
+
+            as_enqueue_async_action('b2brouter_bulk_generate_invoice', $args, 'b2brouter');
+            $queued_count++;
         }
 
         $redirect_to = add_query_arg(array(
-            'b2brouter_bulk_success' => $success_count,
-            'b2brouter_bulk_error' => $error_count,
+            'b2brouter_bulk_queued' => $queued_count,
             'b2brouter_bulk_skipped' => $skipped_count,
         ), $redirect_to);
 
         return $redirect_to;
+    }
+
+    /**
+     * Process a single queued invoice generation job (Action Scheduler worker).
+     *
+     * @since 1.0.0
+     * @param int $order_id The WooCommerce order ID
+     * @return void
+     */
+    public function process_queued_invoice($order_id) {
+        $result = $this->invoice_generator->generate_invoice((int) $order_id);
+        if (empty($result['success'])) {
+            throw new \RuntimeException(
+                isset($result['message']) ? $result['message'] : 'Invoice generation failed'
+            );
+        }
     }
 
     /**
@@ -668,40 +698,31 @@ class Order_Handler {
      * @return void
      */
     public function bulk_action_notices() {
-        if (!isset($_GET['b2brouter_bulk_success'])
-            && !isset($_GET['b2brouter_bulk_error'])
+        if (!isset($_GET['b2brouter_bulk_queued'])
             && !isset($_GET['b2brouter_bulk_skipped'])) {
             return;
         }
 
-        $success_count = isset($_GET['b2brouter_bulk_success']) ? intval($_GET['b2brouter_bulk_success']) : 0;
-        $error_count = isset($_GET['b2brouter_bulk_error']) ? intval($_GET['b2brouter_bulk_error']) : 0;
+        $queued_count = isset($_GET['b2brouter_bulk_queued']) ? intval($_GET['b2brouter_bulk_queued']) : 0;
         $skipped_count = isset($_GET['b2brouter_bulk_skipped']) ? intval($_GET['b2brouter_bulk_skipped']) : 0;
 
-        if ($success_count > 0) {
-            echo '<div class="notice notice-success is-dismissible"><p>';
-            echo sprintf(
-                _n(
-                    '%d invoice generated successfully.',
-                    '%d invoices generated successfully.',
-                    $success_count,
-                    'b2brouter-woocommerce'
-                ),
-                $success_count
-            );
-            echo '</p></div>';
-        }
+        if ($queued_count > 0) {
+            // Deep link to the Action Scheduler UI, filtered to our hook so
+            // merchants can watch progress and inspect per-action logs. AS does
+            // not honor a ?group= filter param; the `s` (search) param is what
+            // narrows the list to a hook name.
+            $scheduled_actions_url = admin_url('admin.php?page=wc-status&tab=action-scheduler&s=b2brouter_bulk_generate_invoice');
 
-        if ($error_count > 0) {
-            echo '<div class="notice notice-error is-dismissible"><p>';
+            echo '<div class="notice notice-info is-dismissible"><p>';
             echo sprintf(
                 _n(
-                    '%d invoice failed to generate.',
-                    '%d invoices failed to generate.',
-                    $error_count,
+                    '%1$d invoice queued for background processing. <a href="%2$s">View Scheduled Actions</a>.',
+                    '%1$d invoices queued for background processing. <a href="%2$s">View Scheduled Actions</a>.',
+                    $queued_count,
                     'b2brouter-woocommerce'
                 ),
-                $error_count
+                $queued_count,
+                esc_url($scheduled_actions_url)
             );
             echo '</p></div>';
         }
@@ -710,8 +731,8 @@ class Order_Handler {
             echo '<div class="notice notice-warning is-dismissible"><p>';
             echo sprintf(
                 _n(
-                    '%d order was skipped because it is not in the completed status. Only completed orders can be invoiced from the bulk action.',
-                    '%d orders were skipped because they are not in the completed status. Only completed orders can be invoiced from the bulk action.',
+                    '%d order was skipped because it is not completed or already has an invoice.',
+                    '%d orders were skipped because they are not completed or already have invoices.',
                     $skipped_count,
                     'b2brouter-woocommerce'
                 ),

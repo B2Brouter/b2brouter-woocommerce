@@ -374,12 +374,14 @@ class OrderHandlerTest extends TestCase {
     }
 
     /**
-     * Test handle_bulk_action processes orders
+     * Test handle_bulk_action enqueues an async action per eligible order
+     * and never calls the generator inline.
      *
      * @return void
      */
-    public function test_handle_bulk_action_generates_invoices() {
-        global $wc_mock_orders;
+    public function test_handle_bulk_action_enqueues_eligible_orders() {
+        global $wc_mock_orders, $as_async_actions;
+        $as_async_actions = array();
 
         foreach (array(100, 101, 102) as $id) {
             $order = new WC_Order($id);
@@ -387,14 +389,25 @@ class OrderHandlerTest extends TestCase {
             $wc_mock_orders[$id] = $order;
         }
 
-        $this->mock_invoice_generator->method('generate_invoice')
-                                    ->willReturn(array('success' => true));
+        // has_invoice() short-circuit must run; none of these have an invoice.
+        $this->mock_invoice_generator->method('has_invoice')->willReturn(false);
+
+        // The generator must NOT be called synchronously from the bulk handler.
+        $this->mock_invoice_generator->expects($this->never())
+                                    ->method('generate_invoice');
 
         $redirect_to = 'http://example.com/wp-admin/edit.php';
         $result = $this->handler->handle_bulk_action($redirect_to, 'b2brouter_generate_invoices', array(100, 101, 102));
 
-        $this->assertStringContainsString('b2brouter_bulk_success=3', $result);
-        $this->assertStringContainsString('b2brouter_bulk_error=0', $result);
+        $this->assertCount(3, $as_async_actions);
+        $this->assertSame('b2brouter_bulk_generate_invoice', $as_async_actions[0]['hook']);
+        $this->assertSame('b2brouter', $as_async_actions[0]['group']);
+        $this->assertSame(array(100, 101, 102), array_map(
+            function ($entry) { return $entry['args']['order_id']; },
+            $as_async_actions
+        ));
+
+        $this->assertStringContainsString('b2brouter_bulk_queued=3', $result);
         $this->assertStringContainsString('b2brouter_bulk_skipped=0', $result);
 
         foreach (array(100, 101, 102) as $id) {
@@ -403,44 +416,13 @@ class OrderHandlerTest extends TestCase {
     }
 
     /**
-     * Test handle_bulk_action counts errors
-     *
-     * @return void
-     */
-    public function test_handle_bulk_action_counts_errors() {
-        global $wc_mock_orders;
-
-        foreach (array(100, 101, 102) as $id) {
-            $order = new WC_Order($id);
-            $order->set_status('completed');
-            $wc_mock_orders[$id] = $order;
-        }
-
-        $this->mock_invoice_generator->method('generate_invoice')
-                                    ->willReturnOnConsecutiveCalls(
-                                        array('success' => true),
-                                        array('success' => false),
-                                        array('success' => true)
-                                    );
-
-        $redirect_to = 'http://example.com/wp-admin/edit.php';
-        $result = $this->handler->handle_bulk_action($redirect_to, 'b2brouter_generate_invoices', array(100, 101, 102));
-
-        $this->assertStringContainsString('b2brouter_bulk_success=2', $result);
-        $this->assertStringContainsString('b2brouter_bulk_error=1', $result);
-
-        foreach (array(100, 101, 102) as $id) {
-            unset($wc_mock_orders[$id]);
-        }
-    }
-
-    /**
-     * Test handle_bulk_action skips non-completed orders and does not invoice them
+     * Test handle_bulk_action skips non-completed orders and does not enqueue them.
      *
      * @return void
      */
     public function test_handle_bulk_action_skips_non_completed_orders() {
-        global $wc_mock_orders;
+        global $wc_mock_orders, $as_async_actions;
+        $as_async_actions = array();
 
         $completed = new WC_Order(200);
         $completed->set_status('completed');
@@ -454,36 +436,105 @@ class OrderHandlerTest extends TestCase {
         $pending->set_status('pending');
         $wc_mock_orders[202] = $pending;
 
-        // Only the completed order should reach the generator
-        $this->mock_invoice_generator->expects($this->once())
-                                    ->method('generate_invoice')
-                                    ->with(200)
-                                    ->willReturn(array('success' => true));
+        $this->mock_invoice_generator->method('has_invoice')->willReturn(false);
+        $this->mock_invoice_generator->expects($this->never())->method('generate_invoice');
 
         $redirect_to = 'http://example.com/wp-admin/edit.php';
         $result = $this->handler->handle_bulk_action($redirect_to, 'b2brouter_generate_invoices', array(200, 201, 202));
 
-        $this->assertStringContainsString('b2brouter_bulk_success=1', $result);
-        $this->assertStringContainsString('b2brouter_bulk_error=0', $result);
+        $this->assertCount(1, $as_async_actions);
+        $this->assertSame(200, $as_async_actions[0]['args']['order_id']);
+
+        $this->assertStringContainsString('b2brouter_bulk_queued=1', $result);
         $this->assertStringContainsString('b2brouter_bulk_skipped=2', $result);
 
         unset($wc_mock_orders[200], $wc_mock_orders[201], $wc_mock_orders[202]);
     }
 
     /**
-     * Test handle_bulk_action counts missing orders as errors
+     * Test handle_bulk_action skips orders that already have an invoice.
      *
      * @return void
      */
-    public function test_handle_bulk_action_counts_missing_orders_as_errors() {
-        $this->mock_invoice_generator->expects($this->never())
-                                    ->method('generate_invoice');
+    public function test_handle_bulk_action_skips_already_invoiced_orders() {
+        global $wc_mock_orders, $as_async_actions;
+        $as_async_actions = array();
+
+        foreach (array(300, 301) as $id) {
+            $order = new WC_Order($id);
+            $order->set_status('completed');
+            $wc_mock_orders[$id] = $order;
+        }
+
+        // 300 already invoiced, 301 not.
+        $this->mock_invoice_generator->method('has_invoice')
+            ->willReturnMap(array(
+                array(300, true),
+                array(301, false),
+            ));
+
+        $redirect_to = 'http://example.com/wp-admin/edit.php';
+        $result = $this->handler->handle_bulk_action($redirect_to, 'b2brouter_generate_invoices', array(300, 301));
+
+        $this->assertCount(1, $as_async_actions);
+        $this->assertSame(301, $as_async_actions[0]['args']['order_id']);
+
+        $this->assertStringContainsString('b2brouter_bulk_queued=1', $result);
+        $this->assertStringContainsString('b2brouter_bulk_skipped=1', $result);
+
+        unset($wc_mock_orders[300], $wc_mock_orders[301]);
+    }
+
+    /**
+     * Test handle_bulk_action does not enqueue a second copy when an action
+     * for the same order is already pending in the queue.
+     *
+     * @return void
+     */
+    public function test_handle_bulk_action_dedupes_already_queued_orders() {
+        global $wc_mock_orders, $as_async_actions;
+        $as_async_actions = array();
+
+        $order = new WC_Order(400);
+        $order->set_status('completed');
+        $wc_mock_orders[400] = $order;
+
+        $this->mock_invoice_generator->method('has_invoice')->willReturn(false);
+
+        // Simulate an earlier submission that already queued this order.
+        $as_async_actions[] = array(
+            'hook' => 'b2brouter_bulk_generate_invoice',
+            'args' => array('order_id' => 400),
+            'group' => 'b2brouter',
+        );
+
+        $redirect_to = 'http://example.com/wp-admin/edit.php';
+        $result = $this->handler->handle_bulk_action($redirect_to, 'b2brouter_generate_invoices', array(400));
+
+        // Still one row total — no duplicate was added.
+        $this->assertCount(1, $as_async_actions);
+
+        // Counted as queued so the notice reflects that the work is in flight.
+        $this->assertStringContainsString('b2brouter_bulk_queued=1', $result);
+        $this->assertStringContainsString('b2brouter_bulk_skipped=0', $result);
+
+        unset($wc_mock_orders[400]);
+    }
+
+    /**
+     * Test handle_bulk_action does not enqueue when wc_get_order returns null.
+     *
+     * @return void
+     */
+    public function test_handle_bulk_action_does_not_enqueue_missing_orders() {
+        global $as_async_actions;
+        $as_async_actions = array();
 
         $redirect_to = 'http://example.com/wp-admin/edit.php';
         $result = $this->handler->handle_bulk_action($redirect_to, 'b2brouter_generate_invoices', array(9999));
 
-        $this->assertStringContainsString('b2brouter_bulk_error=1', $result);
-        $this->assertStringContainsString('b2brouter_bulk_success=0', $result);
+        $this->assertCount(0, $as_async_actions);
+        $this->assertStringContainsString('b2brouter_bulk_queued=0', $result);
     }
 
     /**
@@ -499,56 +550,112 @@ class OrderHandlerTest extends TestCase {
     }
 
     /**
-     * Test bulk_action_notices shows success
+     * Test process_queued_invoice delegates to the generator with the order id.
      *
      * @return void
      */
-    public function test_bulk_action_notices_shows_success_message() {
-        $_GET['b2brouter_bulk_success'] = '5';
+    public function test_process_queued_invoice_delegates_to_generator() {
+        $this->mock_invoice_generator->expects($this->once())
+                                    ->method('generate_invoice')
+                                    ->with(123)
+                                    ->willReturn(array('success' => true));
 
-        ob_start();
-        $this->handler->bulk_action_notices();
-        $output = ob_get_clean();
-
-        $this->assertStringContainsString('notice-success', $output);
-        $this->assertStringContainsString('5 invoices generated successfully', $output);
-
-        unset($_GET['b2brouter_bulk_success']);
+        $this->handler->process_queued_invoice(123);
     }
 
     /**
-     * Test bulk_action_notices shows error
+     * Test process_queued_invoice throws when the generator reports failure,
+     * so Action Scheduler marks the action failed and logs the message.
      *
      * @return void
      */
-    public function test_bulk_action_notices_shows_error_message() {
-        $_GET['b2brouter_bulk_error'] = '3';
+    public function test_process_queued_invoice_throws_on_generator_failure() {
+        $this->mock_invoice_generator->expects($this->once())
+                                    ->method('generate_invoice')
+                                    ->with(456)
+                                    ->willReturn(array(
+                                        'success' => false,
+                                        'message' => 'Account ID not configured',
+                                    ));
 
-        ob_start();
-        $this->handler->bulk_action_notices();
-        $output = ob_get_clean();
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Account ID not configured');
 
-        $this->assertStringContainsString('notice-error', $output);
-        $this->assertStringContainsString('3 invoices failed to generate', $output);
-
-        unset($_GET['b2brouter_bulk_error']);
+        $this->handler->process_queued_invoice(456);
     }
 
     /**
-     * Test bulk_action_notices singular form
+     * Test process_queued_invoice falls back to a generic message when the
+     * generator omits one.
      *
      * @return void
      */
-    public function test_bulk_action_notices_uses_singular_for_one() {
-        $_GET['b2brouter_bulk_success'] = '1';
+    public function test_process_queued_invoice_throws_with_fallback_message() {
+        $this->mock_invoice_generator->expects($this->once())
+                                    ->method('generate_invoice')
+                                    ->with(789)
+                                    ->willReturn(array('success' => false));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Invoice generation failed');
+
+        $this->handler->process_queued_invoice(789);
+    }
+
+    /**
+     * Test the worker is wired to the AS hook end-to-end: firing
+     * b2brouter_bulk_generate_invoice with an order_id reaches the generator.
+     * Stronger than asserting the hook key exists, since this also catches
+     * wrong callbacks, wrong priority, or accepted_args=0.
+     *
+     * @return void
+     */
+    public function test_process_queued_invoice_runs_when_hook_fires() {
+        $this->mock_invoice_generator->expects($this->once())
+                                    ->method('generate_invoice')
+                                    ->with(999)
+                                    ->willReturn(array('success' => true));
+
+        do_action('b2brouter_bulk_generate_invoice', 999);
+    }
+
+    /**
+     * Test bulk_action_notices shows the queued info message.
+     *
+     * @return void
+     */
+    public function test_bulk_action_notices_shows_queued_message() {
+        $_GET['b2brouter_bulk_queued'] = '5';
 
         ob_start();
         $this->handler->bulk_action_notices();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('1 invoice generated successfully', $output);
+        $this->assertStringContainsString('notice-info', $output);
+        $this->assertStringContainsString('5 invoices queued', $output);
+        // Deep link to AS UI: AS reads `s` (search) — not `group` — so we
+        // narrow by hook name, which uniquely identifies our actions.
+        $this->assertStringContainsString('page=wc-status', $output);
+        $this->assertStringContainsString('s=b2brouter_bulk_generate_invoice', $output);
 
-        unset($_GET['b2brouter_bulk_success']);
+        unset($_GET['b2brouter_bulk_queued']);
+    }
+
+    /**
+     * Test bulk_action_notices uses singular for one queued.
+     *
+     * @return void
+     */
+    public function test_bulk_action_notices_uses_singular_for_one_queued() {
+        $_GET['b2brouter_bulk_queued'] = '1';
+
+        ob_start();
+        $this->handler->bulk_action_notices();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString('1 invoice queued', $output);
+
+        unset($_GET['b2brouter_bulk_queued']);
     }
 
     /**
@@ -578,7 +685,7 @@ class OrderHandlerTest extends TestCase {
 
         $this->assertStringContainsString('notice-warning', $output);
         $this->assertStringContainsString('2 orders were skipped', $output);
-        $this->assertStringContainsString('completed status', $output);
+        $this->assertStringContainsString('not completed or already have invoices', $output);
 
         unset($_GET['b2brouter_bulk_skipped']);
     }
