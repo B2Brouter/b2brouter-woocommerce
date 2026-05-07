@@ -2,7 +2,7 @@
 Contributors: B2Brouter
 Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
 Requires at least: 5.8
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 7.4
 Stable tag: 0.9.4
 License: MIT
