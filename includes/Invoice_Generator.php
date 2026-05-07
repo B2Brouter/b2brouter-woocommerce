@@ -349,9 +349,9 @@ class Invoice_Generator {
         }
         if (!empty($tin)) {
             $contact['tin_value'] = $tin;
-            // B2BRouter uses TIN scheme 9999 for generic tax IDs
-            // This can be adjusted based on country if needed
-            $contact['tin_scheme'] = 9999;
+            // B2BRouter uses TIN scheme 9999 for generic tax IDs.
+            // API 2026-03-02 expects scheme codes as zero-padded 4-character strings.
+            $contact['tin_scheme'] = '9999';
         }
 
         // Determine if we should use credit notes (positive amounts) or rectificative (negative amounts)

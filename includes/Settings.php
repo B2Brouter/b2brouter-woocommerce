@@ -259,45 +259,26 @@ class Settings {
             $options = array('api_base' => $this->get_api_base_url());
             $client = $this->build_b2brouter_client($api_key, $options);
 
-            // Call GET /accounts to validate the key and retrieve all accounts
-            $url = $client->getApiBase() . '/accounts?limit=100';
-
-            $headers = array(
-                'X-B2B-API-Key' => $api_key,
-                'X-B2B-API-Version' => $client->getApiVersion(),
-                'Accept' => 'application/json'
-            );
-
-            $response = $client->getHttpClient()->request(
-                'GET',
-                $url,
-                $headers,
-                null,
-                $client->getTimeout()
-            );
-
-            // Check if request was successful
-            if ($response['status'] !== 200) {
-                $body = json_decode($response['body'], true);
-                $error_message = isset($body['message']) ? $body['message'] : __('Invalid API key', 'b2brouter-woocommerce');
+            try {
+                $accounts = $client->accounts->all(array('limit' => 100))->all();
+            } catch (\B2BRouter\Exception\ApiErrorException $e) {
+                $message = $e->getMessage();
+                if ($message === '' || $message === null) {
+                    $message = __('Invalid API key', 'b2brouter-woocommerce');
+                }
 
                 return array(
                     'valid' => false,
-                    'message' => $error_message
+                    'message' => $message,
                 );
             }
 
-            // Parse response and extract accounts
-            $body = json_decode($response['body'], true);
-
-            if (!isset($body['accounts']) || empty($body['accounts'])) {
+            if (empty($accounts)) {
                 return array(
                     'valid' => false,
                     'message' => __('No accounts found for this API key', 'b2brouter-woocommerce')
                 );
             }
-
-            $accounts = $body['accounts'];
 
             // Single account: auto-select it
             if (count($accounts) === 1) {
