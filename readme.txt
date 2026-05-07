@@ -1,5 +1,5 @@
 === B2Brouter for WooCommerce ===
-Contributors: B2Brouter
+Contributors: b2brouter
 Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
 Requires at least: 5.8
 Tested up to: 6.9
