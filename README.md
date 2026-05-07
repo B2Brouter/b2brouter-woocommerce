@@ -1,13 +1,30 @@
 # B2Brouter for WooCommerce
 
-**Automated invoice generation and tax compliance for WooCommerce using B2Brouter's eDocExchange service.**
+**Automated e-invoicing for WooCommerce with built-in compliance for Spain (Verifactu and TicketBAI), France (DGFiP / PPF–Chorus Pro) and Poland (KSeF).**
 
-B2Brouter for WooCommerce integrates your WooCommerce store with B2Brouter's electronic invoicing platform, providing structured data exchange, multi-country tax compliance, and API-driven invoice delivery for B2B and B2C eCommerce.
+B2Brouter for WooCommerce connects your store to B2Brouter's eDocExchange platform: structured invoice data, electronic delivery, and country-specific tax authority reporting where required.
 
 [![Version](https://img.shields.io/badge/version-0.9.4-blue.svg)](https://github.com/B2Brouter/b2brouter-woocommerce/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-blue.svg)](https://wordpress.org)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-5.0%2B-purple.svg)](https://woocommerce.com)
+
+---
+
+## Compliance scope
+
+The plugin includes explicit support for the following e-invoicing regimes:
+
+- **Spain — Verifactu**: Automatic AEAT reporting with QR verification on every issued invoice (state-wide regime).
+- **Spain (Basque Country) — TicketBAI**: Automatic submission to the regional tax authorities of Bizkaia, Gipuzkoa and Araba, with the corresponding TBAI identifier and QR.
+- **France — DGFiP**: Routing through the official PPF / Chorus Pro infrastructure.
+- **Poland — KSeF**: Automatic submission of invoices to the national KSeF system.
+
+Beyond these explicit regimes, the plugin generates compliant electronic invoices (UBL, Facturae, Peppol) for the rest of the EU, the UK, and other jurisdictions supported by B2Brouter.
+
+> **Authority-specific configuration** (Verifactu / TicketBAI credentials, KSeF tokens, Chorus Pro identifiers, etc.) is managed in your **B2Brouter dashboard**, not in the WordPress plugin UI. The plugin only needs your B2Brouter API key.
+
+> Need compliance for another country? [Open an issue](https://github.com/B2Brouter/b2brouter-woocommerce/issues/new) — we prioritise based on demand.
 
 ---
 
@@ -35,11 +52,11 @@ B2Brouter for WooCommerce integrates your WooCommerce store with B2Brouter's ele
 ### Tax Compliance
 
 - **Automatic Tax Category Detection**: Analyzes WooCommerce order data to determine appropriate tax categories for each line item
-- **PEPPOL Tax Categories**: Supports standard PEPPOL categories:
+- **Peppol Tax Categories**: Supports standard Peppol categories:
   - **S** (Standard rate): Applied when taxes exist
   - **E** (Exempt from tax): Taxable items with 0% rate
   - **Z** (Zero-rated goods): Items with explicit zero-rate tax class
-  - **NS** (Not subject to tax): Non-taxable items (B2Brouter maps to PEPPOL G or O based on context)
+  - **NS** (Not subject to tax): Non-taxable items (B2Brouter maps to Peppol G or O based on context)
   - **AE** (VAT Reverse Charge): Automatically detected for intra-EU B2B transactions
 - **Intra-EU Reverse Charge**: Automatic detection based on customer TIN and country comparison
 - **Dynamic Tax Names**: Tax names automatically localized by supplier country (IVA, TVA, VAT, MwSt, GST, etc.)
@@ -122,7 +139,7 @@ Get real-time invoice status updates in your WooCommerce orders with two sync me
 - **API Key Validation**: Real-time validation with account information retrieval
 - **Structured Data Exchange**: Sends structured invoice data (not just PDFs)
 - **Electronic Invoice Formats**: Supports UBL, Facturae, and other formats via B2Brouter
-- **Multi-Country Compliance**: B2Brouter adapts invoice requirements for PEPPOL and non-PEPPOL countries
+- **Multi-Country Compliance**: B2Brouter adapts invoice requirements for Peppol and non-Peppol countries — see [Compliance scope](#compliance-scope) for the regimes explicitly supported
 
 ---
 
@@ -276,7 +293,7 @@ The plugin reads tax configuration from WooCommerce:
 - Create tax class named "Zero Rate"
 - Set tax rate to 0%
 - Assign to products
-- Plugin uses PEPPOL category Z
+- Plugin uses Peppol category Z
 
 **Non-Taxable Products**:
 - Set product **Tax Status** to "None"

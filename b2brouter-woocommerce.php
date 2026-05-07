@@ -2,7 +2,7 @@
 /**
  * Plugin Name: B2Brouter for WooCommerce
  * Plugin URI: https://b2brouter.net
- * Description: Generate and send electronic invoices from WooCommerce orders using B2Brouter
+ * Description: Electronic invoicing for WooCommerce with compliance for Spain (Verifactu, TicketBAI), France (DGFiP) and Poland (KSeF), plus general e-invoicing for the EU and beyond.
  * Version: 0.9.4
  * Author: B2Brouter
  * Author URI: https://b2brouter.net
