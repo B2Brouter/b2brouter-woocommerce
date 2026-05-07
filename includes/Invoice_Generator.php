@@ -395,7 +395,7 @@ class Invoice_Generator {
                 'price' => $price,
             );
 
-            // Always add tax information (PEPPOL compliant)
+            // Always add tax information (Peppol compliant)
             $tax_rate = $this->get_item_tax_rate($item, $item_order);
             $tax_info = $this->get_peppol_tax_category($item, $item_order, $tax_rate);
             $line['taxes_attributes'] = array(
@@ -431,7 +431,7 @@ class Invoice_Generator {
                 'price' => $shipping_price,
             );
 
-            // Always add tax information for shipping (PEPPOL compliant)
+            // Always add tax information for shipping (Peppol compliant)
             $shipping_tax_rate = $this->get_shipping_tax_rate($item_order);
             $merchant_country = $this->get_merchant_country();
             $tax_name = $this->get_tax_name($merchant_country);
@@ -1474,7 +1474,7 @@ class Invoice_Generator {
     }
 
     /**
-     * Get PEPPOL tax category and details for an item
+     * Get Peppol tax category and details for an item
      *
      * @since 1.0.0
      * @param \WC_Order_Item_Product $item The order item

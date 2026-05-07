@@ -11,14 +11,13 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 
 ### Compliance scope
 
-Documented explicit support for four national / regional e-invoicing regimes:
+Documented explicit support for three national e-invoicing regimes:
 
-- **Spain — Verifactu**: automatic AEAT reporting with QR verification (state-wide).
-- **Spain (Basque Country) — TicketBAI**: automatic submission to the regional tax authorities of Bizkaia, Gipuzkoa and Araba.
+- **Spain — Verifactu**: automatic AEAT reporting with QR verification.
 - **France — DGFiP**: routing via PPF / Chorus Pro.
 - **Poland — KSeF**: automatic submission to the national system.
 
-General electronic invoicing (UBL / Facturae / Peppol) continues to work for the rest of the EU, the UK, and other countries supported by B2Brouter. Authority-specific credentials and identifiers (Verifactu / TicketBAI certificates, KSeF tokens, Chorus Pro IDs, etc.) are managed in the B2Brouter dashboard, not in the WordPress plugin UI.
+General electronic invoicing (UBL / Facturae / Peppol) continues to work for the rest of the EU, the UK, and other countries supported by B2Brouter. Authority-specific credentials and identifiers (Verifactu certificates, KSeF tokens, Chorus Pro IDs, etc.) are managed in the B2Brouter dashboard, not in the WordPress plugin UI.
 
 ### Added
 

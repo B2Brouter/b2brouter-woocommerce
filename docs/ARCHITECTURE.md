@@ -336,14 +336,14 @@ WooCommerce order data is transformed to B2Brouter format:
 **Tax Handling**:
 - Merchant country extracted from WooCommerce settings
 - Tax name localized by country (IVA, TVA, VAT, etc.)
-- PEPPOL category determined per line item
+- Peppol category determined per line item
 - Intra-EU reverse charge automatically detected
 
 ### Country-specific compliance regimes
 
-The plugin does **not** implement the wire-format or transmission protocol of any specific tax authority. Country-specific compliance regimes explicitly supported in this release — Spain Verifactu, Spain TicketBAI (Bizkaia / Gipuzkoa / Araba), France DGFiP (PPF / Chorus Pro) and Poland KSeF — are handled entirely by B2Brouter's platform once a structured invoice is submitted via the SDK.
+The plugin does **not** implement the wire-format or transmission protocol of any specific tax authority. Country-specific compliance regimes explicitly supported in this release — Spain Verifactu, France DGFiP (PPF / Chorus Pro) and Poland KSeF — are handled entirely by B2Brouter's platform once a structured invoice is submitted via the SDK.
 
-Authority-specific configuration (Verifactu and TicketBAI certificates, KSeF authorization tokens, Chorus Pro identifiers, etc.) lives in the **B2Brouter dashboard**, not in the WordPress plugin UI. The plugin only requires an API key; the dashboard determines which regimes apply to each organizational unit.
+Authority-specific configuration (Verifactu certificates, KSeF authorization tokens, Chorus Pro identifiers, etc.) lives in the **B2Brouter dashboard**, not in the WordPress plugin UI. The plugin only requires an API key; the dashboard determines which regimes apply to each organizational unit.
 
 ---
 

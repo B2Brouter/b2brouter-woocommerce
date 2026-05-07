@@ -1,8 +1,8 @@
 # B2Brouter for WooCommerce
 
-**Automated e-invoicing for WooCommerce with built-in compliance for Spain (Verifactu and TicketBAI), France (DGFiP / PPF–Chorus Pro) and Poland (KSeF).**
+**Automated e-invoicing for WooCommerce with built-in compliance for Spain (Verifactu), France (DGFiP / PPF–Chorus Pro) and Poland (KSeF).**
 
-B2Brouter for WooCommerce connects your store to B2Brouter's eDocExchange platform: structured invoice data, electronic delivery, and country-specific tax authority reporting where required.
+B2Brouter for WooCommerce connects your store to B2Brouter's platform: structured invoice data, electronic delivery, and country-specific tax authority reporting where required.
 
 [![Version](https://img.shields.io/badge/version-0.9.4-blue.svg)](https://github.com/B2Brouter/b2brouter-woocommerce/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -15,14 +15,13 @@ B2Brouter for WooCommerce connects your store to B2Brouter's eDocExchange platfo
 
 The plugin includes explicit support for the following e-invoicing regimes:
 
-- **Spain — Verifactu**: Automatic AEAT reporting with QR verification on every issued invoice (state-wide regime).
-- **Spain (Basque Country) — TicketBAI**: Automatic submission to the regional tax authorities of Bizkaia, Gipuzkoa and Araba, with the corresponding TBAI identifier and QR.
+- **Spain — Verifactu**: Automatic AEAT reporting with QR verification on every issued invoice.
 - **France — DGFiP**: Routing through the official PPF / Chorus Pro infrastructure.
 - **Poland — KSeF**: Automatic submission of invoices to the national KSeF system.
 
 Beyond these explicit regimes, the plugin generates compliant electronic invoices (UBL, Facturae, Peppol) for the rest of the EU, the UK, and other jurisdictions supported by B2Brouter.
 
-> **Authority-specific configuration** (Verifactu / TicketBAI credentials, KSeF tokens, Chorus Pro identifiers, etc.) is managed in your **B2Brouter dashboard**, not in the WordPress plugin UI. The plugin only needs your B2Brouter API key.
+> **Authority-specific configuration** (Verifactu credentials, KSeF tokens, Chorus Pro identifiers, etc.) is managed in your **B2Brouter dashboard**, not in the WordPress plugin UI. The plugin only needs your B2Brouter API key.
 
 > Need compliance for another country? [Open an issue](https://github.com/B2Brouter/b2brouter-woocommerce/issues/new) — we prioritise based on demand.
 
