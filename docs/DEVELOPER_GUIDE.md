@@ -404,23 +404,37 @@ Update two lines:
 define('B2BROUTER_WC_VERSION', '1.1.0');
 ```
 
-#### Step 2: Commit and Push
+#### Step 2: Open a Release PR
+
+`main` is protected, so version bumps must land via pull request. Branch off main, commit the bumps, push the branch, and open a PR:
 
 ```bash
+git checkout main
+git pull --ff-only
+git checkout -b release_v1.1.0
+
 git add b2brouter-woocommerce.php
 git commit -m "Bump version to 1.1.0"
-git push origin main
+
+git push -u origin release_v1.1.0
+gh pr create --title "Release v1.1.0" --body "Version bump for 1.1.0 release."
 ```
 
-#### Step 3: Create and Push Tag
+Get the PR reviewed and merged before continuing.
+
+#### Step 3: Pull Main and Tag the Merge Commit
+
+After the PR is merged, the bumped `Version:` header lives on the merge commit on `main`. Tag that commit:
 
 ```bash
-# Create annotated tag
-git tag -a v1.1.0 -m "Release version 1.1.0"
+git checkout main
+git pull --ff-only
 
-# Push tag (triggers GitHub Actions)
+git tag -a v1.1.0 -m "Release version 1.1.0"
 git push origin v1.1.0
 ```
+
+Pushing the `v*.*.*` tag triggers GitHub Actions. The workflow validates that the tagged commit's `Version:` header matches the tag name (see `release.yml` lines 33–43), which is why the bump must be on `main` before tagging.
 
 #### Step 4: Monitor GitHub Actions
 
