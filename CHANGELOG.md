@@ -5,7 +5,7 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-05-08
+## [Unreleased]
 
 ### Changed
 
@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Bulk Invoice Generation**: The "Generate B2Brouter Invoices" bulk action now enqueues background jobs via Action Scheduler instead of generating invoices synchronously. Eliminates 504 timeouts on large selections (worst case was ~12 minutes for 50 orders with auto-save PDF). Orders that already have an invoice are pre-filtered and counted as skipped. Progress and per-action logs are visible under **WooCommerce → Status → Scheduled Actions** (group `b2brouter`) (closes #37)
 - **B2Brouter PHP SDK**: Upgraded from `^1.0.0` to `^1.2.0`. The SDK now defaults to API version `2026-03-02`. Verified the only plugin-touching change in the new API version is scheme code formatting: `tin_scheme` is now sent as the zero-padded string `'9999'` instead of integer `9999` (`Invoice_Generator.php`). Removed discount/charge fields, the `taxcode` query parameter, and the `type_document` rename — none are used by the plugin (closes #35)
 - **API Key Validation**: `Settings::validate_api_key()` now uses the SDK's new `AccountService` (`$client->accounts->all()`) instead of a hand-rolled HTTP call against `/accounts`, removing duplicated header construction and response parsing
-- **Documentation**: Refreshed release docs, readme.txt, Welcome/Settings links, and wp.org screenshots ahead of the 1.0.0 release.
 
 ## [0.9.4] - 2026-04-23
 
@@ -351,7 +350,6 @@ We welcome feedback on all aspects of the plugin. Please test in a staging envir
 
 ---
 
-[1.0.0]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.0
 [0.9.4]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.4
 [0.9.3]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.3
 [0.9.2]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.2
