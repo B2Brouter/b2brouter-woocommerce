@@ -444,11 +444,11 @@ class Admin {
 
                 <div class="b2brouter-card b2brouter-info">
                     <h3><?php esc_html_e('Need Help?', 'b2brouter-woocommerce'); ?></h3>
-                    <p><?php esc_html_e('Visit our GitHub repository for detailed documentation. If you need help, please open an issue.', 'b2brouter-woocommerce'); ?></p>
+                    <p><?php esc_html_e('Read our B2Brouter user manual and plugin configuration documentation.', 'b2brouter-woocommerce'); ?></p>
                     <p>
-                        <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Documentation', 'b2brouter-woocommerce'); ?></a> |
-                        <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Changelog', 'b2brouter-woocommerce'); ?></a> |
-                        <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Support', 'b2brouter-woocommerce'); ?></a>
+                        <a href="https://www.b2brouter.net/docs/#/en/" target="_blank"><?php esc_html_e('B2Brouter user manual', 'b2brouter-woocommerce'); ?></a> |
+                        <a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce" target="_blank"><?php esc_html_e('B2Brouter user guide for WooCommerce', 'b2brouter-woocommerce'); ?></a> |
+                        <a href="https://github.com/B2Brouter/b2brouter-woocommerce/blob/main/CHANGELOG.md" target="_blank"><?php esc_html_e('Changelog', 'b2brouter-woocommerce'); ?></a>
                     </p>
                 </div>
             </div>
@@ -668,7 +668,7 @@ class Admin {
                 <div class="notice notice-warning">
                     <p>
                         <?php esc_html_e('API key is not configured. Please enter your B2Brouter API key below.', 'b2brouter-woocommerce'); ?>
-                        <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-woocommerce'); ?></a>
+                        <a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce?id=initial-configuration" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-woocommerce'); ?></a>
                     </p>
                 </div>
             <?php endif; ?>
@@ -731,7 +731,7 @@ class Admin {
                             <?php endif; ?>
                             <p class="description">
                                 <?php esc_html_e('Enter your B2Brouter API key to enable invoice generation.', 'b2brouter-woocommerce'); ?>
-                                <a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-woocommerce'); ?></a>
+                                <a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce?id=initial-configuration" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-woocommerce'); ?></a>
                             </p>
                         </td>
                     </tr>
