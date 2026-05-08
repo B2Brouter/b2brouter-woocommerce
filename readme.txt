@@ -4,7 +4,7 @@ Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.9.4
+Stable tag: 1.0.0
 License: MIT
 License URI: https://opensource.org/license/mit
 
@@ -99,6 +99,19 @@ Yes. The plugin ships with a PHPUnit test suite. See `docs/DEVELOPER_GUIDE.md` i
 
 == Changelog ==
 
+= 1.0.0 =
+
+First stable release.
+
+**Changed:**
+
+* Removed the staging/production environment selector; the plugin defaults to production. Developers can override via the `B2BROUTER_API_BASE` and `B2BROUTER_WEB_BASE` constants in `wp-config.php` (replaces the previous `B2BROUTER_DEV_API_BASE`).
+* The order meta box "View in B2Brouter" link now respects the configured web app base URL instead of being hardcoded to production.
+* Bulk invoice generation now runs as background Action Scheduler jobs instead of synchronously, eliminating 504 timeouts on large selections. Progress is visible under WooCommerce → Status → Scheduled Actions (group `b2brouter`).
+* Upgraded the B2Brouter PHP SDK to `^1.2.0` (API version `2026-03-02`). `tin_scheme` is now sent as the zero-padded string `'9999'`.
+* `Settings::validate_api_key()` now uses the SDK's `AccountService` instead of a hand-rolled HTTP call.
+* Refreshed release documentation, readme.txt, Welcome/Settings links, and wp.org screenshots ahead of the 1.0.0 release.
+
 = 0.9.4 =
 
 Final pre-release before 1.0. Focused on stability, operational polish, and preparing the plugin for distribution via the WordPress.org plugin directory and the WooCommerce Marketplace.
@@ -159,6 +172,10 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 For the complete history, see `CHANGELOG.md` in the repository.
 
 == Upgrade Notice ==
+
+= 1.0.0 =
+
+First stable release. Staging/production environment selector removed (use `B2BROUTER_API_BASE` in `wp-config.php` to override); B2Brouter PHP SDK upgraded to ^1.2.0; bulk invoice generation moved to Action Scheduler.
 
 = 0.9.4 =
 
