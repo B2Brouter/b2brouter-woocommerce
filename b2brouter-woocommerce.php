@@ -3,7 +3,7 @@
  * Plugin Name: B2Brouter for WooCommerce
  * Plugin URI: https://b2brouter.net
  * Description: Electronic invoicing for WooCommerce. Compliance for Spain (Verifactu), France (DGFiP), Poland (KSeF) and general EU e-invoicing.
- * Version: 1.0.0
+ * Version: 0.9.4
  * Author: B2Brouter
  * Author URI: https://b2brouter.net
  * License: MIT
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('B2BROUTER_WC_VERSION', '1.0.0');
+define('B2BROUTER_WC_VERSION', '0.9.4');
 define('B2BROUTER_WC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('B2BROUTER_WC_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('B2BROUTER_WC_PLUGIN_BASENAME', plugin_basename(__FILE__));
