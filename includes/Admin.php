@@ -53,7 +53,7 @@ class Admin {
      * @param Invoice_Generator $invoice_generator Invoice generator instance
      * @param Status_Sync $status_sync Status sync instance
      */
-    public function __construct(Settings $settings, Invoice_Generator $invoice_generator, Status_Sync $status_sync = null) {
+    public function __construct(Settings $settings, Invoice_Generator $invoice_generator, ?Status_Sync $status_sync = null) {
         $this->settings = $settings;
         $this->invoice_generator = $invoice_generator;
         $this->status_sync = $status_sync;
