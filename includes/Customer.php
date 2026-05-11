@@ -377,9 +377,15 @@ class Customer {
             return true;
         }
 
-        // Check for guest access with order key
-        if (isset($_POST['order_key']) && $order->get_order_key() === $_POST['order_key']) {
-            return true;
+        // Check for guest access with order key. Nonce is verified by the AJAX
+        // entry points (check_ajax_referer) before this method is reached.
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
+        if (isset($_POST['order_key'])) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
+            $order_key = sanitize_text_field(wp_unslash($_POST['order_key']));
+            if ($order->get_order_key() === $order_key) {
+                return true;
+            }
         }
 
         return false;

@@ -125,9 +125,11 @@ class Invoice_List_Table extends \WP_List_Table {
         $current_page = $this->get_pagenum();
         $offset       = ($current_page - 1) * $per_page;
 
-        // Get sorting parameters
-        $orderby = isset($_REQUEST['orderby']) ? sanitize_text_field($_REQUEST['orderby']) : 'date';
-        $order   = isset($_REQUEST['order']) ? sanitize_text_field($_REQUEST['order']) : 'DESC';
+        // Get sorting parameters. Read-only table navigation; no state change.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $orderby = isset($_REQUEST['orderby']) ? sanitize_text_field(wp_unslash($_REQUEST['orderby'])) : 'date';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $order   = isset($_REQUEST['order']) ? sanitize_text_field(wp_unslash($_REQUEST['order'])) : 'DESC';
 
         // Query orders with invoices
         $args = array(
@@ -404,13 +406,10 @@ class Invoice_List_Table extends \WP_List_Table {
      */
     public function process_bulk_action() {
         if ('download' === $this->current_action()) {
-            // Check nonce
-            if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])) {
-                wp_die(__('Security check failed', 'b2brouter-woocommerce'));
-            }
+            check_admin_referer('bulk-' . $this->_args['plural']);
 
             // Get selected invoices
-            $invoice_ids = isset($_REQUEST['invoice']) ? array_map('intval', $_REQUEST['invoice']) : array();
+            $invoice_ids = isset($_REQUEST['invoice']) ? array_map('intval', (array) wp_unslash($_REQUEST['invoice'])) : array();
 
             if (empty($invoice_ids)) {
                 return;
@@ -441,8 +440,11 @@ class Invoice_List_Table extends \WP_List_Table {
      * @return void
      */
     public function bulk_download_notice() {
+        // Read-only notice from query param set by self::process_bulk_action() after redirect.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if (isset($_GET['bulk_download'])) {
-            $count = intval($_GET['bulk_download']);
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $count = intval(wp_unslash($_GET['bulk_download']));
             printf(
                 '<div class="notice notice-success is-dismissible"><p>%s</p></div>',
                 sprintf(
