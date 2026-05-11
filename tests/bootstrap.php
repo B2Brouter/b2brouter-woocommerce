@@ -141,6 +141,20 @@ if (!function_exists('esc_url')) {
     }
 }
 
+if (!function_exists('wp_kses_post')) {
+    /**
+     * Mock wp_kses_post function
+     *
+     * Tests don't exercise the allowlist — pass-through is sufficient.
+     *
+     * @param string $data Content to filter
+     * @return string Filtered content
+     */
+    function wp_kses_post($data) {
+        return $data;
+    }
+}
+
 if (!function_exists('current_time')) {
     /**
      * Mock current_time function

@@ -1009,6 +1009,7 @@ class Invoice_Generator {
             header('Expires: 0');
 
             // Output PDF
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- raw PDF body, not HTML; Content-Type header set above.
             echo $pdf_data;
             exit;
 
