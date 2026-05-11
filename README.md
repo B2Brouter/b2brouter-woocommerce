@@ -173,14 +173,14 @@ cd b2brouter-woocommerce
 composer install
 
 # Link to WordPress plugins directory
-ln -s $(pwd) /path/to/wordpress/wp-content/plugins/b2brouter-woocommerce
+ln -s $(pwd) /path/to/wordpress/wp-content/plugins/b2brouter-for-woocommerce
 ```
 
 Build distribution package:
 
 ```bash
 ./build-release.sh
-# Output: build/b2brouter-woocommerce-X.X.X.zip
+# Output: build/b2brouter-for-woocommerce-X.X.X.zip
 ```
 
 See [DISTRIBUTION.md](docs/DISTRIBUTION.md) for release procedures.

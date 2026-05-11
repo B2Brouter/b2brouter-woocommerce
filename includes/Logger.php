@@ -3,7 +3,7 @@
  * Logger
  *
  * Thin wrapper around wc_get_logger() that pins the source to
- * 'b2brouter-woocommerce' so plugin entries are filterable in
+ * 'b2brouter-for-woocommerce' so plugin entries are filterable in
  * WooCommerce > Status > Logs.
  *
  * @package B2Brouter\WooCommerce
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
  */
 class Logger {
 
-    const SOURCE = 'b2brouter-woocommerce';
+    const SOURCE = 'b2brouter-for-woocommerce';
 
     /**
      * Log an error-level message.

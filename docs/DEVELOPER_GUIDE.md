@@ -39,7 +39,7 @@ cd b2brouter-woocommerce
 composer install
 
 # Link to WordPress (or see full setup guide)
-ln -s $(pwd) /path/to/wordpress/wp-content/plugins/b2brouter-woocommerce
+ln -s $(pwd) /path/to/wordpress/wp-content/plugins/b2brouter-for-woocommerce
 ```
 
 ---
@@ -100,7 +100,7 @@ b2brouter-woocommerce/
 │   ├── WebhookHandlerTest.php
 │   └── bootstrap.php
 ├── vendor/                      # Composer dependencies (gitignored)
-├── b2brouter-woocommerce.php    # Main plugin file
+├── b2brouter-for-woocommerce.php    # Main plugin file
 ├── build-release.sh             # Build distribution package
 ├── CHANGELOG.md                 # Version history
 ├── composer.json                # Composer configuration
@@ -113,7 +113,7 @@ b2brouter-woocommerce/
 
 | File | Purpose |
 |------|---------|
-| `b2brouter-woocommerce.php` | Plugin bootstrap, dependency injection container |
+| `b2brouter-for-woocommerce.php` | Plugin bootstrap, dependency injection container |
 | `includes/Settings.php` | API key storage, environment config, validation, webhook settings |
 | `includes/Invoice_Generator.php` | Invoice data preparation, SDK calls |
 | `includes/Order_Handler.php` | WooCommerce hooks, order integration |
@@ -392,7 +392,7 @@ Triggers automatically when you push a version tag.
 
 ```bash
 # Edit plugin file
-vim b2brouter-woocommerce.php
+vim b2brouter-for-woocommerce.php
 ```
 
 Update two lines:
@@ -413,7 +413,7 @@ git checkout main
 git pull --ff-only
 git checkout -b release_v1.1.0
 
-git add b2brouter-woocommerce.php
+git add b2brouter-for-woocommerce.php
 git commit -m "Bump version to 1.1.0"
 
 git push -u origin release_v1.1.0
@@ -454,7 +454,7 @@ Pushing the `v*.*.*` tag triggers GitHub Actions. The workflow validates that th
 #### Step 5: Verify Release
 
 1. Go to GitHub → **Releases**
-2. Download `b2brouter-woocommerce-1.1.0.zip`
+2. Download `b2brouter-for-woocommerce-1.1.0.zip`
 3. Test in clean WordPress install
 
 ### Method 2: Manual Local Build
@@ -467,7 +467,7 @@ For testing before official release.
 # Run build script
 ./build-release.sh
 
-# Output: dist/b2brouter-woocommerce-1.1.0.zip
+# Output: dist/b2brouter-for-woocommerce-1.1.0.zip
 ```
 
 **What it does:**
@@ -483,10 +483,10 @@ For testing before official release.
 
 ```bash
 # Verify ZIP contents
-unzip -l dist/b2brouter-woocommerce-1.1.0.zip | grep vendor/b2brouter
+unzip -l dist/b2brouter-for-woocommerce-1.1.0.zip | grep vendor/b2brouter
 
 # Extract and test
-unzip dist/b2brouter-woocommerce-1.1.0.zip -d /tmp/test
+unzip dist/b2brouter-for-woocommerce-1.1.0.zip -d /tmp/test
 # ... test in WordPress ...
 ```
 
@@ -496,7 +496,7 @@ If local testing passes:
 
 ```bash
 # Commit and tag
-git add b2brouter-woocommerce.php
+git add b2brouter-for-woocommerce.php
 git commit -m "Release version 1.1.0"
 git tag -a v1.1.0 -m "Release 1.1.0"
 git push origin main v1.1.0
@@ -567,8 +567,8 @@ File: `.github/workflows/release.yml`
 14. Upload artifacts
 
 **Outputs:**
-- `b2brouter-woocommerce-X.Y.Z.zip` - Distribution package
-- `b2brouter-woocommerce-X.Y.Z.zip.sha256` - Checksum
+- `b2brouter-for-woocommerce-X.Y.Z.zip` - Distribution package
+- `b2brouter-for-woocommerce-X.Y.Z.zip.sha256` - Checksum
 - Release notes with installation instructions
 
 ### Branch Protection
@@ -650,7 +650,7 @@ try {
     error_log('Invoice generation failed: ' . $e->getMessage());
     return array(
         'success' => false,
-        'message' => __('Failed to generate invoice. Please try again.', 'b2brouter-woocommerce')
+        'message' => __('Failed to generate invoice. Please try again.', 'b2brouter-for-woocommerce')
     );
 }
 
@@ -664,9 +664,9 @@ $order->add_order_note('Invoice generation failed: ' . $e->getMessage());
 
 ```php
 // Good: Translatable
-__('Invoice generated successfully', 'b2brouter-woocommerce');
-_e('Settings saved', 'b2brouter-woocommerce');
-_n('%d invoice', '%d invoices', $count, 'b2brouter-woocommerce');
+__('Invoice generated successfully', 'b2brouter-for-woocommerce');
+_e('Settings saved', 'b2brouter-for-woocommerce');
+_n('%d invoice', '%d invoices', $count, 'b2brouter-for-woocommerce');
 
 // Bad: Hardcoded
 echo 'Invoice generated';
@@ -719,10 +719,10 @@ php -r "require 'vendor/autoload.php'; echo 'OK\n';"
 **Solution:**
 ```bash
 # Check symbolic link
-ls -la /path/to/wordpress/wp-content/plugins/b2brouter-woocommerce
+ls -la /path/to/wordpress/wp-content/plugins/b2brouter-for-woocommerce
 
 # Check main plugin file exists
-cat b2brouter-woocommerce.php | head -20
+cat b2brouter-for-woocommerce.php | head -20
 
 # Check for PHP errors
 tail -f /path/to/wordpress/wp-content/debug.log
@@ -810,13 +810,13 @@ git push origin v1.1.0
 **Solution:**
 ```bash
 # Ensure versions match
-grep "Version:" b2brouter-woocommerce.php
-grep "B2BROUTER_WC_VERSION" b2brouter-woocommerce.php
+grep "Version:" b2brouter-for-woocommerce.php
+grep "B2BROUTER_WC_VERSION" b2brouter-for-woocommerce.php
 git describe --tags
 
 # Fix and re-tag
-vim b2brouter-woocommerce.php
-git add b2brouter-woocommerce.php
+vim b2brouter-for-woocommerce.php
+git add b2brouter-for-woocommerce.php
 git commit --amend
 git tag -d v1.1.0
 git push origin :refs/tags/v1.1.0
@@ -877,10 +877,10 @@ git push origin feature/my-feature
 
 ```bash
 # Update version
-vim b2brouter-woocommerce.php
+vim b2brouter-for-woocommerce.php
 
 # Commit and tag
-git add b2brouter-woocommerce.php
+git add b2brouter-for-woocommerce.php
 git commit -m "Bump version to X.Y.Z"
 git push origin main
 git tag -a vX.Y.Z -m "Release X.Y.Z"
@@ -903,7 +903,7 @@ git push origin vX.Y.Z
 
 # Build and test distribution
 ./build-release.sh
-unzip -t dist/b2brouter-woocommerce-*.zip
+unzip -t dist/b2brouter-for-woocommerce-*.zip
 ```
 
 ---
