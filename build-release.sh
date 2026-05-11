@@ -64,6 +64,7 @@ echo -e "${YELLOW}Copying plugin files...${NC}"
 # Copy main files
 cp -r includes "${RELEASE_DIR}/"
 cp -r assets "${RELEASE_DIR}/"
+cp -r languages "${RELEASE_DIR}/"
 cp b2brouter-woocommerce.php "${RELEASE_DIR}/"
 cp composer.json "${RELEASE_DIR}/"
 cp LICENSE "${RELEASE_DIR}/"
