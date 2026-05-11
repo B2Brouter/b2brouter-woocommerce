@@ -149,8 +149,31 @@ class Admin {
      * @return void
      */
     public function register_settings() {
-        register_setting('b2brouter_settings', 'b2brouter_api_key');
-        register_setting('b2brouter_settings', 'b2brouter_invoice_mode');
+        register_setting('b2brouter_settings', 'b2brouter_api_key', array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default'           => '',
+        ));
+        register_setting('b2brouter_settings', 'b2brouter_invoice_mode', array(
+            'type'              => 'string',
+            'sanitize_callback' => array($this, 'sanitize_invoice_mode'),
+            'default'           => 'manual',
+        ));
+    }
+
+    /**
+     * Sanitize the invoice mode option.
+     *
+     * Whitelists the two values accepted by Settings::set_invoice_mode().
+     * Anything else falls back to 'manual', matching get_invoice_mode()'s default.
+     *
+     * @since 1.0.0
+     * @param mixed $value Raw value from the Settings API.
+     * @return string 'automatic' or 'manual'.
+     */
+    public function sanitize_invoice_mode($value) {
+        $allowed = array('automatic', 'manual');
+        return in_array($value, $allowed, true) ? $value : 'manual';
     }
 
     /**
