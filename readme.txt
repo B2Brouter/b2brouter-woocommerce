@@ -97,6 +97,28 @@ Yes. The plugin ships with a PHPUnit test suite. See `docs/DEVELOPER_GUIDE.md` i
 5. Webhook configuration section.
 6. Customer "My Account" view with Download Invoice / Generate Invoice buttons.
 
+== External Services ==
+
+This plugin connects your WooCommerce store to **B2Brouter**, a third-party e-invoicing SaaS operated by B2Brouter SL. Using the plugin requires an active B2Brouter account and API key.
+
+**Service endpoint:** `https://api.b2brouter.net` (overridable via the `B2BROUTER_API_BASE` constant for staging or self-hosted instances).
+
+**Data sent to B2Brouter when an invoice or credit note is created:**
+
+* Order data — order number, date, currency, totals, and line items (product name, SKU, quantity, unit price, tax rate, Peppol tax category).
+* Customer billing data — name, company name, billing address, country, email, and TIN/VAT number when provided at checkout.
+* Refund data when a credit note is generated against a previously invoiced order.
+
+**Data received from B2Brouter:** invoice status updates and PDF documents, either via webhook callbacks to `/wp-json/b2brouter/v1/webhook` or via SDK polling.
+
+**When data is transmitted:** whenever an invoice or credit note is created (automatically on order completion, or on demand from the order screen, the WooCommerce bulk action, or the customer's My Account page) and whenever invoice status is polled or pushed back via webhook.
+
+**Provider and legal documents:**
+
+* Provider: [B2Brouter](https://www.b2brouter.net)
+* [Terms and Conditions](https://www.b2brouter.net/global/terms-and-conditions/)
+* [Privacy Policy](https://www.b2brouter.net/global/privacy-policy/)
+
 == Changelog ==
 
 = 0.9.4 =
