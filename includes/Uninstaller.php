@@ -194,6 +194,7 @@ class Uninstaller {
                 'orderby'  => 'ID',
                 'order'    => 'ASC',
                 'status'   => 'any',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- one-shot meta scan at plugin deletion; no indexed alternative.
                 'meta_query' => array(
                     array(
                         'key'     => '_b2brouter_invoice_id',

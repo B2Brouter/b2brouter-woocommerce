@@ -302,7 +302,9 @@ class Webhook_Handler {
         // Query orders with matching invoice ID (HPOS-compatible)
         $orders = wc_get_orders(array(
             'limit' => 1,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- webhook resolves invoice_id to order; only path without a custom invoice_id index.
             'meta_key' => '_b2brouter_invoice_id',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- paired with meta_key above.
             'meta_value' => $invoice_id,
             'return' => 'ids',
             'type' => array('shop_order', 'shop_order_refund'),

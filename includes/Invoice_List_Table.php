@@ -137,6 +137,7 @@ class Invoice_List_Table extends \WP_List_Table {
             'offset'     => $offset,
             'orderby'    => $orderby,
             'order'      => $order,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- listing orders by invoice meta is the page's entire purpose.
             'meta_key'   => '_b2brouter_invoice_id',
             'meta_compare' => 'EXISTS',
             'type'       => array('shop_order', 'shop_order_refund'),
@@ -147,6 +148,7 @@ class Invoice_List_Table extends \WP_List_Table {
         // Get total count for pagination
         $total_args = array(
             'limit'      => -1,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- pagination count for the listing above.
             'meta_key'   => '_b2brouter_invoice_id',
             'meta_compare' => 'EXISTS',
             'type'       => array('shop_order', 'shop_order_refund'),

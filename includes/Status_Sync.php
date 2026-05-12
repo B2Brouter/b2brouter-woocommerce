@@ -214,6 +214,7 @@ class Status_Sync {
             'limit' => $limit * 2, // Get more to filter later
             'type' => array('shop_order', 'shop_order_refund'),
             'return' => 'ids',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- finding orders with a B2Brouter invoice is the sync job's purpose; no indexed alternative without a custom table.
             'meta_query' => array(
                 array(
                     'key' => '_b2brouter_invoice_id',
