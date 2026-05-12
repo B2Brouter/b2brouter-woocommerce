@@ -977,8 +977,8 @@ class Admin {
                                     <?php
                                     printf(
                                         esc_html__('Currently storing %d PDF(s) using %s of disk space', 'b2brouter-for-woocommerce'),
-                                        $stats['count'],
-                                        size_format($stats['total_size'], 2)
+                                        (int) $stats['count'],
+                                        esc_html( size_format($stats['total_size'], 2) )
                                     );
                                     ?>
                                 </p>
@@ -1102,7 +1102,7 @@ class Admin {
      */
     public function render_invoices_page() {
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'b2brouter-for-woocommerce'));
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'b2brouter-for-woocommerce'));
         }
 
         ?>

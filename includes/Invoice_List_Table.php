@@ -406,7 +406,7 @@ class Invoice_List_Table extends \WP_List_Table {
         if ('download' === $this->current_action()) {
             // Check nonce
             if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])) {
-                wp_die(__('Security check failed', 'b2brouter-for-woocommerce'));
+                wp_die(esc_html__('Security check failed', 'b2brouter-for-woocommerce'));
             }
 
             // Get selected invoices
@@ -452,7 +452,7 @@ class Invoice_List_Table extends \WP_List_Table {
                         $count,
                         'b2brouter-for-woocommerce'
                     )),
-                    $count
+                    (int) $count
                 )
             );
         }

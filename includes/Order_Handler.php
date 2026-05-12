@@ -405,10 +405,10 @@ class Order_Handler {
                         <div style="padding: 8px; background: #f9f9f9; margin-bottom: 8px; border-left: 3px solid <?php echo $refund_has_invoice ? '#46b450' : '#ddd'; ?>;">
                             <p style="margin: 0 0 5px 0;">
                                 <strong>
-                                    <?php printf(esc_html__('Refund #%s', 'b2brouter-for-woocommerce'), $refund->get_id()); ?>
+                                    <?php printf(esc_html__('Refund #%s', 'b2brouter-for-woocommerce'), (int) $refund->get_id()); ?>
                                 </strong>
                                 <span style="color: #666; font-size: 0.9em;">
-                                    (<?php echo wc_price($refund->get_amount(), array('currency' => $order->get_currency())); ?>)
+                                    (<?php echo wp_kses_post( wc_price($refund->get_amount(), array('currency' => $order->get_currency())) ); ?>)
                                 </span>
                             </p>
                             <?php if ($refund_has_invoice): ?>
@@ -714,30 +714,30 @@ class Order_Handler {
             $scheduled_actions_url = admin_url('admin.php?page=wc-status&tab=action-scheduler&s=b2brouter_bulk_generate_invoice');
 
             echo '<div class="notice notice-info is-dismissible"><p>';
-            echo sprintf(
+            echo wp_kses_post( sprintf(
                 _n(
                     '%1$d invoice queued for background processing. <a href="%2$s">View Scheduled Actions</a>.',
                     '%1$d invoices queued for background processing. <a href="%2$s">View Scheduled Actions</a>.',
                     $queued_count,
                     'b2brouter-for-woocommerce'
                 ),
-                $queued_count,
+                (int) $queued_count,
                 esc_url($scheduled_actions_url)
-            );
+            ) );
             echo '</p></div>';
         }
 
         if ($skipped_count > 0) {
             echo '<div class="notice notice-warning is-dismissible"><p>';
-            echo sprintf(
+            echo esc_html( sprintf(
                 _n(
                     '%d order was skipped because it is not completed or already has an invoice.',
                     '%d orders were skipped because they are not completed or already have invoices.',
                     $skipped_count,
                     'b2brouter-for-woocommerce'
                 ),
-                $skipped_count
-            );
+                (int) $skipped_count
+            ) );
             echo '</p></div>';
         }
     }
