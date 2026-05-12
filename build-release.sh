@@ -29,7 +29,7 @@ if ! command -v composer &> /dev/null; then
 fi
 
 # Get version from main plugin file
-VERSION=$(grep -E "^\s*\*\s*Version:" b2brouter-woocommerce.php | awk '{print $3}')
+VERSION=$(grep -E "^\s*\*\s*Version:" b2brouter-for-woocommerce.php | awk '{print $3}')
 if [ -z "$VERSION" ]; then
     echo -e "${RED}Error: Could not extract version from plugin file.${NC}"
     exit 1
@@ -41,7 +41,7 @@ echo ""
 # Define paths
 BUILD_DIR="build"
 DIST_DIR="dist"
-PLUGIN_NAME="b2brouter-woocommerce"
+PLUGIN_NAME="b2brouter-for-woocommerce"
 RELEASE_DIR="${BUILD_DIR}/${PLUGIN_NAME}"
 ARCHIVE_NAME="${PLUGIN_NAME}-${VERSION}.zip"
 
@@ -64,7 +64,7 @@ echo -e "${YELLOW}Copying plugin files...${NC}"
 # Required files/directories that must end up in the release
 REQUIRED_DIRS=(includes assets languages)
 REQUIRED_FILES=(
-    b2brouter-woocommerce.php
+    b2brouter-for-woocommerce.php
     uninstall.php
     readme.txt
     composer.json
@@ -174,7 +174,7 @@ echo -e "${YELLOW}Verifying archive contents...${NC}"
 ZIP_LIST=$(unzip -l "${DIST_DIR}/${ARCHIVE_NAME}")
 
 ZIP_REQUIRED=(
-    "${PLUGIN_NAME}/b2brouter-woocommerce.php"
+    "${PLUGIN_NAME}/b2brouter-for-woocommerce.php"
     "${PLUGIN_NAME}/uninstall.php"
     "${PLUGIN_NAME}/readme.txt"
     "${PLUGIN_NAME}/vendor/b2brouter/b2brouter-php/"

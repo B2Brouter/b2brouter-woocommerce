@@ -148,7 +148,7 @@ class Status_Sync {
         // Add 6-hourly schedule for webhook fallback polling
         $schedules['six_hourly'] = array(
             'interval' => 21600, // 6 hours in seconds
-            'display' => __('Every 6 Hours', 'b2brouter-woocommerce')
+            'display' => __('Every 6 Hours', 'b2brouter-for-woocommerce')
         );
 
         return $schedules;
@@ -348,7 +348,7 @@ class Status_Sync {
             if (!$order) {
                 return array(
                     'success' => false,
-                    'message' => __('Order not found', 'b2brouter-woocommerce')
+                    'message' => __('Order not found', 'b2brouter-for-woocommerce')
                 );
             }
 
@@ -357,7 +357,7 @@ class Status_Sync {
             if (empty($invoice_id)) {
                 return array(
                     'success' => false,
-                    'message' => __('No invoice ID found', 'b2brouter-woocommerce')
+                    'message' => __('No invoice ID found', 'b2brouter-for-woocommerce')
                 );
             }
 
@@ -370,7 +370,7 @@ class Status_Sync {
             if (empty($invoice)) {
                 return array(
                     'success' => false,
-                    'message' => __('Invoice not found in B2Brouter', 'b2brouter-woocommerce')
+                    'message' => __('Invoice not found in B2Brouter', 'b2brouter-for-woocommerce')
                 );
             }
 
@@ -392,7 +392,7 @@ class Status_Sync {
 
             return array(
                 'success' => true,
-                'message' => sprintf(__('Status updated to: %s', 'b2brouter-woocommerce'), $status),
+                'message' => sprintf(__('Status updated to: %s', 'b2brouter-for-woocommerce'), $status),
                 'status' => $status
             );
 
@@ -400,21 +400,21 @@ class Status_Sync {
             Logger::warning('B2Brouter Status Sync - Invoice not found for order ' . $order_id . ' (invoice ' . $invoice_id . ')');
             return array(
                 'success' => false,
-                'message' => __('Invoice not found in B2Brouter', 'b2brouter-woocommerce')
+                'message' => __('Invoice not found in B2Brouter', 'b2brouter-for-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\AuthenticationException $e) {
             Logger::error('B2Brouter Status Sync - Authentication failed: ' . $e->getMessage());
             return array(
                 'success' => false,
-                'message' => __('API authentication failed', 'b2brouter-woocommerce')
+                'message' => __('API authentication failed', 'b2brouter-for-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\ApiErrorException $e) {
             Logger::error('B2Brouter Status Sync - API error for order ' . $order_id . ': ' . $e->getMessage());
             return array(
                 'success' => false,
-                'message' => sprintf(__('API error: %s', 'b2brouter-woocommerce'), $e->getMessage())
+                'message' => sprintf(__('API error: %s', 'b2brouter-for-woocommerce'), $e->getMessage())
             );
 
         } catch (\Exception $e) {
@@ -467,11 +467,11 @@ class Status_Sync {
         $api_key = $this->settings->get_api_key();
 
         if (empty($api_key)) {
-            throw new \Exception(__('API key not configured', 'b2brouter-woocommerce'));
+            throw new \Exception(__('API key not configured', 'b2brouter-for-woocommerce'));
         }
 
         if (!class_exists('B2BRouter\B2BRouterClient')) {
-            throw new \Exception(__('B2Brouter PHP SDK not found', 'b2brouter-woocommerce'));
+            throw new \Exception(__('B2Brouter PHP SDK not found', 'b2brouter-for-woocommerce'));
         }
 
         $options = array('api_base' => $this->settings->get_api_base_url());

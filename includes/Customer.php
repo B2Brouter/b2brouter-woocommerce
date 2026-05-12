@@ -108,10 +108,10 @@ class Customer {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('b2brouter_customer_nonce'),
             'strings' => array(
-                'downloading' => __('Downloading...', 'b2brouter-woocommerce'),
-                'error' => __('Error downloading PDF', 'b2brouter-woocommerce'),
-                'generating' => __('Generating...', 'b2brouter-woocommerce'),
-                'generateInvoice' => __('Generate Invoice', 'b2brouter-woocommerce'),
+                'downloading' => __('Downloading...', 'b2brouter-for-woocommerce'),
+                'error' => __('Error downloading PDF', 'b2brouter-for-woocommerce'),
+                'generating' => __('Generating...', 'b2brouter-for-woocommerce'),
+                'generateInvoice' => __('Generate Invoice', 'b2brouter-for-woocommerce'),
             ),
             'debug' => defined('WP_DEBUG') && WP_DEBUG,
         ));
@@ -132,7 +132,7 @@ class Customer {
         if (!empty($invoice_id)) {
             $actions['b2brouter_download_invoice'] = array(
                 'url' => '#b2brouter-invoice-' . $order->get_id() . '-' . $order->get_order_key(),
-                'name' => __('Download Invoice', 'b2brouter-woocommerce'),
+                'name' => __('Download Invoice', 'b2brouter-for-woocommerce'),
             );
         }
         // If manual mode and no invoice, show generate button
@@ -140,7 +140,7 @@ class Customer {
                 in_array($order->get_status(), array('completed', 'processing'), true)) {
             $actions['b2brouter_generate_invoice'] = array(
                 'url' => '#',
-                'name' => __('Generate Invoice', 'b2brouter-woocommerce'),
+                'name' => __('Generate Invoice', 'b2brouter-for-woocommerce'),
             );
         }
 
@@ -153,7 +153,7 @@ class Customer {
                     // Encode refund ID in URL fragment for JavaScript extraction
                     $actions['b2brouter_download_credit_note_' . $refund->get_id()] = array(
                         'url' => '#refund-' . $refund->get_id(),
-                        'name' => __('Download Credit Note', 'b2brouter-woocommerce') . ' #' . ($index + 1),
+                        'name' => __('Download Credit Note', 'b2brouter-for-woocommerce') . ' #' . ($index + 1),
                     );
                 }
             }
@@ -190,12 +190,12 @@ class Customer {
 
         ?>
         <section class="b2brouter-invoice-section woocommerce-order-details">
-            <h2 class="woocommerce-order-details__title"><?php esc_html_e('Invoice', 'b2brouter-woocommerce'); ?></h2>
+            <h2 class="woocommerce-order-details__title"><?php esc_html_e('Invoice', 'b2brouter-for-woocommerce'); ?></h2>
 
             <div class="b2brouter-invoice-details">
                 <?php if (!empty($invoice_number)): ?>
                     <p>
-                        <strong><?php esc_html_e('Invoice Number:', 'b2brouter-woocommerce'); ?></strong>
+                        <strong><?php esc_html_e('Invoice Number:', 'b2brouter-for-woocommerce'); ?></strong>
                         <?php echo esc_html($invoice_number); ?>
                     </p>
                 <?php endif; ?>
@@ -206,7 +206,7 @@ class Customer {
                             data-order-id="<?php echo esc_attr($order_id); ?>"
                             data-order-key="<?php echo esc_attr($order->get_order_key()); ?>">
                         <span class="dashicons dashicons-pdf"></span>
-                        <?php esc_html_e('Download Invoice PDF', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('Download Invoice PDF', 'b2brouter-for-woocommerce'); ?>
                     </button>
                 </p>
 
@@ -220,7 +220,7 @@ class Customer {
                         <small>
                             <?php
                             printf(
-                                esc_html__('PDF Size: %s', 'b2brouter-woocommerce'),
+                                esc_html__('PDF Size: %s', 'b2brouter-for-woocommerce'),
                                 esc_html(size_format($pdf_size, 2))
                             );
                             ?>
@@ -247,7 +247,7 @@ class Customer {
 
         if (!$order_id) {
             wp_send_json_error(array(
-                'message' => __('Invalid order ID', 'b2brouter-woocommerce')
+                'message' => __('Invalid order ID', 'b2brouter-for-woocommerce')
             ));
         }
 
@@ -256,14 +256,14 @@ class Customer {
 
         if (!$order) {
             wp_send_json_error(array(
-                'message' => __('Order not found', 'b2brouter-woocommerce')
+                'message' => __('Order not found', 'b2brouter-for-woocommerce')
             ));
         }
 
         // Check customer permissions
         if (!$this->can_customer_access_order($order)) {
             wp_send_json_error(array(
-                'message' => __('You do not have permission to access this order', 'b2brouter-woocommerce')
+                'message' => __('You do not have permission to access this order', 'b2brouter-for-woocommerce')
             ));
         }
 
@@ -272,7 +272,7 @@ class Customer {
 
         if (empty($invoice_id)) {
             wp_send_json_error(array(
-                'message' => __('No invoice found for this order', 'b2brouter-woocommerce')
+                'message' => __('No invoice found for this order', 'b2brouter-for-woocommerce')
             ));
         }
 
@@ -295,7 +295,7 @@ class Customer {
 
         if (!$order_id) {
             wp_send_json_error(array(
-                'message' => __('Invalid order ID', 'b2brouter-woocommerce')
+                'message' => __('Invalid order ID', 'b2brouter-for-woocommerce')
             ));
         }
 
@@ -304,35 +304,35 @@ class Customer {
 
         if (!$order) {
             wp_send_json_error(array(
-                'message' => __('Order not found', 'b2brouter-woocommerce')
+                'message' => __('Order not found', 'b2brouter-for-woocommerce')
             ));
         }
 
         // Check customer permissions
         if (!$this->can_customer_access_order($order)) {
             wp_send_json_error(array(
-                'message' => __('You do not have permission to access this order', 'b2brouter-woocommerce')
+                'message' => __('You do not have permission to access this order', 'b2brouter-for-woocommerce')
             ));
         }
 
         // Check if in manual mode
         if ($this->settings->get_invoice_mode() !== 'manual') {
             wp_send_json_error(array(
-                'message' => __('Invoice generation is not available in automatic mode', 'b2brouter-woocommerce')
+                'message' => __('Invoice generation is not available in automatic mode', 'b2brouter-for-woocommerce')
             ));
         }
 
         // Check order status (only completed/processing)
         if (!in_array($order->get_status(), array('completed', 'processing'), true)) {
             wp_send_json_error(array(
-                'message' => __('Invoice can only be generated for completed or processing orders', 'b2brouter-woocommerce')
+                'message' => __('Invoice can only be generated for completed or processing orders', 'b2brouter-for-woocommerce')
             ));
         }
 
         // Check if invoice already exists
         if ($order->get_meta('_b2brouter_invoice_id')) {
             wp_send_json_error(array(
-                'message' => __('Invoice already exists for this order', 'b2brouter-woocommerce')
+                'message' => __('Invoice already exists for this order', 'b2brouter-for-woocommerce')
             ));
         }
 

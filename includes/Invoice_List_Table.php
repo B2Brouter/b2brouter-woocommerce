@@ -54,8 +54,8 @@ class Invoice_List_Table extends \WP_List_Table {
         $this->invoice_generator = $invoice_generator;
 
         parent::__construct(array(
-            'singular' => __('Invoice', 'b2brouter-woocommerce'),
-            'plural'   => __('Invoices', 'b2brouter-woocommerce'),
+            'singular' => __('Invoice', 'b2brouter-for-woocommerce'),
+            'plural'   => __('Invoices', 'b2brouter-for-woocommerce'),
             'ajax'     => false,
         ));
     }
@@ -69,13 +69,13 @@ class Invoice_List_Table extends \WP_List_Table {
     public function get_columns() {
         return array(
             'cb'             => '<input type="checkbox" />',
-            'order_number'   => __('Order #', 'b2brouter-woocommerce'),
-            'customer'       => __('Customer', 'b2brouter-woocommerce'),
-            'invoice_number' => __('Invoice #', 'b2brouter-woocommerce'),
-            'date'           => __('Date', 'b2brouter-woocommerce'),
-            'status'         => __('Status', 'b2brouter-woocommerce'),
-            'amount'         => __('Amount', 'b2brouter-woocommerce'),
-            'actions'        => __('Actions', 'b2brouter-woocommerce'),
+            'order_number'   => __('Order #', 'b2brouter-for-woocommerce'),
+            'customer'       => __('Customer', 'b2brouter-for-woocommerce'),
+            'invoice_number' => __('Invoice #', 'b2brouter-for-woocommerce'),
+            'date'           => __('Date', 'b2brouter-for-woocommerce'),
+            'status'         => __('Status', 'b2brouter-for-woocommerce'),
+            'amount'         => __('Amount', 'b2brouter-for-woocommerce'),
+            'actions'        => __('Actions', 'b2brouter-for-woocommerce'),
         );
     }
 
@@ -100,7 +100,7 @@ class Invoice_List_Table extends \WP_List_Table {
      */
     public function get_bulk_actions() {
         return array(
-            'download' => __('Download PDFs', 'b2brouter-woocommerce'),
+            'download' => __('Download PDFs', 'b2brouter-for-woocommerce'),
         );
     }
 
@@ -222,8 +222,8 @@ class Invoice_List_Table extends \WP_List_Table {
                 return sprintf(
                     '<a href="%s"><strong>%s</strong></a><br><small>%s #%s</small>',
                     esc_url($parent_edit_url),
-                    esc_html__('Refund', 'b2brouter-woocommerce'),
-                    esc_html__('for Order', 'b2brouter-woocommerce'),
+                    esc_html__('Refund', 'b2brouter-for-woocommerce'),
+                    esc_html__('for Order', 'b2brouter-for-woocommerce'),
                     esc_html($parent_order->get_order_number())
                 );
             }
@@ -265,7 +265,7 @@ class Invoice_List_Table extends \WP_List_Table {
         }
 
         if (empty($customer_name)) {
-            $customer_name = __('Guest', 'b2brouter-woocommerce');
+            $customer_name = __('Guest', 'b2brouter-for-woocommerce');
         }
 
         $customer_email = $order->get_billing_email();
@@ -303,7 +303,7 @@ class Invoice_List_Table extends \WP_List_Table {
         return sprintf(
             '<a href="%s" target="_blank" title="%s">%s <span class="dashicons dashicons-external" style="font-size: 12px; text-decoration: none;"></span></a>',
             esc_url($b2brouter_url),
-            esc_attr__('View in B2Brouter', 'b2brouter-woocommerce'),
+            esc_attr__('View in B2Brouter', 'b2brouter-for-woocommerce'),
             esc_html($invoice_number)
         );
     }
@@ -379,8 +379,8 @@ class Invoice_List_Table extends \WP_List_Table {
                 <span class="dashicons dashicons-pdf" style="line-height: 1.4;"></span> %s
             </button>',
             esc_attr($order_id),
-            esc_attr__('View PDF', 'b2brouter-woocommerce'),
-            esc_html__('View', 'b2brouter-woocommerce')
+            esc_attr__('View PDF', 'b2brouter-for-woocommerce'),
+            esc_html__('View', 'b2brouter-for-woocommerce')
         );
 
         // Download PDF button
@@ -389,8 +389,8 @@ class Invoice_List_Table extends \WP_List_Table {
                 <span class="dashicons dashicons-download" style="line-height: 1.4;"></span> %s
             </button>',
             esc_attr($order_id),
-            esc_attr__('Download PDF', 'b2brouter-woocommerce'),
-            esc_html__('Download', 'b2brouter-woocommerce')
+            esc_attr__('Download PDF', 'b2brouter-for-woocommerce'),
+            esc_html__('Download', 'b2brouter-for-woocommerce')
         );
 
         return implode(' ', $actions);
@@ -406,7 +406,7 @@ class Invoice_List_Table extends \WP_List_Table {
         if ('download' === $this->current_action()) {
             // Check nonce
             if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])) {
-                wp_die(__('Security check failed', 'b2brouter-woocommerce'));
+                wp_die(__('Security check failed', 'b2brouter-for-woocommerce'));
             }
 
             // Get selected invoices
@@ -450,7 +450,7 @@ class Invoice_List_Table extends \WP_List_Table {
                         'Preparing to download %d invoice PDF.',
                         'Preparing to download %d invoice PDFs.',
                         $count,
-                        'b2brouter-woocommerce'
+                        'b2brouter-for-woocommerce'
                     )),
                     $count
                 )
@@ -465,6 +465,6 @@ class Invoice_List_Table extends \WP_List_Table {
      * @return void
      */
     public function no_items() {
-        esc_html_e('No invoices found.', 'b2brouter-woocommerce');
+        esc_html_e('No invoices found.', 'b2brouter-for-woocommerce');
     }
 }

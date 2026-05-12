@@ -243,7 +243,7 @@ class Settings {
             if (empty($api_key)) {
                 return array(
                     'valid' => false,
-                    'message' => __('API key cannot be empty', 'b2brouter-woocommerce')
+                    'message' => __('API key cannot be empty', 'b2brouter-for-woocommerce')
                 );
             }
 
@@ -251,7 +251,7 @@ class Settings {
             if (!class_exists('B2BRouter\B2BRouterClient')) {
                 return array(
                     'valid' => false,
-                    'message' => __('B2Brouter PHP SDK not found. Please install dependencies.', 'b2brouter-woocommerce')
+                    'message' => __('B2Brouter PHP SDK not found. Please install dependencies.', 'b2brouter-for-woocommerce')
                 );
             }
 
@@ -264,7 +264,7 @@ class Settings {
             } catch (\B2BRouter\Exception\ApiErrorException $e) {
                 $message = $e->getMessage();
                 if ($message === '' || $message === null) {
-                    $message = __('Invalid API key', 'b2brouter-woocommerce');
+                    $message = __('Invalid API key', 'b2brouter-for-woocommerce');
                 }
 
                 return array(
@@ -276,7 +276,7 @@ class Settings {
             if (empty($accounts)) {
                 return array(
                     'valid' => false,
-                    'message' => __('No accounts found for this API key', 'b2brouter-woocommerce')
+                    'message' => __('No accounts found for this API key', 'b2brouter-for-woocommerce')
                 );
             }
 
@@ -289,7 +289,7 @@ class Settings {
                 return array(
                     'valid' => true,
                     'message' => sprintf(
-                        __('API key is valid. Using account: %s', 'b2brouter-woocommerce'),
+                        __('API key is valid. Using account: %s', 'b2brouter-for-woocommerce'),
                         $account['name']
                     )
                 );
@@ -341,13 +341,13 @@ class Settings {
                 'valid' => true,
                 'multiple_accounts' => true,
                 'accounts' => $account_list,
-                'message' => __('API key is valid. Please select an account.', 'b2brouter-woocommerce')
+                'message' => __('API key is valid. Please select an account.', 'b2brouter-for-woocommerce')
             );
         } catch (\Exception $e) {
             return array(
                 'valid' => false,
                 'message' => sprintf(
-                    __('API key validation failed: %s', 'b2brouter-woocommerce'),
+                    __('API key validation failed: %s', 'b2brouter-for-woocommerce'),
                     $e->getMessage()
                 )
             );
