@@ -250,7 +250,24 @@ class Uninstaller {
             return;
         }
 
-        $this->remove_directory($path);
+        // Uninstall runs in an admin context but wp-admin/includes/file.php
+        // is only auto-loaded for some entry points, so pull it in defensively.
+        if (!function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        if (!WP_Filesystem()) {
+            Logger::warning('B2Brouter Uninstall: WP_Filesystem API unavailable for ' . $path);
+            return;
+        }
+
+        global $wp_filesystem;
+
+        // Recursive directory delete: third arg 'd' forces the path to be
+        // treated as a directory regardless of what stat() reports.
+        if (!$wp_filesystem->delete($path, true, 'd')) {
+            Logger::warning('B2Brouter Uninstall: failed to remove directory ' . $path);
+        }
     }
 
     /**
@@ -277,42 +294,6 @@ class Uninstaller {
         }
 
         return $upload_dir['basedir'] . '/b2brouter-invoices';
-    }
-
-    /**
-     * Recursively remove a directory and all its contents.
-     *
-     * @param string $path Absolute directory path.
-     * @return void
-     */
-    protected function remove_directory($path) {
-        // @ suppresses PHP warnings at the syscall boundary; failures are
-        // surfaced through Logger::warning so leaked PDFs are visible in
-        // WooCommerce logs instead of silently dropped.
-        $entries = @scandir($path);
-        if ($entries === false) {
-            Logger::warning('B2Brouter Uninstall: scandir() failed for ' . $path);
-            return;
-        }
-
-        foreach ($entries as $entry) {
-            if ($entry === '.' || $entry === '..') {
-                continue;
-            }
-
-            $full = $path . '/' . $entry;
-            if (is_dir($full) && !is_link($full)) {
-                $this->remove_directory($full);
-            } else {
-                if (!@unlink($full)) {
-                    Logger::warning('B2Brouter Uninstall: failed to delete ' . $full);
-                }
-            }
-        }
-
-        if (!@rmdir($path)) {
-            Logger::warning('B2Brouter Uninstall: failed to remove directory ' . $path);
-        }
     }
 
     /**
