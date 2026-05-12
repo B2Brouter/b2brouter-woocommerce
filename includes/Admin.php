@@ -102,8 +102,8 @@ class Admin {
       }
 
         add_menu_page(
-            __('Invoices', 'b2brouter-woocommerce'),
-            __('Invoices', 'b2brouter-woocommerce'),
+            __('Invoices', 'b2brouter-for-woocommerce'),
+            __('Invoices', 'b2brouter-for-woocommerce'),
             'manage_options',
             'b2brouter',
             array($this, 'render_welcome_page'),
@@ -114,8 +114,8 @@ class Admin {
         // Register Welcome page first (same slug as parent to replace the auto-generated submenu item)
         add_submenu_page(
             'b2brouter',
-            __('Welcome', 'b2brouter-woocommerce'),
-            __('Welcome', 'b2brouter-woocommerce'),
+            __('Welcome', 'b2brouter-for-woocommerce'),
+            __('Welcome', 'b2brouter-for-woocommerce'),
             'manage_options',
             'b2brouter',
             array($this, 'render_welcome_page')
@@ -124,8 +124,8 @@ class Admin {
         // Register Settings page
         add_submenu_page(
             'b2brouter',
-            __('Settings', 'b2brouter-woocommerce'),
-            __('Settings', 'b2brouter-woocommerce'),
+            __('Settings', 'b2brouter-for-woocommerce'),
+            __('Settings', 'b2brouter-for-woocommerce'),
             'manage_options',
             'b2brouter-settings',
             array($this, 'render_settings_page')
@@ -134,8 +134,8 @@ class Admin {
         // Register List of Invoices page
         add_submenu_page(
             'b2brouter',
-            __('List of Invoices', 'b2brouter-woocommerce'),
-            __('List of Invoices', 'b2brouter-woocommerce'),
+            __('List of Invoices', 'b2brouter-for-woocommerce'),
+            __('List of Invoices', 'b2brouter-for-woocommerce'),
             'manage_woocommerce',
             'b2brouter-invoices',
             array($this, 'render_invoices_page')
@@ -178,7 +178,7 @@ class Admin {
         $settings_link = sprintf(
             '<a href="%s">%s</a>',
             admin_url('admin.php?page=b2brouter-settings'),
-            __('Settings', 'b2brouter-woocommerce')
+            __('Settings', 'b2brouter-for-woocommerce')
         );
 
         array_unshift($links, $settings_link);
@@ -204,11 +204,11 @@ class Admin {
             'id'    => 'b2brouter-counter',
             'title' => sprintf(
                 '<span class="ab-icon dashicons dashicons-media-document"></span> <span class="ab-label">%s</span>',
-                sprintf(__('Invoices: %d', 'b2brouter-woocommerce'), $count)
+                sprintf(__('Invoices: %d', 'b2brouter-for-woocommerce'), $count)
             ),
             'href'  => admin_url('admin.php?page=b2brouter-invoices'),
             'meta'  => array(
-                'title' => __('B2Brouter Invoices', 'b2brouter-woocommerce'),
+                'title' => __('B2Brouter Invoices', 'b2brouter-for-woocommerce'),
             ),
         ));
     }
@@ -254,16 +254,16 @@ class Admin {
             'nonce' => wp_create_nonce('b2brouter_nonce'),
             'bulk_download_ids' => $bulk_download_ids ? $bulk_download_ids : false,
             'strings' => array(
-                'validating' => __('Validating...', 'b2brouter-woocommerce'),
-                'generating' => __('Generating invoice...', 'b2brouter-woocommerce'),
-                'success' => __('Success!', 'b2brouter-woocommerce'),
-                'error' => __('Error', 'b2brouter-woocommerce'),
-                'validate_key' => __('Validate Key', 'b2brouter-woocommerce'),
-                'api_key_required' => __('API key is required', 'b2brouter-woocommerce'),
-                'downloading' => __('Downloading...', 'b2brouter-woocommerce'),
-                'loading' => __('Loading...', 'b2brouter-woocommerce'),
+                'validating' => __('Validating...', 'b2brouter-for-woocommerce'),
+                'generating' => __('Generating invoice...', 'b2brouter-for-woocommerce'),
+                'success' => __('Success!', 'b2brouter-for-woocommerce'),
+                'error' => __('Error', 'b2brouter-for-woocommerce'),
+                'validate_key' => __('Validate Key', 'b2brouter-for-woocommerce'),
+                'api_key_required' => __('API key is required', 'b2brouter-for-woocommerce'),
+                'downloading' => __('Downloading...', 'b2brouter-for-woocommerce'),
+                'loading' => __('Loading...', 'b2brouter-for-woocommerce'),
                 /* translators: %1$s: account name, %2$s: account ID */
-                'current_account' => __('Current account: %1$s (ID: %2$s)', 'b2brouter-woocommerce'),
+                'current_account' => __('Current account: %1$s (ID: %2$s)', 'b2brouter-for-woocommerce'),
             ),
         ));
     }
@@ -278,7 +278,7 @@ class Admin {
         check_ajax_referer('b2brouter_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-woocommerce')));
+            wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-for-woocommerce')));
         }
 
         $api_key = isset($_POST['api_key']) ? sanitize_text_field($_POST['api_key']) : '';
@@ -302,19 +302,19 @@ class Admin {
         check_ajax_referer('b2brouter_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-woocommerce')));
+            wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-for-woocommerce')));
         }
 
         $account_id = isset($_POST['account_id']) ? sanitize_text_field($_POST['account_id']) : '';
 
         if (empty($account_id)) {
-            wp_send_json_error(array('message' => __('No account selected', 'b2brouter-woocommerce')));
+            wp_send_json_error(array('message' => __('No account selected', 'b2brouter-for-woocommerce')));
         }
 
         // Verify account_id against server-validated account list
         $verified_accounts = get_transient('b2brouter_validated_accounts');
         if (empty($verified_accounts) || !isset($verified_accounts[$account_id])) {
-            wp_send_json_error(array('message' => __('Invalid account. Please re-validate your API key.', 'b2brouter-woocommerce')));
+            wp_send_json_error(array('message' => __('Invalid account. Please re-validate your API key.', 'b2brouter-for-woocommerce')));
         }
 
         $account_name = $verified_accounts[$account_id];
@@ -324,7 +324,7 @@ class Admin {
 
         wp_send_json_success(array(
             'message' => sprintf(
-                __('Account selected: %s', 'b2brouter-woocommerce'),
+                __('Account selected: %s', 'b2brouter-for-woocommerce'),
                 $account_name
             )
         ));
@@ -340,13 +340,13 @@ class Admin {
         check_ajax_referer('b2brouter_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-woocommerce')));
+            wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-for-woocommerce')));
         }
 
         $order_id = isset($_POST['order_id']) ? intval($_POST['order_id']) : 0;
 
         if (!$order_id) {
-            wp_send_json_error(array('message' => __('Invalid order ID', 'b2brouter-woocommerce')));
+            wp_send_json_error(array('message' => __('Invalid order ID', 'b2brouter-for-woocommerce')));
         }
 
         $result = $this->invoice_generator->generate_invoice($order_id);
@@ -371,8 +371,8 @@ class Admin {
             <div class="b2brouter-banner">
                 <div class="first-column">
                     <img src="<?php echo esc_url(B2BROUTER_WC_PLUGIN_URL . 'assets/img/Woo-isotip-linear-degradate.svg'); ?>" alt="Logo">
-                    <h1><?php esc_html_e('B2Brouter for WooCommerce', 'b2brouter-woocommerce'); ?></h1>
-                    <h3><?php esc_html_e('The B2Brouter plugin allows you to automatically generate and send electronic invoices for your WooCommerce orders.', 'b2brouter-woocommerce'); ?></h3>
+                    <h1><?php esc_html_e('B2Brouter for WooCommerce', 'b2brouter-for-woocommerce'); ?></h1>
+                    <h3><?php esc_html_e('The B2Brouter plugin allows you to automatically generate and send electronic invoices for your WooCommerce orders.', 'b2brouter-for-woocommerce'); ?></h3>
                 </div>
                 <img src="<?php echo esc_url(B2BROUTER_WC_PLUGIN_URL . 'assets/img/woo-graphic.svg'); ?>" alt="Logo">
             </div>
@@ -382,60 +382,60 @@ class Admin {
 
                     <div class="b2brouter-card-row b2brouter-card-row--70-30">
                         <div class="b2brouter-card-col">
-                            <h3><?php esc_html_e('Next Steps', 'b2brouter-woocommerce'); ?></h3>
-                            <h4><?php esc_html_e('Step 1 — Get your B2Brouter credentials', 'b2brouter-woocommerce'); ?></h4>
+                            <h3><?php esc_html_e('Next Steps', 'b2brouter-for-woocommerce'); ?></h3>
+                            <h4><?php esc_html_e('Step 1 — Get your B2Brouter credentials', 'b2brouter-for-woocommerce'); ?></h4>
                             <ol>
-                                <li><a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Register at app.b2brouter.net', 'b2brouter-woocommerce'); ?></a></li>
-                                <li><?php esc_html_e('Purchase an eDocExchange subscription.', 'b2brouter-woocommerce'); ?> <span><?php esc_html_e('First month is for free!', 'b2brouter-woocommerce'); ?></span></li>
-                                <li><?php esc_html_e('Go to Developers → API Keys in your B2Brouter dashboard.', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('Copy the API key and store it safely.', 'b2brouter-woocommerce'); ?></li>
+                                <li><a href="https://app.b2brouter.net" target="_blank"><?php esc_html_e('Register at app.b2brouter.net', 'b2brouter-for-woocommerce'); ?></a></li>
+                                <li><?php esc_html_e('Purchase an eDocExchange subscription.', 'b2brouter-for-woocommerce'); ?> <span><?php esc_html_e('First month is for free!', 'b2brouter-for-woocommerce'); ?></span></li>
+                                <li><?php esc_html_e('Go to Developers → API Keys in your B2Brouter dashboard.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Copy the API key and store it safely.', 'b2brouter-for-woocommerce'); ?></li>
                             </ol>
-                            <h4><?php esc_html_e('Step 2 — Configure the plugin', 'b2brouter-woocommerce'); ?></h4>
+                            <h4><?php esc_html_e('Step 2 — Configure the plugin', 'b2brouter-for-woocommerce'); ?></h4>
                             <ol>
-                                <li><?php esc_html_e('In WordPress, go to Invoices → Settings.', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('Paste your B2Brouter API key.', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('Click Validate Key. If the key is correct, the plugin will display your account information.', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('In WordPress, go to Invoices → Settings.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Paste your B2Brouter API key.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Click Validate Key. If the key is correct, the plugin will display your account information.', 'b2brouter-for-woocommerce'); ?></li>
                             </ol>
                         </div>
                         <div class="b2brouter-card-col b2brouter-card-highlight">
-                            <h3><?php esc_html_e('Requirements', 'b2brouter-woocommerce'); ?></h3>
+                            <h3><?php esc_html_e('Requirements', 'b2brouter-for-woocommerce'); ?></h3>
                             <ul class="b2brouter-list">
-                                <li><?php esc_html_e('A B2Brouter account with an active eDocExchange subscription', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('WordPress 5.8 or higher', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('WooCommerce 5.0 or higher, installed and active', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('PHP 7.4 or higher', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('A B2Brouter account with an active eDocExchange subscription', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('WordPress 5.8 or higher', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('WooCommerce 5.0 or higher, installed and active', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('PHP 7.4 or higher', 'b2brouter-for-woocommerce'); ?></li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="b2brouter-card-row b2brouter-card-row--70-30">
                         <div class="b2brouter-card-col">
-                            <h3><?php esc_html_e('How it works', 'b2brouter-woocommerce'); ?></h3>
+                            <h3><?php esc_html_e('How it works', 'b2brouter-for-woocommerce'); ?></h3>
                             <ul class="b2brouter-list">
-                                <li><?php esc_html_e('Advanced configuration (transports, formats, taxes) is done in your B2Brouter account.', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('When an order is completed, the plugin automatically generates the invoice via the B2Brouter API.', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('B2Brouter sends the invoice to your customer using your configured transport (email, Peppol, etc.).', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('Your customers can also download their invoices from their account page.', 'b2brouter-woocommerce'); ?></li>
-                                <li><?php esc_html_e('Credit notes are generated automatically when you process a refund.', 'b2brouter-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Advanced configuration (transports, formats, taxes) is done in your B2Brouter account.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('When an order is completed, the plugin automatically generates the invoice via the B2Brouter API.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('B2Brouter sends the invoice to your customer using your configured transport (email, Peppol, etc.).', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Your customers can also download their invoices from their account page.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><?php esc_html_e('Credit notes are generated automatically when you process a refund.', 'b2brouter-for-woocommerce'); ?></li>
                             </ul>
-                            <h3><?php esc_html_e('Ready to get started?', 'b2brouter-woocommerce'); ?></h3>
+                            <h3><?php esc_html_e('Ready to get started?', 'b2brouter-for-woocommerce'); ?></h3>
                             <div class="b2brouter-actions">
                                 <a href="https://app.b2brouter.net" class="button button-primary button-hero" target="_blank">
-                                    <?php esc_html_e('Go to B2Brouter - Activate Subscription', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Go to B2Brouter - Activate Subscription', 'b2brouter-for-woocommerce'); ?>
                                 </a>
                                 <a href="<?php echo esc_url(admin_url('admin.php?page=b2brouter-settings')); ?>" class="button button-secondary button-hero">
-                                    <?php esc_html_e('Configure Plugin', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Configure Plugin', 'b2brouter-for-woocommerce'); ?>
                                 </a>
                             </div>
                         </div>
                         <div class="b2brouter-card-col b2brouter-card-highlight">
-                            <h3><?php esc_html_e('Benefits', 'b2brouter-woocommerce'); ?></h3>
+                            <h3><?php esc_html_e('Benefits', 'b2brouter-for-woocommerce'); ?></h3>
                             <ul class="b2brouter-checklist">
-                                <li><strong><?php esc_html_e('Legal Compliance', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Automatic compliance with electronic invoicing regulations across multiple countries.', 'b2brouter-woocommerce'); ?></li>
-                                <li><strong><?php esc_html_e('Time Saving', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Automatic generation of electronic invoices without manual intervention.', 'b2brouter-woocommerce'); ?></li>
-                                <li><strong><?php esc_html_e('Professionalism', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Invoices in standard formats: UBL, CII, XML, etc.', 'b2brouter-woocommerce'); ?></li>
-                                <li><strong><?php esc_html_e('Cross-border', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Support for international B2B and B2C transactions.', 'b2brouter-woocommerce'); ?></li>
-                                <li><strong><?php esc_html_e('Full Integration', 'b2brouter-woocommerce'); ?></strong> — <?php esc_html_e('Works seamlessly with WooCommerce without affecting your workflow.', 'b2brouter-woocommerce'); ?></li>
+                                <li><strong><?php esc_html_e('Legal Compliance', 'b2brouter-for-woocommerce'); ?></strong> — <?php esc_html_e('Automatic compliance with electronic invoicing regulations across multiple countries.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><strong><?php esc_html_e('Time Saving', 'b2brouter-for-woocommerce'); ?></strong> — <?php esc_html_e('Automatic generation of electronic invoices without manual intervention.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><strong><?php esc_html_e('Professionalism', 'b2brouter-for-woocommerce'); ?></strong> — <?php esc_html_e('Invoices in standard formats: UBL, CII, XML, etc.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><strong><?php esc_html_e('Cross-border', 'b2brouter-for-woocommerce'); ?></strong> — <?php esc_html_e('Support for international B2B and B2C transactions.', 'b2brouter-for-woocommerce'); ?></li>
+                                <li><strong><?php esc_html_e('Full Integration', 'b2brouter-for-woocommerce'); ?></strong> — <?php esc_html_e('Works seamlessly with WooCommerce without affecting your workflow.', 'b2brouter-for-woocommerce'); ?></li>
                             </ul>
                         </div>
                     </div>
@@ -443,12 +443,12 @@ class Admin {
                 </div>
 
                 <div class="b2brouter-card b2brouter-info">
-                    <h3><?php esc_html_e('Need Help?', 'b2brouter-woocommerce'); ?></h3>
-                    <p><?php esc_html_e('Read our B2Brouter user manual and plugin configuration documentation.', 'b2brouter-woocommerce'); ?></p>
+                    <h3><?php esc_html_e('Need Help?', 'b2brouter-for-woocommerce'); ?></h3>
+                    <p><?php esc_html_e('Read our B2Brouter user manual and plugin configuration documentation.', 'b2brouter-for-woocommerce'); ?></p>
                     <p>
-                        <a href="https://www.b2brouter.net/docs/#/en/" target="_blank"><?php esc_html_e('B2Brouter user manual', 'b2brouter-woocommerce'); ?></a> |
-                        <a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce" target="_blank"><?php esc_html_e('B2Brouter user guide for WooCommerce', 'b2brouter-woocommerce'); ?></a> |
-                        <a href="https://github.com/B2Brouter/b2brouter-woocommerce/blob/main/CHANGELOG.md" target="_blank"><?php esc_html_e('Changelog', 'b2brouter-woocommerce'); ?></a>
+                        <a href="https://www.b2brouter.net/docs/#/en/" target="_blank"><?php esc_html_e('B2Brouter user manual', 'b2brouter-for-woocommerce'); ?></a> |
+                        <a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce" target="_blank"><?php esc_html_e('B2Brouter user guide for WooCommerce', 'b2brouter-for-woocommerce'); ?></a> |
+                        <a href="https://github.com/B2Brouter/b2brouter-woocommerce/blob/main/CHANGELOG.md" target="_blank"><?php esc_html_e('Changelog', 'b2brouter-for-woocommerce'); ?></a>
                     </p>
                 </div>
             </div>
@@ -552,7 +552,7 @@ class Admin {
                     add_settings_error(
                         'b2brouter_webhook_secret',
                         'empty_webhook_secret',
-                        __('Webhook secret is required when webhooks are enabled.', 'b2brouter-woocommerce'),
+                        __('Webhook secret is required when webhooks are enabled.', 'b2brouter-for-woocommerce'),
                         'warning'
                     );
                 }
@@ -608,7 +608,7 @@ class Admin {
                     add_settings_error(
                         'b2brouter_invoice_series_code',
                         'empty_invoice_series_code',
-                        __('Invoice series code is required and cannot be empty.', 'b2brouter-woocommerce'),
+                        __('Invoice series code is required and cannot be empty.', 'b2brouter-for-woocommerce'),
                         'error'
                     );
                 } else {
@@ -624,7 +624,7 @@ class Admin {
                     add_settings_error(
                         'b2brouter_credit_note_series_code',
                         'empty_credit_note_series_code',
-                        __('Credit note series code is required and cannot be empty.', 'b2brouter-woocommerce'),
+                        __('Credit note series code is required and cannot be empty.', 'b2brouter-for-woocommerce'),
                         'error'
                     );
                 } else {
@@ -656,19 +656,19 @@ class Admin {
             }
             settings_errors();
             if (!$has_blocking_error) {
-                echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved successfully.', 'b2brouter-woocommerce') . '</p></div>';
+                echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved successfully.', 'b2brouter-for-woocommerce') . '</p></div>';
             }
         }
 
         ?>
         <div class="wrap b2brouter-settings">
-            <h1><?php esc_html_e('Invoice Settings', 'b2brouter-woocommerce'); ?></h1>
+            <h1><?php esc_html_e('Invoice Settings', 'b2brouter-for-woocommerce'); ?></h1>
 
             <?php if (!$api_configured): ?>
                 <div class="notice notice-warning">
                     <p>
-                        <?php esc_html_e('API key is not configured. Please enter your B2Brouter API key below.', 'b2brouter-woocommerce'); ?>
-                        <a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce?id=initial-configuration" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-woocommerce'); ?></a>
+                        <?php esc_html_e('API key is not configured. Please enter your B2Brouter API key below.', 'b2brouter-for-woocommerce'); ?>
+                        <a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce?id=initial-configuration" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-for-woocommerce'); ?></a>
                     </p>
                 </div>
             <?php endif; ?>
@@ -677,26 +677,26 @@ class Admin {
                 <?php wp_nonce_field('b2brouter_settings'); ?>
 
                 <div class="b2brouter-uninstall-card">
-                    <h2><?php esc_html_e('Uninstall behavior', 'b2brouter-woocommerce'); ?></h2>
+                    <h2><?php esc_html_e('Uninstall behavior', 'b2brouter-for-woocommerce'); ?></h2>
                     <p>
-                        <?php esc_html_e('When this plugin is deleted from WordPress, it always removes its settings, cached PDF files, and scheduled sync tasks. Invoice identifiers stored on each order (B2Brouter invoice ID, invoice number, series code, and issue date) are preserved by default so your tax audit trail stays intact.', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('When this plugin is deleted from WordPress, it always removes its settings, cached PDF files, and scheduled sync tasks. Invoice identifiers stored on each order (B2Brouter invoice ID, invoice number, series code, and issue date) are preserved by default so your tax audit trail stays intact.', 'b2brouter-for-woocommerce'); ?>
                     </p>
                     <label class="b2brouter-uninstall-toggle">
                         <input type="checkbox"
                                name="b2brouter_delete_archival_data"
                                value="1"
                                <?php checked($delete_archival_data); ?>>
-                        <?php esc_html_e('Also delete invoice identifiers from orders on uninstall', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('Also delete invoice identifiers from orders on uninstall', 'b2brouter-for-woocommerce'); ?>
                     </label>
                     <p class="description">
-                        <?php esc_html_e('Warning: this cannot be undone. Customer VAT / TIN numbers are never removed by uninstall.', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('Warning: this cannot be undone. Customer VAT / TIN numbers are never removed by uninstall.', 'b2brouter-for-woocommerce'); ?>
                     </p>
                 </div>
 
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="b2brouter_api_key"><?php esc_html_e('API Key', 'b2brouter-woocommerce'); ?></label>
+                            <label for="b2brouter_api_key"><?php esc_html_e('API Key', 'b2brouter-for-woocommerce'); ?></label>
                         </th>
                         <td>
                             <input type="text"
@@ -704,15 +704,15 @@ class Admin {
                                    name="b2brouter_api_key"
                                    value="<?php echo esc_attr($api_key); ?>"
                                    class="regular-text"
-                                   placeholder="<?php esc_attr_e('Enter your B2Brouter API key', 'b2brouter-woocommerce'); ?>">
+                                   placeholder="<?php esc_attr_e('Enter your B2Brouter API key', 'b2brouter-for-woocommerce'); ?>">
                             <button type="button" id="b2brouter_validate_key" class="button button-secondary">
-                                <?php esc_html_e('Validate Key', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Validate Key', 'b2brouter-for-woocommerce'); ?>
                             </button>
                             <span id="b2brouter_validation_result"></span>
                             <div id="b2brouter_account_selector" style="display:none; margin-top: 10px;">
                                 <select id="b2brouter_account_select" class="regular-text"></select>
                                 <button type="button" id="b2brouter_select_account" class="button button-primary">
-                                    <?php esc_html_e('Use this account', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Use this account', 'b2brouter-for-woocommerce'); ?>
                                 </button>
                                 <span id="b2brouter_account_select_result"></span>
                             </div>
@@ -723,22 +723,22 @@ class Admin {
                                 <p class="description" id="b2brouter_current_account">
                                     <?php echo esc_html(sprintf(
                                         /* translators: %1$s: account name, %2$s: account ID */
-                                        __('Current account: %1$s (ID: %2$s)', 'b2brouter-woocommerce'),
-                                        !empty($current_account_name) ? $current_account_name : __('Unknown', 'b2brouter-woocommerce'),
+                                        __('Current account: %1$s (ID: %2$s)', 'b2brouter-for-woocommerce'),
+                                        !empty($current_account_name) ? $current_account_name : __('Unknown', 'b2brouter-for-woocommerce'),
                                         $current_account_id
                                     )); ?>
                                 </p>
                             <?php endif; ?>
                             <p class="description">
-                                <?php esc_html_e('Enter your B2Brouter API key to enable invoice generation.', 'b2brouter-woocommerce'); ?>
-                                <a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce?id=initial-configuration" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-woocommerce'); ?></a>
+                                <?php esc_html_e('Enter your B2Brouter API key to enable invoice generation.', 'b2brouter-for-woocommerce'); ?>
+                                <a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce?id=initial-configuration" target="_blank"><?php esc_html_e('Get your API key', 'b2brouter-for-woocommerce'); ?></a>
                             </p>
                         </td>
                     </tr>
 
                     <tr>
                         <th scope="row">
-                            <?php esc_html_e('Invoice Generation Mode', 'b2brouter-woocommerce'); ?>
+                            <?php esc_html_e('Invoice Generation Mode', 'b2brouter-for-woocommerce'); ?>
                         </th>
                         <td>
                             <fieldset>
@@ -747,29 +747,29 @@ class Admin {
                                            name="b2brouter_invoice_mode"
                                            value="automatic"
                                            <?php checked($invoice_mode, 'automatic'); ?>>
-                                    <?php esc_html_e('Automatic', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Automatic', 'b2brouter-for-woocommerce'); ?>
                                 </label>
-                                <p class="description"><?php esc_html_e('Generate invoice automatically when order is completed', 'b2brouter-woocommerce'); ?></p>
+                                <p class="description"><?php esc_html_e('Generate invoice automatically when order is completed', 'b2brouter-for-woocommerce'); ?></p>
 
                                 <label>
                                     <input type="radio"
                                            name="b2brouter_invoice_mode"
                                            value="manual"
                                            <?php checked($invoice_mode, 'manual'); ?>>
-                                    <?php esc_html_e('Manual', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Manual', 'b2brouter-for-woocommerce'); ?>
                                 </label>
-                                <p class="description"><?php esc_html_e('Generate invoice manually using a button in the order admin', 'b2brouter-woocommerce'); ?></p>
+                                <p class="description"><?php esc_html_e('Generate invoice manually using a button in the order admin', 'b2brouter-for-woocommerce'); ?></p>
                             </fieldset>
                         </td>
                     </tr>
                 </table>
 
-                <h2><?php esc_html_e('Webhook Configuration', 'b2brouter-woocommerce'); ?></h2>
+                <h2><?php esc_html_e('Webhook Configuration', 'b2brouter-for-woocommerce'); ?></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">
                             <label for="b2brouter_webhook_enabled">
-                                <?php esc_html_e('Enable Webhooks', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Enable Webhooks', 'b2brouter-for-woocommerce'); ?>
                             </label>
                         </th>
                         <td>
@@ -779,7 +779,7 @@ class Admin {
                                    value="yes"
                                    <?php checked($this->settings->get_webhook_enabled(), true); ?> />
                             <p class="description">
-                                <?php esc_html_e('Receive real-time invoice status updates from B2Brouter (recommended).', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Receive real-time invoice status updates from B2Brouter (recommended).', 'b2brouter-for-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
@@ -787,7 +787,7 @@ class Admin {
                     <tr>
                         <th scope="row">
                             <label for="b2brouter_webhook_url">
-                                <?php esc_html_e('Webhook URL', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Webhook URL', 'b2brouter-for-woocommerce'); ?>
                             </label>
                         </th>
                         <td>
@@ -800,11 +800,11 @@ class Admin {
                                    style="background-color: #f0f0f0;" />
                             <button type="button"
                                     class="button button-secondary"
-                                    onclick="navigator.clipboard.writeText('<?php echo esc_attr($this->settings->get_webhook_url()); ?>'); this.textContent = '<?php esc_attr_e('Copied!', 'b2brouter-woocommerce'); ?>'; setTimeout(() => { this.textContent = '<?php esc_attr_e('Copy', 'b2brouter-woocommerce'); ?>'; }, 2000);">
-                                <?php esc_html_e('Copy', 'b2brouter-woocommerce'); ?>
+                                    onclick="navigator.clipboard.writeText('<?php echo esc_attr($this->settings->get_webhook_url()); ?>'); this.textContent = '<?php esc_attr_e('Copied!', 'b2brouter-for-woocommerce'); ?>'; setTimeout(() => { this.textContent = '<?php esc_attr_e('Copy', 'b2brouter-for-woocommerce'); ?>'; }, 2000);">
+                                <?php esc_html_e('Copy', 'b2brouter-for-woocommerce'); ?>
                             </button>
                             <p class="description">
-                                <?php esc_html_e('Enter this URL in your B2Brouter dashboard webhook settings.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Enter this URL in your B2Brouter dashboard webhook settings.', 'b2brouter-for-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
@@ -812,7 +812,7 @@ class Admin {
                     <tr>
                         <th scope="row">
                             <label for="b2brouter_webhook_secret">
-                                <?php esc_html_e('Webhook Secret', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Webhook Secret', 'b2brouter-for-woocommerce'); ?>
                             </label>
                         </th>
                         <td>
@@ -822,7 +822,7 @@ class Admin {
                                    value="<?php echo esc_attr($this->settings->get_webhook_secret()); ?>"
                                    class="regular-text" />
                             <p class="description">
-                                <?php esc_html_e('Enter the webhook secret from your B2Brouter dashboard to verify webhook authenticity.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Enter the webhook secret from your B2Brouter dashboard to verify webhook authenticity.', 'b2brouter-for-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
@@ -830,7 +830,7 @@ class Admin {
                     <tr>
                         <th scope="row">
                             <label for="b2brouter_webhook_fallback_polling">
-                                <?php esc_html_e('Fallback Polling', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Fallback Polling', 'b2brouter-for-woocommerce'); ?>
                             </label>
                         </th>
                         <td>
@@ -840,17 +840,17 @@ class Admin {
                                    value="yes"
                                    <?php checked($this->settings->get_webhook_fallback_polling(), true); ?> />
                             <p class="description">
-                                <?php esc_html_e('Keep polling as backup (checks every 6 hours if webhook fails). Recommended for reliability.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Keep polling as backup (checks every 6 hours if webhook fails). Recommended for reliability.', 'b2brouter-for-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
                 </table>
 
-                <h2><?php esc_html_e('Invoice Numbering & Series', 'b2brouter-woocommerce'); ?></h2>
+                <h2><?php esc_html_e('Invoice Numbering & Series', 'b2brouter-for-woocommerce'); ?></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="b2brouter_invoice_series_code"><?php esc_html_e('Invoice Series Code', 'b2brouter-woocommerce'); ?></label>
+                            <label for="b2brouter_invoice_series_code"><?php esc_html_e('Invoice Series Code', 'b2brouter-for-woocommerce'); ?></label>
                         </th>
                         <td>
                             <input type="text"
@@ -862,14 +862,14 @@ class Admin {
                                    required
                                    aria-required="true">
                             <p class="description">
-                                <?php esc_html_e('Series code used for all invoices (required). B2Brouter allows one series per invoice type. Defaults to INV.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Series code used for all invoices (required). B2Brouter allows one series per invoice type. Defaults to INV.', 'b2brouter-for-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
 
                     <tr>
                         <th scope="row">
-                            <label for="b2brouter_credit_note_series_code"><?php esc_html_e('Credit Note Series Code', 'b2brouter-woocommerce'); ?></label>
+                            <label for="b2brouter_credit_note_series_code"><?php esc_html_e('Credit Note Series Code', 'b2brouter-for-woocommerce'); ?></label>
                         </th>
                         <td>
                             <input type="text"
@@ -881,14 +881,14 @@ class Admin {
                                    required
                                    aria-required="true">
                             <p class="description">
-                                <?php esc_html_e('Series code used for all credit notes (required). B2Brouter allows one series per type. Defaults to CN.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Series code used for all credit notes (required). B2Brouter allows one series per type. Defaults to CN.', 'b2brouter-for-woocommerce'); ?>
                             </p>
                         </td>
                     </tr>
 
                     <tr>
                         <th scope="row">
-                            <?php esc_html_e('Invoice Numbering Pattern', 'b2brouter-woocommerce'); ?>
+                            <?php esc_html_e('Invoice Numbering Pattern', 'b2brouter-for-woocommerce'); ?>
                         </th>
                         <td>
                             <fieldset>
@@ -897,28 +897,28 @@ class Admin {
                                            name="b2brouter_invoice_numbering_pattern"
                                            value="automatic"
                                            <?php checked($numbering_pattern, 'automatic'); ?>>
-                                    <?php esc_html_e('Automatic (B2Brouter manages numbering)', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Automatic (B2Brouter manages numbering)', 'b2brouter-for-woocommerce'); ?>
                                 </label>
-                                <p class="description"><?php esc_html_e('Let B2Brouter automatically assign invoice numbers', 'b2brouter-woocommerce'); ?></p>
+                                <p class="description"><?php esc_html_e('Let B2Brouter automatically assign invoice numbers', 'b2brouter-for-woocommerce'); ?></p>
 
                                 <label>
                                     <input type="radio"
                                            name="b2brouter_invoice_numbering_pattern"
                                            value="woocommerce"
                                            <?php checked($numbering_pattern, 'woocommerce'); ?>>
-                                    <?php esc_html_e('WooCommerce Order Number', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('WooCommerce Order Number', 'b2brouter-for-woocommerce'); ?>
                                 </label>
-                                <p class="description"><?php esc_html_e('Use the WooCommerce order number as the invoice number', 'b2brouter-woocommerce'); ?></p>
+                                <p class="description"><?php esc_html_e('Use the WooCommerce order number as the invoice number', 'b2brouter-for-woocommerce'); ?></p>
                             </fieldset>
                         </td>
                     </tr>
                 </table>
 
-                <h2><?php esc_html_e('PDF Options', 'b2brouter-woocommerce'); ?></h2>
+                <h2><?php esc_html_e('PDF Options', 'b2brouter-for-woocommerce'); ?></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <?php esc_html_e('Automatic PDF Caching', 'b2brouter-woocommerce'); ?>
+                            <?php esc_html_e('Automatic PDF Caching', 'b2brouter-for-woocommerce'); ?>
                         </th>
                         <td>
                             <fieldset>
@@ -927,10 +927,10 @@ class Admin {
                                            name="b2brouter_auto_save_pdf"
                                            value="1"
                                            <?php checked($auto_save_pdf, true); ?>>
-                                    <?php esc_html_e('Automatically download and cache PDF when invoice is generated', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Automatically download and cache PDF when invoice is generated', 'b2brouter-for-woocommerce'); ?>
                                 </label>
                                 <p class="description">
-                                    <?php esc_html_e('When enabled, PDFs will be automatically downloaded from B2Brouter and stored locally when an invoice is generated. This improves performance and reduces API calls.', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('When enabled, PDFs will be automatically downloaded from B2Brouter and stored locally when an invoice is generated. This improves performance and reduces API calls.', 'b2brouter-for-woocommerce'); ?>
                                 </p>
                             </fieldset>
                         </td>
@@ -938,12 +938,12 @@ class Admin {
 
                     <tr>
                         <th scope="row">
-                            <?php esc_html_e('PDF Storage Location', 'b2brouter-woocommerce'); ?>
+                            <?php esc_html_e('PDF Storage Location', 'b2brouter-for-woocommerce'); ?>
                         </th>
                         <td>
                             <code><?php echo esc_html($this->settings->get_pdf_storage_path()); ?></code>
                             <p class="description">
-                                <?php esc_html_e('Invoice PDFs are stored in this directory. Files are protected from direct access via .htaccess rules.', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Invoice PDFs are stored in this directory. Files are protected from direct access via .htaccess rules.', 'b2brouter-for-woocommerce'); ?>
                             </p>
                             <?php
                             $stats = $this->get_pdf_storage_stats();
@@ -953,7 +953,7 @@ class Admin {
                                     <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
                                     <?php
                                     printf(
-                                        esc_html__('Currently storing %d PDF(s) using %s of disk space', 'b2brouter-woocommerce'),
+                                        esc_html__('Currently storing %d PDF(s) using %s of disk space', 'b2brouter-for-woocommerce'),
                                         $stats['count'],
                                         size_format($stats['total_size'], 2)
                                     );
@@ -962,7 +962,7 @@ class Admin {
                             <?php } else { ?>
                                 <p class="description">
                                     <span class="dashicons dashicons-info" style="color: #72aee6;"></span>
-                                    <?php esc_html_e('Directory will be created automatically when first PDF is downloaded', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Directory will be created automatically when first PDF is downloaded', 'b2brouter-for-woocommerce'); ?>
                                 </p>
                             <?php } ?>
                         </td>
@@ -970,7 +970,7 @@ class Admin {
 
                     <tr>
                         <th scope="row">
-                            <?php esc_html_e('Email PDF Attachments', 'b2brouter-woocommerce'); ?>
+                            <?php esc_html_e('Email PDF Attachments', 'b2brouter-for-woocommerce'); ?>
                         </th>
                         <td>
                             <fieldset>
@@ -979,7 +979,7 @@ class Admin {
                                            name="b2brouter_attach_to_order_completed"
                                            value="1"
                                            <?php checked($attach_to_completed, true); ?>>
-                                    <?php esc_html_e('Attach PDF to Order Completed email (sent to customer)', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Attach PDF to Order Completed email (sent to customer)', 'b2brouter-for-woocommerce'); ?>
                                 </label>
                                 <br>
                                 <label>
@@ -987,7 +987,7 @@ class Admin {
                                            name="b2brouter_attach_to_customer_invoice"
                                            value="1"
                                            <?php checked($attach_to_invoice, true); ?>>
-                                    <?php esc_html_e('Attach PDF to Customer Invoice email', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Attach PDF to Customer Invoice email', 'b2brouter-for-woocommerce'); ?>
                                 </label>
                                 <br>
                                 <label>
@@ -995,10 +995,10 @@ class Admin {
                                            name="b2brouter_attach_to_refunded_order"
                                            value="1"
                                            <?php checked($attach_to_refunded, true); ?>>
-                                    <?php esc_html_e('Attach PDF to Refunded Order email (credit note/rectificative)', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Attach PDF to Refunded Order email (credit note/rectificative)', 'b2brouter-for-woocommerce'); ?>
                                 </label>
                                 <p class="description">
-                                    <?php esc_html_e('Automatically attach invoice PDFs to customer emails. "Order Completed" is sent when orders are fulfilled. "Customer Invoice" is sent for pending/unpaid orders or when manually sent from admin panel. "Refunded Order" is sent when orders are refunded.', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Automatically attach invoice PDFs to customer emails. "Order Completed" is sent when orders are fulfilled. "Customer Invoice" is sent for pending/unpaid orders or when manually sent from admin panel. "Refunded Order" is sent when orders are refunded.', 'b2brouter-for-woocommerce'); ?>
                                 </p>
                             </fieldset>
                         </td>
@@ -1006,7 +1006,7 @@ class Admin {
 
                     <tr>
                         <th scope="row">
-                            <?php esc_html_e('Automatic Cleanup', 'b2brouter-woocommerce'); ?>
+                            <?php esc_html_e('Automatic Cleanup', 'b2brouter-for-woocommerce'); ?>
                         </th>
                         <td>
                             <fieldset>
@@ -1015,55 +1015,55 @@ class Admin {
                                            name="b2brouter_auto_cleanup_enabled"
                                            value="1"
                                            <?php checked($auto_cleanup_enabled, true); ?>>
-                                    <?php esc_html_e('Automatically delete old cached PDFs', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Automatically delete old cached PDFs', 'b2brouter-for-woocommerce'); ?>
                                 </label>
                                 <br><br>
                                 <label>
-                                    <?php esc_html_e('Delete PDFs older than', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('Delete PDFs older than', 'b2brouter-for-woocommerce'); ?>
                                     <input type="number"
                                            name="b2brouter_auto_cleanup_days"
                                            value="<?php echo esc_attr($auto_cleanup_days); ?>"
                                            min="1"
                                            max="365"
                                            style="width: 80px;">
-                                    <?php esc_html_e('days', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('days', 'b2brouter-for-woocommerce'); ?>
                                 </label>
                                 <p class="description">
-                                    <?php esc_html_e('When enabled, PDFs older than the specified number of days will be automatically deleted daily via cron job. This helps manage disk space usage.', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('When enabled, PDFs older than the specified number of days will be automatically deleted daily via cron job. This helps manage disk space usage.', 'b2brouter-for-woocommerce'); ?>
                                 </p>
                             </fieldset>
                         </td>
                     </tr>
                 </table>
 
-                <h2><?php esc_html_e('Plugin Information', 'b2brouter-woocommerce'); ?></h2>
+                <h2><?php esc_html_e('Plugin Information', 'b2brouter-for-woocommerce'); ?></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <?php esc_html_e('Transaction Counter', 'b2brouter-woocommerce'); ?>
+                            <?php esc_html_e('Transaction Counter', 'b2brouter-for-woocommerce'); ?>
                         </th>
                         <td>
                             <strong><?php echo esc_html($transaction_count); ?></strong>
-                            <p class="description"><?php esc_html_e('Total number of invoices generated from this plugin', 'b2brouter-woocommerce'); ?></p>
+                            <p class="description"><?php esc_html_e('Total number of invoices generated from this plugin', 'b2brouter-for-woocommerce'); ?></p>
                         </td>
                     </tr>
 
                     <tr>
                         <th scope="row">
-                            <?php esc_html_e('B2Brouter Account', 'b2brouter-woocommerce'); ?>
+                            <?php esc_html_e('B2Brouter Account', 'b2brouter-for-woocommerce'); ?>
                         </th>
                         <td>
                             <a href="https://app.b2brouter.net" class="button button-secondary" target="_blank">
-                                <?php esc_html_e('Access B2Brouter Account Settings', 'b2brouter-woocommerce'); ?>
+                                <?php esc_html_e('Access B2Brouter Account Settings', 'b2brouter-for-woocommerce'); ?>
                             </a>
-                            <p class="description"><?php esc_html_e('Configure advanced settings like transports, formats, and taxes in your B2Brouter account.', 'b2brouter-woocommerce'); ?></p>
+                            <p class="description"><?php esc_html_e('Configure advanced settings like transports, formats, and taxes in your B2Brouter account.', 'b2brouter-for-woocommerce'); ?></p>
                         </td>
                     </tr>
                 </table>
 
                 <p class="submit">
                     <button type="submit" name="b2brouter_save_settings" class="button button-primary">
-                        <?php esc_html_e('Save Settings', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('Save Settings', 'b2brouter-for-woocommerce'); ?>
                     </button>
                 </p>
             </form>
@@ -1079,12 +1079,12 @@ class Admin {
      */
     public function render_invoices_page() {
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'b2brouter-woocommerce'));
+            wp_die(__('You do not have sufficient permissions to access this page.', 'b2brouter-for-woocommerce'));
         }
 
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('List of Invoices', 'b2brouter-woocommerce'); ?></h1>
+            <h1><?php esc_html_e('List of Invoices', 'b2brouter-for-woocommerce'); ?></h1>
 
             <?php
             // Create an instance of the list table
@@ -1120,7 +1120,7 @@ class Admin {
         // Check permissions
         if (!current_user_can('manage_options') && !current_user_can('edit_shop_orders')) {
             wp_send_json_error(array(
-                'message' => __('Permission denied', 'b2brouter-woocommerce')
+                'message' => __('Permission denied', 'b2brouter-for-woocommerce')
             ));
         }
 
@@ -1129,7 +1129,7 @@ class Admin {
 
         if (!$order_id) {
             wp_send_json_error(array(
-                'message' => __('Invalid order ID', 'b2brouter-woocommerce')
+                'message' => __('Invalid order ID', 'b2brouter-for-woocommerce')
             ));
         }
 

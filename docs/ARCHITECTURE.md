@@ -45,7 +45,7 @@ b2brouter-woocommerce/
 ├── vendor/                        # Composer dependencies (gitignored)
 ├── .github/workflows/
 │   └── release.yml               # Automated release workflow
-├── b2brouter-woocommerce.php     # Main plugin file
+├── b2brouter-for-woocommerce.php     # Main plugin file
 ├── composer.json
 ├── phpunit.xml
 └── README.md

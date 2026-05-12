@@ -29,7 +29,7 @@ if ! command -v composer &> /dev/null; then
 fi
 
 # Get version from main plugin file
-VERSION=$(grep -E "^\s*\*\s*Version:" b2brouter-woocommerce.php | awk '{print $3}')
+VERSION=$(grep -E "^\s*\*\s*Version:" b2brouter-for-woocommerce.php | awk '{print $3}')
 if [ -z "$VERSION" ]; then
     echo -e "${RED}Error: Could not extract version from plugin file.${NC}"
     exit 1
@@ -41,7 +41,7 @@ echo ""
 # Define paths
 BUILD_DIR="build"
 DIST_DIR="dist"
-PLUGIN_NAME="b2brouter-woocommerce"
+PLUGIN_NAME="b2brouter-for-woocommerce"
 RELEASE_DIR="${BUILD_DIR}/${PLUGIN_NAME}"
 ARCHIVE_NAME="${PLUGIN_NAME}-${VERSION}.zip"
 
@@ -65,7 +65,7 @@ echo -e "${YELLOW}Copying plugin files...${NC}"
 cp -r includes "${RELEASE_DIR}/"
 cp -r assets "${RELEASE_DIR}/"
 cp -r languages "${RELEASE_DIR}/"
-cp b2brouter-woocommerce.php "${RELEASE_DIR}/"
+cp b2brouter-for-woocommerce.php "${RELEASE_DIR}/"
 cp composer.json "${RELEASE_DIR}/"
 cp LICENSE "${RELEASE_DIR}/"
 cp README.md "${RELEASE_DIR}/"
