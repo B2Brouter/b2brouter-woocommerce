@@ -64,6 +64,7 @@ jobs:
           # Copy main files
           cp -r includes build/b2brouter-for-woocommerce/
           cp -r assets build/b2brouter-for-woocommerce/
+          cp -r languages build/b2brouter-for-woocommerce/
           cp -r vendor build/b2brouter-for-woocommerce/
           cp b2brouter-for-woocommerce.php build/b2brouter-for-woocommerce/
           cp composer.json build/b2brouter-for-woocommerce/
