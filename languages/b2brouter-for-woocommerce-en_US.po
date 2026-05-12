@@ -1,8 +1,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: B2Brouter for WooCommerce 0.9.4\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/b2brouter-for-woocommerce\n"
-"POT-Creation-Date: 2026-05-11T09:02:15+00:00\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/b2brouter-for-"
+"woocommerce\n"
+"POT-Creation-Date: 2026-05-12T15:56:13+00:00\n"
 "PO-Revision-Date: 2026-03-31 13:56+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -13,7 +14,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
-#: b2brouter-for-woocommerce.php includes/Admin.php:374
+#: b2brouter-for-woocommerce.php includes/Admin.php:399
 msgid "B2Brouter for WooCommerce"
 msgstr ""
 
@@ -35,7 +36,7 @@ msgstr ""
 msgid "B2Brouter"
 msgstr ""
 
-#: b2brouter-for-woocommerce.php:158
+#: b2brouter-for-woocommerce.php:156
 msgid ""
 "B2Brouter for WooCommerce requires WooCommerce to be installed and active."
 msgstr ""
@@ -50,88 +51,90 @@ msgstr "Invoices"
 msgid "Welcome"
 msgstr "Welcome"
 
-#: includes/Admin.php:127 includes/Admin.php:128 includes/Admin.php:181
+#: includes/Admin.php:127 includes/Admin.php:128 includes/Admin.php:204
 msgid "Settings"
 msgstr "Settings"
 
-#: includes/Admin.php:137 includes/Admin.php:138 includes/Admin.php:1087
+#: includes/Admin.php:137 includes/Admin.php:138 includes/Admin.php:1113
 msgid "List of Invoices"
 msgstr "List of Invoices"
 
-#: includes/Admin.php:207
+#. translators: %d: number of invoices generated
+#: includes/Admin.php:231
 #, php-format
 msgid "Invoices: %d"
 msgstr "Invoices: %d"
 
-#: includes/Admin.php:211
+#: includes/Admin.php:235
 msgid "B2Brouter Invoices"
 msgstr "B2Brouter Invoices"
 
-#: includes/Admin.php:257
+#: includes/Admin.php:281
 msgid "Validating..."
 msgstr "Validating..."
 
-#: includes/Admin.php:258
+#: includes/Admin.php:282
 msgid "Generating invoice..."
 msgstr "Generating invoice..."
 
-#: includes/Admin.php:259
+#: includes/Admin.php:283
 msgid "Success!"
 msgstr "Success!"
 
-#: includes/Admin.php:260 includes/Invoice_Generator.php:907
-#: includes/Invoice_Generator.php:941 includes/Invoice_Generator.php:955
-#: includes/Invoice_Generator.php:974 includes/Invoice_Generator.php:987
-#: includes/Invoice_Generator.php:1019
+#: includes/Admin.php:284 includes/Invoice_Generator.php:913
+#: includes/Invoice_Generator.php:947 includes/Invoice_Generator.php:961
+#: includes/Invoice_Generator.php:980 includes/Invoice_Generator.php:993
+#: includes/Invoice_Generator.php:1026
 msgid "Error"
 msgstr "Error"
 
-#: includes/Admin.php:261 includes/Admin.php:709
+#: includes/Admin.php:285 includes/Admin.php:734
 msgid "Validate Key"
 msgstr "Validate Key"
 
-#: includes/Admin.php:262
+#: includes/Admin.php:286
 msgid "API key is required"
 msgstr "API key is required"
 
-#: includes/Admin.php:263 includes/Customer.php:111
+#: includes/Admin.php:287 includes/Customer.php:111
 msgid "Downloading..."
 msgstr "Downloading..."
 
-#: includes/Admin.php:264
+#: includes/Admin.php:288
 msgid "Loading..."
 msgstr "Loading..."
 
 #. translators: %1$s: account name, %2$s: account ID
-#: includes/Admin.php:266 includes/Admin.php:726
+#: includes/Admin.php:290 includes/Admin.php:751
 #, php-format
 msgid "Current account: %1$s (ID: %2$s)"
 msgstr "Current account: %1$s (ID: %2$s)"
 
-#: includes/Admin.php:281 includes/Admin.php:305 includes/Admin.php:343
-#: includes/Admin.php:1123
+#: includes/Admin.php:305 includes/Admin.php:329 includes/Admin.php:368
+#: includes/Admin.php:1149
 msgid "Permission denied"
 msgstr "Permission denied"
 
-#: includes/Admin.php:311
+#: includes/Admin.php:335
 msgid "No account selected"
 msgstr "No account selected"
 
-#: includes/Admin.php:317
+#: includes/Admin.php:341
 msgid "Invalid account. Please re-validate your API key."
 msgstr "Invalid account. Please re-validate your API key."
 
-#: includes/Admin.php:327
+#. translators: %s: B2Brouter account name
+#: includes/Admin.php:352
 #, php-format
 msgid "Account selected: %s"
 msgstr "Account selected: %s"
 
-#: includes/Admin.php:349 includes/Admin.php:1132 includes/Customer.php:250
-#: includes/Customer.php:298
+#: includes/Admin.php:374 includes/Admin.php:1158 includes/Customer.php:251
+#: includes/Customer.php:299
 msgid "Invalid order ID"
 msgstr "Invalid order ID"
 
-#: includes/Admin.php:375
+#: includes/Admin.php:400
 msgid ""
 "The B2Brouter plugin allows you to automatically generate and send "
 "electronic invoices for your WooCommerce orders."
@@ -139,47 +142,47 @@ msgstr ""
 "B2Brouter plugin allows you to automatically generate and send electronic "
 "invoices for your WooCommerce orders."
 
-#: includes/Admin.php:385
+#: includes/Admin.php:410
 msgid "Next Steps"
 msgstr "Next Steps"
 
-#: includes/Admin.php:386
+#: includes/Admin.php:411
 msgid "Step 1 — Get your B2Brouter credentials"
 msgstr "Step 1 — Get your B2Brouter credentials"
 
-#: includes/Admin.php:388
+#: includes/Admin.php:413
 msgid "Register at app.b2brouter.net"
 msgstr "Register at app.b2brouter.net"
 
-#: includes/Admin.php:389
+#: includes/Admin.php:414
 msgid "Purchase an eDocExchange subscription."
 msgstr "Purchase an eDocExchange subscription."
 
-#: includes/Admin.php:389
+#: includes/Admin.php:414
 msgid "First month is for free!"
 msgstr "First month is for free!"
 
-#: includes/Admin.php:390
+#: includes/Admin.php:415
 msgid "Go to Developers → API Keys in your B2Brouter dashboard."
 msgstr "Go to Developers → API Keys in your B2Brouter dashboard."
 
-#: includes/Admin.php:391
+#: includes/Admin.php:416
 msgid "Copy the API key and store it safely."
 msgstr "Copy the API key and store it safely."
 
-#: includes/Admin.php:393
+#: includes/Admin.php:418
 msgid "Step 2 — Configure the plugin"
 msgstr "Step 2 — Configure the plugin"
 
-#: includes/Admin.php:395
+#: includes/Admin.php:420
 msgid "In WordPress, go to Invoices → Settings."
 msgstr "In WordPress, go to Invoices → Settings."
 
-#: includes/Admin.php:396
+#: includes/Admin.php:421
 msgid "Paste your B2Brouter API key."
 msgstr "Paste your B2Brouter API key."
 
-#: includes/Admin.php:397
+#: includes/Admin.php:422
 msgid ""
 "Click Validate Key. If the key is correct, the plugin will display your "
 "account information."
@@ -187,31 +190,31 @@ msgstr ""
 "Click Validate Key. If the key is correct, the plugin will display your "
 "account information."
 
-#: includes/Admin.php:401
+#: includes/Admin.php:426
 msgid "Requirements"
 msgstr "Requirements"
 
-#: includes/Admin.php:403
+#: includes/Admin.php:428
 msgid "A B2Brouter account with an active eDocExchange subscription"
 msgstr "A B2Brouter account with an active eDocExchange subscription"
 
-#: includes/Admin.php:404
+#: includes/Admin.php:429
 msgid "WordPress 5.8 or higher"
 msgstr "WordPress 5.8 or higher"
 
-#: includes/Admin.php:405
+#: includes/Admin.php:430
 msgid "WooCommerce 5.0 or higher, installed and active"
 msgstr "WooCommerce 5.0 or higher, installed and active"
 
-#: includes/Admin.php:406
+#: includes/Admin.php:431
 msgid "PHP 7.4 or higher"
 msgstr "PHP 7.4 or higher"
 
-#: includes/Admin.php:413
+#: includes/Admin.php:438
 msgid "How it works"
 msgstr "How it works"
 
-#: includes/Admin.php:415
+#: includes/Admin.php:440
 msgid ""
 "Advanced configuration (transports, formats, taxes) is done in your "
 "B2Brouter account."
@@ -219,7 +222,7 @@ msgstr ""
 "Advanced configuration (transports, formats, taxes) is done in your "
 "B2Brouter account."
 
-#: includes/Admin.php:416
+#: includes/Admin.php:441
 msgid ""
 "When an order is completed, the plugin automatically generates the invoice "
 "via the B2Brouter API."
@@ -227,7 +230,7 @@ msgstr ""
 "When an order is completed, the plugin automatically generates the invoice "
 "via the B2Brouter API."
 
-#: includes/Admin.php:417
+#: includes/Admin.php:442
 msgid ""
 "B2Brouter sends the invoice to your customer using your configured transport "
 "(email, Peppol, etc.)."
@@ -235,37 +238,37 @@ msgstr ""
 "B2Brouter sends the invoice to your customer using your configured transport "
 "(email, Peppol, etc.)."
 
-#: includes/Admin.php:418
+#: includes/Admin.php:443
 msgid ""
 "Your customers can also download their invoices from their account page."
 msgstr ""
 "Your customers can also download their invoices from their account page."
 
-#: includes/Admin.php:419
+#: includes/Admin.php:444
 msgid "Credit notes are generated automatically when you process a refund."
 msgstr "Credit notes are generated automatically when you process a refund."
 
-#: includes/Admin.php:421
+#: includes/Admin.php:446
 msgid "Ready to get started?"
 msgstr "Ready to get started?"
 
-#: includes/Admin.php:424
+#: includes/Admin.php:449
 msgid "Go to B2Brouter - Activate Subscription"
 msgstr "Go to B2Brouter - Activate Subscription"
 
-#: includes/Admin.php:427
+#: includes/Admin.php:452
 msgid "Configure Plugin"
 msgstr "Configure Plugin"
 
-#: includes/Admin.php:432
+#: includes/Admin.php:457
 msgid "Benefits"
 msgstr "Benefits"
 
-#: includes/Admin.php:434
+#: includes/Admin.php:459
 msgid "Legal Compliance"
 msgstr "Legal Compliance"
 
-#: includes/Admin.php:434
+#: includes/Admin.php:459
 msgid ""
 "Automatic compliance with electronic invoicing regulations across multiple "
 "countries."
@@ -273,93 +276,93 @@ msgstr ""
 "Automatic compliance with electronic invoicing regulations across multiple "
 "countries."
 
-#: includes/Admin.php:435
+#: includes/Admin.php:460
 msgid "Time Saving"
 msgstr "Time Saving"
 
-#: includes/Admin.php:435
+#: includes/Admin.php:460
 msgid ""
 "Automatic generation of electronic invoices without manual intervention."
 msgstr ""
 "Automatic generation of electronic invoices without manual intervention."
 
-#: includes/Admin.php:436
+#: includes/Admin.php:461
 msgid "Professionalism"
 msgstr "Professionalism"
 
-#: includes/Admin.php:436
+#: includes/Admin.php:461
 msgid "Invoices in standard formats: UBL, CII, XML, etc."
 msgstr "Invoices in standard formats: UBL, CII, XML, etc."
 
-#: includes/Admin.php:437
+#: includes/Admin.php:462
 msgid "Cross-border"
 msgstr "Cross-border"
 
-#: includes/Admin.php:437
+#: includes/Admin.php:462
 msgid "Support for international B2B and B2C transactions."
 msgstr "Support for international B2B and B2C transactions."
 
-#: includes/Admin.php:438
+#: includes/Admin.php:463
 msgid "Full Integration"
 msgstr "Full Integration"
 
-#: includes/Admin.php:438
+#: includes/Admin.php:463
 msgid "Works seamlessly with WooCommerce without affecting your workflow."
 msgstr "Works seamlessly with WooCommerce without affecting your workflow."
 
-#: includes/Admin.php:446
+#: includes/Admin.php:471
 msgid "Need Help?"
 msgstr "Need Help?"
 
-#: includes/Admin.php:447
+#: includes/Admin.php:472
 msgid "Read our B2Brouter user manual and plugin configuration documentation."
 msgstr ""
 
-#: includes/Admin.php:449
+#: includes/Admin.php:474
 msgid "B2Brouter user manual"
 msgstr ""
 
-#: includes/Admin.php:450
+#: includes/Admin.php:475
 msgid "B2Brouter user guide for WooCommerce"
 msgstr ""
 
-#: includes/Admin.php:451
+#: includes/Admin.php:476
 msgid "Changelog"
 msgstr "Changelog"
 
-#: includes/Admin.php:555
+#: includes/Admin.php:580
 msgid "Webhook secret is required when webhooks are enabled."
 msgstr "Webhook secret is required when webhooks are enabled."
 
-#: includes/Admin.php:611
+#: includes/Admin.php:636
 msgid "Invoice series code is required and cannot be empty."
 msgstr ""
 
-#: includes/Admin.php:627
+#: includes/Admin.php:652
 msgid "Credit note series code is required and cannot be empty."
 msgstr ""
 
-#: includes/Admin.php:659
+#: includes/Admin.php:684
 msgid "Settings saved successfully."
 msgstr "Settings saved successfully."
 
-#: includes/Admin.php:665
+#: includes/Admin.php:690
 msgid "Invoice Settings"
 msgstr "Invoice Settings"
 
-#: includes/Admin.php:670
+#: includes/Admin.php:695
 msgid "API key is not configured. Please enter your B2Brouter API key below."
 msgstr "API key is not configured. Please enter your B2Brouter API key below."
 
-#: includes/Admin.php:671 includes/Admin.php:734
+#: includes/Admin.php:696 includes/Admin.php:759
 msgid "Get your API key"
 msgstr "Get your API key"
 
-#: includes/Admin.php:680
+#: includes/Admin.php:705
 msgid "Uninstall behavior"
 msgstr ""
 
-#: includes/Admin.php:682
+#: includes/Admin.php:707
 msgid ""
 "When this plugin is deleted from WordPress, it always removes its settings, "
 "cached PDF files, and scheduled sync tasks. Invoice identifiers stored on "
@@ -367,89 +370,89 @@ msgid ""
 "date) are preserved by default so your tax audit trail stays intact."
 msgstr ""
 
-#: includes/Admin.php:689
+#: includes/Admin.php:714
 msgid "Also delete invoice identifiers from orders on uninstall"
 msgstr ""
 
-#: includes/Admin.php:692
+#: includes/Admin.php:717
 msgid ""
 "Warning: this cannot be undone. Customer VAT / TIN numbers are never removed "
 "by uninstall."
 msgstr ""
 
-#: includes/Admin.php:699
+#: includes/Admin.php:724
 msgid "API Key"
 msgstr "API Key"
 
-#: includes/Admin.php:707
+#: includes/Admin.php:732
 msgid "Enter your B2Brouter API key"
 msgstr "Enter your B2Brouter API key"
 
-#: includes/Admin.php:715
+#: includes/Admin.php:740
 msgid "Use this account"
 msgstr "Use this account"
 
-#: includes/Admin.php:727
+#: includes/Admin.php:752
 msgid "Unknown"
 msgstr "Unknown"
 
-#: includes/Admin.php:733
+#: includes/Admin.php:758
 msgid "Enter your B2Brouter API key to enable invoice generation."
 msgstr "Enter your B2Brouter API key to enable invoice generation."
 
-#: includes/Admin.php:741
+#: includes/Admin.php:766
 msgid "Invoice Generation Mode"
 msgstr "Invoice Generation Mode"
 
-#: includes/Admin.php:750
+#: includes/Admin.php:775
 msgid "Automatic"
 msgstr "Automatic"
 
-#: includes/Admin.php:752
+#: includes/Admin.php:777
 msgid "Generate invoice automatically when order is completed"
 msgstr "Generate invoice automatically when order is completed"
 
-#: includes/Admin.php:759
+#: includes/Admin.php:784
 msgid "Manual"
 msgstr "Manual"
 
-#: includes/Admin.php:761
+#: includes/Admin.php:786
 msgid "Generate invoice manually using a button in the order admin"
 msgstr "Generate invoice manually using a button in the order admin"
 
-#: includes/Admin.php:767
+#: includes/Admin.php:792
 msgid "Webhook Configuration"
 msgstr "Webhook Configuration"
 
-#: includes/Admin.php:772
+#: includes/Admin.php:797
 msgid "Enable Webhooks"
 msgstr "Enable Webhooks"
 
-#: includes/Admin.php:782
+#: includes/Admin.php:807
 msgid "Receive real-time invoice status updates from B2Brouter (recommended)."
 msgstr "Receive real-time invoice status updates from B2Brouter (recommended)."
 
-#: includes/Admin.php:790
+#: includes/Admin.php:815
 msgid "Webhook URL"
 msgstr "Webhook URL"
 
-#: includes/Admin.php:803
+#: includes/Admin.php:828
 msgid "Copied!"
 msgstr "Copied!"
 
-#: includes/Admin.php:803 includes/Admin.php:804
+#: includes/Admin.php:828 includes/Admin.php:829
 msgid "Copy"
 msgstr "Copy"
 
-#: includes/Admin.php:807
+#: includes/Admin.php:832
 msgid "Enter this URL in your B2Brouter dashboard webhook settings."
 msgstr "Enter this URL in your B2Brouter dashboard webhook settings."
 
-#: includes/Admin.php:815
+#: includes/Admin.php:840
 msgid "Webhook Secret"
 msgstr "Webhook Secret"
 
-#: includes/Admin.php:825
+#: includes/Admin.php:850
 msgid ""
 "Enter the webhook secret from your B2Brouter dashboard to verify webhook "
 "authenticity."
@@ -457,11 +460,11 @@ msgstr ""
 "Enter the webhook secret from your B2Brouter dashboard to verify webhook "
 "authenticity."
 
-#: includes/Admin.php:833
+#: includes/Admin.php:858
 msgid "Fallback Polling"
 msgstr "Fallback Polling"
 
-#: includes/Admin.php:843
+#: includes/Admin.php:868
 msgid ""
 "Keep polling as backup (checks every 6 hours if webhook fails). Recommended "
 "for reliability."
@@ -469,63 +472,63 @@ msgstr ""
 "Keep polling as backup (checks every 6 hours if webhook fails). Recommended "
 "for reliability."
 
-#: includes/Admin.php:849
+#: includes/Admin.php:874
 msgid "Invoice Numbering & Series"
 msgstr "Invoice Numbering & Series"
 
-#: includes/Admin.php:853
+#: includes/Admin.php:878
 msgid "Invoice Series Code"
 msgstr "Invoice Series Code"
 
-#: includes/Admin.php:865
+#: includes/Admin.php:890
 msgid ""
 "Series code used for all invoices (required). B2Brouter allows one series "
 "per invoice type. Defaults to INV."
 msgstr ""
 
-#: includes/Admin.php:872
+#: includes/Admin.php:897
 msgid "Credit Note Series Code"
 msgstr "Credit Note Series Code"
 
-#: includes/Admin.php:884
+#: includes/Admin.php:909
 msgid ""
 "Series code used for all credit notes (required). B2Brouter allows one "
 "series per type. Defaults to CN."
 msgstr ""
 
-#: includes/Admin.php:891
+#: includes/Admin.php:916
 msgid "Invoice Numbering Pattern"
 msgstr "Invoice Numbering Pattern"
 
-#: includes/Admin.php:900
+#: includes/Admin.php:925
 msgid "Automatic (B2Brouter manages numbering)"
 msgstr "Automatic (B2Brouter manages numbering)"
 
-#: includes/Admin.php:902
+#: includes/Admin.php:927
 msgid "Let B2Brouter automatically assign invoice numbers"
 msgstr "Let B2Brouter automatically assign invoice numbers"
 
-#: includes/Admin.php:909
+#: includes/Admin.php:934
 msgid "WooCommerce Order Number"
 msgstr "WooCommerce Order Number"
 
-#: includes/Admin.php:911
+#: includes/Admin.php:936
 msgid "Use the WooCommerce order number as the invoice number"
 msgstr "Use the WooCommerce order number as the invoice number"
 
-#: includes/Admin.php:917
+#: includes/Admin.php:942
 msgid "PDF Options"
 msgstr "PDF Options"
 
-#: includes/Admin.php:921
+#: includes/Admin.php:946
 msgid "Automatic PDF Caching"
 msgstr "Automatic PDF Caching"
 
-#: includes/Admin.php:930
+#: includes/Admin.php:955
 msgid "Automatically download and cache PDF when invoice is generated"
 msgstr "Automatically download and cache PDF when invoice is generated"
 
-#: includes/Admin.php:933
+#: includes/Admin.php:958
 msgid ""
 "When enabled, PDFs will be automatically downloaded from B2Brouter and "
 "stored locally when an invoice is generated. This improves performance and "
@@ -535,11 +538,11 @@ msgstr ""
 "stored locally when an invoice is generated. This improves performance and "
 "reduces API calls."
 
-#: includes/Admin.php:941
+#: includes/Admin.php:966
 msgid "PDF Storage Location"
 msgstr "PDF Storage Location"
 
-#: includes/Admin.php:946
+#: includes/Admin.php:971
 msgid ""
 "Invoice PDFs are stored in this directory. Files are protected from direct "
 "access via .htaccess rules."
@@ -547,32 +550,33 @@ msgstr ""
 "Invoice PDFs are stored in this directory. Files are protected from direct "
 "access via .htaccess rules."
 
-#: includes/Admin.php:956
-#, php-format
-msgid "Currently storing %d PDF(s) using %s of disk space"
+#. translators: 1: number of cached PDF files, 2: total disk space used by the cache (e.g. "1.2 MB")
+#: includes/Admin.php:982
+#, fuzzy, php-format
+msgid "Currently storing %1$d PDF(s) using %2$s of disk space"
 msgstr "Currently storing %d PDF(s) using %s of disk space"
 
-#: includes/Admin.php:965
+#: includes/Admin.php:991
 msgid "Directory will be created automatically when first PDF is downloaded"
 msgstr "Directory will be created automatically when first PDF is downloaded"
 
-#: includes/Admin.php:973
+#: includes/Admin.php:999
 msgid "Email PDF Attachments"
 msgstr "Email PDF Attachments"
 
-#: includes/Admin.php:982
+#: includes/Admin.php:1008
 msgid "Attach PDF to Order Completed email (sent to customer)"
 msgstr "Attach PDF to Order Completed email (sent to customer)"
 
-#: includes/Admin.php:990
+#: includes/Admin.php:1016
 msgid "Attach PDF to Customer Invoice email"
 msgstr "Attach PDF to Customer Invoice email"
 
-#: includes/Admin.php:998
+#: includes/Admin.php:1024
 msgid "Attach PDF to Refunded Order email (credit note/rectificative)"
 msgstr "Attach PDF to Refunded Order email (credit note/rectificative)"
 
-#: includes/Admin.php:1001
+#: includes/Admin.php:1027
 msgid ""
 "Automatically attach invoice PDFs to customer emails. \"Order Completed\" is "
 "sent when orders are fulfilled. \"Customer Invoice\" is sent for pending/"
@@ -584,23 +588,23 @@ msgstr ""
 "unpaid orders or when manually sent from admin panel. \"Refunded Order\" is "
 "sent when orders are refunded."
 
-#: includes/Admin.php:1009
+#: includes/Admin.php:1035
 msgid "Automatic Cleanup"
 msgstr "Automatic Cleanup"
 
-#: includes/Admin.php:1018
+#: includes/Admin.php:1044
 msgid "Automatically delete old cached PDFs"
 msgstr "Automatically delete old cached PDFs"
 
-#: includes/Admin.php:1022
+#: includes/Admin.php:1048
 msgid "Delete PDFs older than"
 msgstr "Delete PDFs older than"
 
-#: includes/Admin.php:1029
+#: includes/Admin.php:1055
 msgid "days"
 msgstr "days"
 
-#: includes/Admin.php:1032
+#: includes/Admin.php:1058
 msgid ""
 "When enabled, PDFs older than the specified number of days will be "
 "automatically deleted daily via cron job. This helps manage disk space usage."
@@ -608,27 +612,27 @@ msgstr ""
 "When enabled, PDFs older than the specified number of days will be "
 "automatically deleted daily via cron job. This helps manage disk space usage."
 
-#: includes/Admin.php:1039
+#: includes/Admin.php:1065
 msgid "Plugin Information"
 msgstr "Plugin Information"
 
-#: includes/Admin.php:1043
+#: includes/Admin.php:1069
 msgid "Transaction Counter"
 msgstr "Transaction Counter"
 
-#: includes/Admin.php:1047
+#: includes/Admin.php:1073
 msgid "Total number of invoices generated from this plugin"
 msgstr "Total number of invoices generated from this plugin"
 
-#: includes/Admin.php:1053
+#: includes/Admin.php:1079
 msgid "B2Brouter Account"
 msgstr "B2Brouter Account"
 
-#: includes/Admin.php:1057
+#: includes/Admin.php:1083
 msgid "Access B2Brouter Account Settings"
 msgstr "Access B2Brouter Account Settings"
 
-#: includes/Admin.php:1059
+#: includes/Admin.php:1085
 msgid ""
 "Configure advanced settings like transports, formats, and taxes in your "
 "B2Brouter account."
@@ -636,11 +640,11 @@ msgstr ""
 "Configure advanced settings like transports, formats, and taxes in your "
 "B2Brouter account."
 
-#: includes/Admin.php:1066
+#: includes/Admin.php:1092
 msgid "Save Settings"
 msgstr "Save Settings"
 
-#: includes/Admin.php:1082
+#: includes/Admin.php:1108
 msgid "You do not have sufficient permissions to access this page."
 msgstr "You do not have sufficient permissions to access this page."
 
@@ -653,7 +657,7 @@ msgid "Generating..."
 msgstr "Generating..."
 
 #: includes/Customer.php:114 includes/Customer.php:143
-#: includes/Order_Handler.php:375
+#: includes/Order_Handler.php:377
 msgid "Generate Invoice"
 msgstr "Generate Invoice"
 
@@ -666,7 +670,7 @@ msgid "Download Credit Note"
 msgstr "Download Credit Note"
 
 #: includes/Customer.php:193 includes/Invoice_List_Table.php:57
-#: includes/Order_Handler.php:490
+#: includes/Order_Handler.php:495
 msgid "Invoice"
 msgstr "Invoice"
 
@@ -678,40 +682,41 @@ msgstr "Invoice Number:"
 msgid "Download Invoice PDF"
 msgstr "Download Invoice PDF"
 
-#: includes/Customer.php:223
+#. translators: %s: formatted PDF file size (e.g. "1.2 MB")
+#: includes/Customer.php:224
 #, php-format
 msgid "PDF Size: %s"
 msgstr "PDF Size: %s"
 
-#: includes/Customer.php:259 includes/Customer.php:307
-#: includes/Invoice_Generator.php:136 includes/Invoice_Generator.php:771
-#: includes/Invoice_Generator.php:906 includes/Status_Sync.php:351
+#: includes/Customer.php:260 includes/Customer.php:308
+#: includes/Invoice_Generator.php:136 includes/Invoice_Generator.php:777
+#: includes/Invoice_Generator.php:912 includes/Status_Sync.php:351
 msgid "Order not found"
 msgstr "Order not found"
 
-#: includes/Customer.php:266 includes/Customer.php:314
+#: includes/Customer.php:267 includes/Customer.php:315
 msgid "You do not have permission to access this order"
 msgstr "You do not have permission to access this order"
 
-#: includes/Customer.php:275 includes/Invoice_Generator.php:778
-#: includes/Invoice_Generator.php:940
+#: includes/Customer.php:276 includes/Invoice_Generator.php:784
+#: includes/Invoice_Generator.php:946
 msgid "No invoice found for this order"
 msgstr "No invoice found for this order"
 
-#: includes/Customer.php:321
+#: includes/Customer.php:322
 msgid "Invoice generation is not available in automatic mode"
 msgstr "Invoice generation is not available in automatic mode"
 
-#: includes/Customer.php:328
+#: includes/Customer.php:329
 msgid "Invoice can only be generated for completed or processing orders"
 msgstr "Invoice can only be generated for completed or processing orders"
 
-#: includes/Customer.php:335
+#: includes/Customer.php:336
 msgid "Invoice already exists for this order"
 msgstr "Invoice already exists for this order"
 
 #: includes/Customer_Fields.php:106 includes/Customer_Fields.php:133
-#: includes/Customer_Fields.php:170 includes/Customer_Fields.php:253
+#: includes/Customer_Fields.php:170 includes/Customer_Fields.php:259
 msgid "Tax ID / VAT Number"
 msgstr "Tax ID / VAT Number"
 
@@ -723,15 +728,15 @@ msgstr "Tax Identification Number"
 msgid "Enter your business Tax ID or VAT number for invoicing (optional)"
 msgstr "Enter your business Tax ID or VAT number for invoicing (optional)"
 
-#: includes/Customer_Fields.php:254
+#: includes/Customer_Fields.php:260
 msgid "Customer Tax Identification Number or VAT number"
 msgstr "Customer Tax Identification Number or VAT number"
 
-#: includes/Invoice_Generator.php:109 includes/Status_Sync.php:470
+#: includes/Invoice_Generator.php:109 includes/Status_Sync.php:472
 msgid "API key not configured"
 msgstr "API key not configured"
 
-#: includes/Invoice_Generator.php:113 includes/Status_Sync.php:474
+#: includes/Invoice_Generator.php:113 includes/Status_Sync.php:476
 msgid "B2Brouter PHP SDK not found"
 msgstr "B2Brouter PHP SDK not found"
 
@@ -751,119 +756,125 @@ msgstr "Cannot generate credit note: parent order has no invoice"
 msgid "Account ID not configured. Please validate your API key."
 msgstr "Account ID not configured. Please validate your API key."
 
-#: includes/Invoice_Generator.php:213
-#, php-format
-msgid "B2Brouter credit note generated successfully. Invoice: %s (ID: %s)"
+#. translators: 1: formatted invoice number, 2: B2Brouter internal invoice ID
+#: includes/Invoice_Generator.php:214
+#, fuzzy, php-format
+msgid "B2Brouter credit note generated successfully. Invoice: %1$s (ID: %2$s)"
 msgstr "B2Brouter credit note generated successfully. Invoice: %s (ID: %s)"
 
-#: includes/Invoice_Generator.php:218
-#, php-format
-msgid "B2Brouter invoice generated successfully. Invoice: %s (ID: %s)"
+#. translators: 1: formatted invoice number, 2: B2Brouter internal invoice ID
+#: includes/Invoice_Generator.php:220
+#, fuzzy, php-format
+msgid "B2Brouter invoice generated successfully. Invoice: %1$s (ID: %2$s)"
 msgstr "B2Brouter invoice generated successfully. Invoice: %s (ID: %s)"
 
-#: includes/Invoice_Generator.php:245
+#: includes/Invoice_Generator.php:247
 msgid "Credit note PDF automatically downloaded and cached locally"
 msgstr "Credit note PDF automatically downloaded and cached locally"
 
-#: includes/Invoice_Generator.php:246
+#: includes/Invoice_Generator.php:248
 msgid "Invoice PDF automatically downloaded and cached locally"
 msgstr "Invoice PDF automatically downloaded and cached locally"
 
-#: includes/Invoice_Generator.php:257
+#: includes/Invoice_Generator.php:259
 msgid "Credit note generated successfully"
 msgstr "Credit note generated successfully"
 
-#: includes/Invoice_Generator.php:258
+#: includes/Invoice_Generator.php:260
 msgid "Invoice generated successfully"
 msgstr "Invoice generated successfully"
 
-#: includes/Invoice_Generator.php:282
+#. translators: %s: error message returned by the B2Brouter API
+#: includes/Invoice_Generator.php:285
 #, php-format
 msgid "B2Brouter credit note generation failed: %s"
 msgstr "B2Brouter credit note generation failed: %s"
 
-#: includes/Invoice_Generator.php:286
+#. translators: %s: error message returned by the B2Brouter API
+#: includes/Invoice_Generator.php:290
 #, php-format
 msgid "B2Brouter invoice generation failed: %s"
 msgstr "B2Brouter invoice generation failed: %s"
 
-#: includes/Invoice_Generator.php:316
+#: includes/Invoice_Generator.php:320
 msgid "Parent order has no invoice. Cannot create refund invoice."
 msgstr "Parent order has no invoice. Cannot create refund invoice."
 
-#: includes/Invoice_Generator.php:429
+#: includes/Invoice_Generator.php:433
 msgid "Shipping"
 msgstr "Shipping"
 
-#: includes/Invoice_Generator.php:489
+#. translators: %s: WooCommerce order number or refund ID
+#: includes/Invoice_Generator.php:494
 #, php-format
 msgid "WooCommerce Order #%s"
 msgstr "WooCommerce Order #%s"
 
-#: includes/Invoice_Generator.php:693
+#: includes/Invoice_Generator.php:698
 msgid "Invoice ID is required"
 msgstr "Invoice ID is required"
 
-#: includes/Invoice_Generator.php:704
+#: includes/Invoice_Generator.php:709
 msgid "PDF data is empty"
 msgstr "PDF data is empty"
 
-#: includes/Invoice_Generator.php:714
+#: includes/Invoice_Generator.php:719
 msgid "PDF downloaded successfully"
 msgstr "PDF downloaded successfully"
 
-#: includes/Invoice_Generator.php:721
+#: includes/Invoice_Generator.php:726
 msgid "Invoice not found"
 msgstr "Invoice not found"
 
-#: includes/Invoice_Generator.php:728
+#: includes/Invoice_Generator.php:733
 msgid "API authentication failed. Please check your API key."
 msgstr "API authentication failed. Please check your API key."
 
-#: includes/Invoice_Generator.php:735
+#: includes/Invoice_Generator.php:740
 msgid "You do not have permission to download this invoice."
 msgstr "You do not have permission to download this invoice."
 
-#: includes/Invoice_Generator.php:743 includes/Status_Sync.php:417
+#. translators: %s: error message returned by the B2Brouter API
+#: includes/Invoice_Generator.php:749 includes/Status_Sync.php:419
 #, php-format
 msgid "API error: %s"
 msgstr "API error: %s"
 
-#: includes/Invoice_Generator.php:792
+#: includes/Invoice_Generator.php:798
 msgid "Using existing PDF file"
 msgstr "Using existing PDF file"
 
-#: includes/Invoice_Generator.php:813
+#: includes/Invoice_Generator.php:819
 msgid ""
 "WordPress Filesystem API is not available. On FTP-only hosts, please define "
 "FTP_USER, FTP_PASS, and FTP_HOST in wp-config.php."
 msgstr ""
 
-#: includes/Invoice_Generator.php:821
+#: includes/Invoice_Generator.php:827
 msgid "Failed to create PDF storage directory"
 msgstr "Failed to create PDF storage directory"
 
-#: includes/Invoice_Generator.php:834
+#: includes/Invoice_Generator.php:840
 msgid "Failed to save PDF file"
 msgstr "Failed to save PDF file"
 
-#: includes/Invoice_Generator.php:855
+#: includes/Invoice_Generator.php:861
 msgid "PDF saved successfully"
 msgstr "PDF saved successfully"
 
-#: includes/Invoice_Generator.php:915
+#: includes/Invoice_Generator.php:921
 msgid "You do not have permission to access this invoice."
 msgstr "You do not have permission to access this invoice."
 
-#: includes/Invoice_Generator.php:916
+#: includes/Invoice_Generator.php:922
 msgid "Permission Denied"
 msgstr "Permission Denied"
 
-#: includes/Invoice_Generator.php:954
+#: includes/Invoice_Generator.php:960
 msgid "Filesystem unavailable. Please try again later."
 msgstr ""
 
-#: includes/Invoice_Generator.php:986
+#: includes/Invoice_Generator.php:992
 msgid "Failed to read invoice PDF."
 msgstr ""
 
@@ -899,50 +910,47 @@ msgstr "Actions"
 msgid "Download PDFs"
 msgstr "Download PDFs"
 
-#: includes/Invoice_List_Table.php:225
+#: includes/Invoice_List_Table.php:227
 msgid "Refund"
 msgstr "Refund"
 
-#: includes/Invoice_List_Table.php:226
+#: includes/Invoice_List_Table.php:228
 msgid "for Order"
 msgstr "for Order"
 
-#: includes/Invoice_List_Table.php:268
+#: includes/Invoice_List_Table.php:270
 msgid "Guest"
 msgstr "Guest"
 
-#: includes/Invoice_List_Table.php:306 includes/Order_Handler.php:465
+#: includes/Invoice_List_Table.php:308 includes/Order_Handler.php:470
 msgid "View in B2Brouter"
 msgstr "View in B2Brouter"
 
-#: includes/Invoice_List_Table.php:382 includes/Order_Handler.php:311
+#: includes/Invoice_List_Table.php:384 includes/Order_Handler.php:312
 msgid "View PDF"
 msgstr "View PDF"
 
-#: includes/Invoice_List_Table.php:383 includes/Order_Handler.php:426
+#: includes/Invoice_List_Table.php:385 includes/Order_Handler.php:431
 msgid "View"
 msgstr "View"
 
-#: includes/Invoice_List_Table.php:392 includes/Order_Handler.php:321
+#: includes/Invoice_List_Table.php:394 includes/Order_Handler.php:322
 msgid "Download PDF"
 msgstr "Download PDF"
 
-#: includes/Invoice_List_Table.php:393 includes/Order_Handler.php:434
+#: includes/Invoice_List_Table.php:395 includes/Order_Handler.php:439
 msgid "Download"
 msgstr "Download"
 
-#: includes/Invoice_List_Table.php:409
-msgid "Security check failed"
-msgstr "Security check failed"
-
-#: includes/Invoice_List_Table.php:449
+#. translators: %d: number of invoice PDFs queued for download
+#: includes/Invoice_List_Table.php:453
 #, php-format
 msgid "Preparing to download %d invoice PDF."
 msgid_plural "Preparing to download %d invoice PDFs."
 msgstr[0] "Preparing to download %d invoice PDF."
 msgstr[1] "Preparing to download %d invoice PDFs."
 
-#: includes/Invoice_List_Table.php:468
+#: includes/Invoice_List_Table.php:473
 msgid "No invoices found."
 msgstr "No invoices found."
 
@@ -1002,78 +1010,82 @@ msgstr "Generated Date:"
 msgid "Status:"
 msgstr "Status:"
 
-#: includes/Order_Handler.php:275
+#. translators: %s: human-readable time since the status was last checked (e.g. "3 hours ago")
+#: includes/Order_Handler.php:276
 #, php-format
 msgid "Last checked: %s"
 msgstr "Last checked: %s"
 
-#: includes/Order_Handler.php:276 includes/Order_Handler.php:338
+#: includes/Order_Handler.php:277 includes/Order_Handler.php:340
 msgid "ago"
 msgstr "ago"
 
-#: includes/Order_Handler.php:291
+#: includes/Order_Handler.php:292
 msgid "Error:"
 msgstr "Error:"
 
-#: includes/Order_Handler.php:336
-#, php-format
-msgid "PDF cached (%s, %s)"
+#. translators: 1: cached PDF file size, 2: human-readable time since the PDF was cached (e.g. "3 hours ago")
+#: includes/Order_Handler.php:338
+#, fuzzy, php-format
+msgid "PDF cached (%1$s, %2$s)"
 msgstr "PDF cached (%s, %s)"
 
-#: includes/Order_Handler.php:348
+#: includes/Order_Handler.php:350
 msgid "Credit Note Not Generated"
 msgstr "Credit Note Not Generated"
 
-#: includes/Order_Handler.php:350
+#: includes/Order_Handler.php:352
 msgid "Invoice Not Generated"
 msgstr "Invoice Not Generated"
 
-#: includes/Order_Handler.php:357
+#: includes/Order_Handler.php:359
 msgid "API key not configured."
 msgstr "API key not configured."
 
-#: includes/Order_Handler.php:359
+#: includes/Order_Handler.php:361
 msgid "Configure now"
 msgstr "Configure now"
 
-#: includes/Order_Handler.php:364
+#: includes/Order_Handler.php:366
 msgid "Cannot generate credit note: parent order has no invoice."
 msgstr "Cannot generate credit note: parent order has no invoice."
 
-#: includes/Order_Handler.php:373
+#: includes/Order_Handler.php:375
 msgid "Generate Credit Note"
 msgstr "Generate Credit Note"
 
-#: includes/Order_Handler.php:383
+#: includes/Order_Handler.php:385
 msgid "Click to manually generate a credit note for this refund."
 msgstr "Click to manually generate a credit note for this refund."
 
-#: includes/Order_Handler.php:385
+#: includes/Order_Handler.php:387
 msgid "Click to manually generate an invoice for this order."
 msgstr "Click to manually generate an invoice for this order."
 
-#: includes/Order_Handler.php:399
+#: includes/Order_Handler.php:401
 msgid "Refund Invoices"
 msgstr "Refund Invoices"
 
-#: includes/Order_Handler.php:408
+#. translators: %s: WooCommerce refund ID
+#: includes/Order_Handler.php:412
 #, php-format
 msgid "Refund #%s"
 msgstr "Refund #%s"
 
-#: includes/Order_Handler.php:440
+#: includes/Order_Handler.php:445
 msgid "No credit note"
 msgstr "No credit note"
 
-#: includes/Order_Handler.php:464
+#: includes/Order_Handler.php:469
 msgid "Manage from B2Brouter"
 msgstr "Manage from B2Brouter"
 
-#: includes/Order_Handler.php:614
+#: includes/Order_Handler.php:619
 msgid "Generate B2Brouter Invoices"
 msgstr "Generate B2Brouter Invoices"
 
-#: includes/Order_Handler.php:718
+#. translators: 1: number of invoices queued, 2: URL to the Action Scheduler UI filtered to our hook
+#: includes/Order_Handler.php:728
 #, php-format
 msgid ""
 "%1$d invoice queued for background processing. <a href=\"%2$s\">View "
@@ -1084,7 +1096,8 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Order_Handler.php:733
+#. translators: %d: number of orders skipped during bulk invoice generation
+#: includes/Order_Handler.php:744
 #, php-format
 msgid ""
 "%d order was skipped because it is not completed or already has an invoice."
@@ -1110,16 +1123,18 @@ msgstr "Invalid API key"
 msgid "No accounts found for this API key"
 msgstr "No accounts found for this API key"
 
-#: includes/Settings.php:292
+#. translators: %s: B2Brouter account name
+#: includes/Settings.php:293
 #, php-format
 msgid "API key is valid. Using account: %s"
 msgstr "API key is valid. Using account: %s"
 
-#: includes/Settings.php:344
+#: includes/Settings.php:345
 msgid "API key is valid. Please select an account."
 msgstr "API key is valid. Please select an account."
 
-#: includes/Settings.php:350
+#. translators: %s: error message returned by the B2Brouter API
+#: includes/Settings.php:352
 #, php-format
 msgid "API key validation failed: %s"
 msgstr "API key validation failed: %s"
@@ -1132,23 +1147,28 @@ msgstr "Every 6 Hours"
 msgid "No invoice ID found"
 msgstr "No invoice ID found"
 
-#: includes/Status_Sync.php:373 includes/Status_Sync.php:403
+#: includes/Status_Sync.php:373 includes/Status_Sync.php:404
 msgid "Invoice not found in B2Brouter"
 msgstr "Invoice not found in B2Brouter"
 
-#: includes/Status_Sync.php:395
+#. translators: %s: new invoice status (e.g. "sent", "delivered")
+#: includes/Status_Sync.php:396
 #, php-format
 msgid "Status updated to: %s"
 msgstr "Status updated to: %s"
 
-#: includes/Status_Sync.php:410
+#: includes/Status_Sync.php:411
 msgid "API authentication failed"
 msgstr "API authentication failed"
 
-#: includes/Webhook_Handler.php:279
-#, php-format
-msgid "Status updated via webhook: %s → %s"
+#. translators: 1: previous invoice status, 2: new invoice status
+#: includes/Webhook_Handler.php:280
+#, fuzzy, php-format
+msgid "Status updated via webhook: %1$s → %2$s"
 msgstr "Status updated via webhook: %s → %s"
+
+#~ msgid "Security check failed"
+#~ msgstr "Security check failed"
 
 #~ msgid ""
 #~ "Visit our GitHub repository for detailed documentation. If you need help, "

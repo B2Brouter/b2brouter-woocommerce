@@ -106,11 +106,11 @@ class Invoice_Generator {
         $api_key = $this->settings->get_api_key();
 
         if (empty($api_key)) {
-            throw new \Exception(__('API key not configured', 'b2brouter-for-woocommerce'));
+            throw new \Exception(esc_html__('API key not configured', 'b2brouter-for-woocommerce'));
         }
 
         if (!class_exists('B2BRouter\B2BRouterClient')) {
-            throw new \Exception(__('B2Brouter PHP SDK not found', 'b2brouter-for-woocommerce'));
+            throw new \Exception(esc_html__('B2Brouter PHP SDK not found', 'b2brouter-for-woocommerce'));
         }
 
         // Create client with environment setting
@@ -210,12 +210,14 @@ class Invoice_Generator {
 
             $note_message = $is_refund
                 ? sprintf(
-                    __('B2Brouter credit note generated successfully. Invoice: %s (ID: %s)', 'b2brouter-for-woocommerce'),
+                    /* translators: 1: formatted invoice number, 2: B2Brouter internal invoice ID */
+                    __('B2Brouter credit note generated successfully. Invoice: %1$s (ID: %2$s)', 'b2brouter-for-woocommerce'),
                     $formatted_number,
                     $invoice['id']
                   )
                 : sprintf(
-                    __('B2Brouter invoice generated successfully. Invoice: %s (ID: %s)', 'b2brouter-for-woocommerce'),
+                    /* translators: 1: formatted invoice number, 2: B2Brouter internal invoice ID */
+                    __('B2Brouter invoice generated successfully. Invoice: %1$s (ID: %2$s)', 'b2brouter-for-woocommerce'),
                     $formatted_number,
                     $invoice['id']
                   );
@@ -279,10 +281,12 @@ class Invoice_Generator {
 
                 $error_message = isset($is_refund) && $is_refund
                     ? sprintf(
+                        /* translators: %s: error message returned by the B2Brouter API */
                         __('B2Brouter credit note generation failed: %s', 'b2brouter-for-woocommerce'),
                         $e->getMessage()
                       )
                     : sprintf(
+                        /* translators: %s: error message returned by the B2Brouter API */
                         __('B2Brouter invoice generation failed: %s', 'b2brouter-for-woocommerce'),
                         $e->getMessage()
                       );
@@ -313,7 +317,7 @@ class Invoice_Generator {
         if ($is_refund) {
             $parent_invoice_info = $this->get_parent_invoice_info($order);
             if (!$parent_invoice_info) {
-                throw new \Exception(__('Parent order has no invoice. Cannot create refund invoice.', 'b2brouter-for-woocommerce'));
+                throw new \Exception(esc_html__('Parent order has no invoice. Cannot create refund invoice.', 'b2brouter-for-woocommerce'));
             }
             $parent_order = $parent_invoice_info['parent_order'];
         }
@@ -479,13 +483,14 @@ class Invoice_Generator {
         $invoice_data = array(
             'type' => $invoice_type,
             'date' => current_time('Y-m-d'),
-            'due_date' => date('Y-m-d', strtotime(current_time('Y-m-d') . ' +30 days')),
+            'due_date' => wp_date('Y-m-d', strtotime(current_time('Y-m-d') . ' +30 days')),
             'currency' => $order->get_currency(),
             'language' => substr(get_locale(), 0, 2),  // Get language from WordPress locale (e.g., 'es' from 'es_ES')
             'contact' => $contact,
             'contact_email_override' => $contact['email'], // Override email to enable sending for IssuedSimplifiedInvoice
             'invoice_lines_attributes' => $invoice_lines,
             'extra_info' => sprintf(
+                /* translators: %s: WooCommerce order number or refund ID */
                 __('WooCommerce Order #%s', 'b2brouter-for-woocommerce'),
                 $is_refund ? $order->get_id() : $order->get_order_number()
             ),
@@ -740,6 +745,7 @@ class Invoice_Generator {
             return array(
                 'success' => false,
                 'message' => sprintf(
+                    /* translators: %s: error message returned by the B2Brouter API */
                     __('API error: %s', 'b2brouter-for-woocommerce'),
                     $e->getMessage()
                 )

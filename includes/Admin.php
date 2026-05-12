@@ -227,6 +227,7 @@ class Admin {
             'id'    => 'b2brouter-counter',
             'title' => sprintf(
                 '<span class="ab-icon dashicons dashicons-media-document"></span> <span class="ab-label">%s</span>',
+                /* translators: %d: number of invoices generated */
                 sprintf(__('Invoices: %d', 'b2brouter-for-woocommerce'), $count)
             ),
             'href'  => admin_url('admin.php?page=b2brouter-invoices'),
@@ -347,6 +348,7 @@ class Admin {
 
         wp_send_json_success(array(
             'message' => sprintf(
+                /* translators: %s: B2Brouter account name */
                 __('Account selected: %s', 'b2brouter-for-woocommerce'),
                 $account_name
             )
@@ -976,7 +978,8 @@ class Admin {
                                     <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
                                     <?php
                                     printf(
-                                        esc_html__('Currently storing %d PDF(s) using %s of disk space', 'b2brouter-for-woocommerce'),
+                                        /* translators: 1: number of cached PDF files, 2: total disk space used by the cache (e.g. "1.2 MB") */
+                                        esc_html__('Currently storing %1$d PDF(s) using %2$s of disk space', 'b2brouter-for-woocommerce'),
                                         (int) $stats['count'],
                                         esc_html( size_format($stats['total_size'], 2) )
                                     );

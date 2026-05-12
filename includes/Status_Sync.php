@@ -392,6 +392,7 @@ class Status_Sync {
 
             return array(
                 'success' => true,
+                /* translators: %s: new invoice status (e.g. "sent", "delivered") */
                 'message' => sprintf(__('Status updated to: %s', 'b2brouter-for-woocommerce'), $status),
                 'status' => $status
             );
@@ -414,6 +415,7 @@ class Status_Sync {
             Logger::error('B2Brouter Status Sync - API error for order ' . $order_id . ': ' . $e->getMessage());
             return array(
                 'success' => false,
+                /* translators: %s: error message returned by the B2Brouter API */
                 'message' => sprintf(__('API error: %s', 'b2brouter-for-woocommerce'), $e->getMessage())
             );
 
@@ -467,11 +469,11 @@ class Status_Sync {
         $api_key = $this->settings->get_api_key();
 
         if (empty($api_key)) {
-            throw new \Exception(__('API key not configured', 'b2brouter-for-woocommerce'));
+            throw new \Exception(esc_html__('API key not configured', 'b2brouter-for-woocommerce'));
         }
 
         if (!class_exists('B2BRouter\B2BRouterClient')) {
-            throw new \Exception(__('B2Brouter PHP SDK not found', 'b2brouter-for-woocommerce'));
+            throw new \Exception(esc_html__('B2Brouter PHP SDK not found', 'b2brouter-for-woocommerce'));
         }
 
         $options = array('api_base' => $this->settings->get_api_base_url());

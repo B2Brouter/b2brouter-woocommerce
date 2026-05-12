@@ -171,6 +171,20 @@ if (!function_exists('wp_kses_post')) {
     }
 }
 
+if (!function_exists('wp_date')) {
+    /**
+     * Mock wp_date function. The real function honors the WP-configured
+     * timezone; for tests the system timezone is sufficient.
+     *
+     * @param string   $format    Format accepted by date()
+     * @param int|null $timestamp Unix timestamp; defaults to now
+     * @return string
+     */
+    function wp_date($format, $timestamp = null) {
+        return date($format, $timestamp ?? time());
+    }
+}
+
 if (!function_exists('current_time')) {
     /**
      * Mock current_time function

@@ -220,6 +220,7 @@ class Customer {
                         <small>
                             <?php
                             printf(
+                                /* translators: %s: formatted PDF file size (e.g. "1.2 MB") */
                                 esc_html__('PDF Size: %s', 'b2brouter-for-woocommerce'),
                                 esc_html(size_format($pdf_size, 2))
                             );

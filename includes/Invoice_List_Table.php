@@ -448,12 +448,15 @@ class Invoice_List_Table extends \WP_List_Table {
             printf(
                 '<div class="notice notice-success is-dismissible"><p>%s</p></div>',
                 sprintf(
-                    esc_html(_n(
-                        'Preparing to download %d invoice PDF.',
-                        'Preparing to download %d invoice PDFs.',
-                        $count,
-                        'b2brouter-for-woocommerce'
-                    )),
+                    esc_html(
+                        /* translators: %d: number of invoice PDFs queued for download */
+                        _n(
+                            'Preparing to download %d invoice PDF.',
+                            'Preparing to download %d invoice PDFs.',
+                            $count,
+                            'b2brouter-for-woocommerce'
+                        )
+                    ),
                     (int) $count
                 )
             );

@@ -272,6 +272,7 @@ class Order_Handler {
                         <small style="color: #666;">
                             <?php
                             printf(
+                                /* translators: %s: human-readable time since the status was last checked (e.g. "3 hours ago") */
                                 esc_html__('Last checked: %s', 'b2brouter-for-woocommerce'),
                                 esc_html(human_time_diff($status_updated, current_time('timestamp'))) . ' ' . esc_html__('ago', 'b2brouter-for-woocommerce')
                             );
@@ -333,7 +334,8 @@ class Order_Handler {
                     <span class="dashicons dashicons-yes-alt" style="color: #46b450; font-size: 14px;"></span>
                     <?php
                     printf(
-                        esc_html__('PDF cached (%s, %s)', 'b2brouter-for-woocommerce'),
+                        /* translators: 1: cached PDF file size, 2: human-readable time since the PDF was cached (e.g. "3 hours ago") */
+                        esc_html__('PDF cached (%1$s, %2$s)', 'b2brouter-for-woocommerce'),
                         esc_html(size_format($pdf_size, 2)),
                         esc_html(human_time_diff(strtotime($pdf_date), current_time('timestamp'))) . ' ' . esc_html__('ago', 'b2brouter-for-woocommerce')
                     );
@@ -405,7 +407,10 @@ class Order_Handler {
                         <div style="padding: 8px; background: #f9f9f9; margin-bottom: 8px; border-left: 3px solid <?php echo $refund_has_invoice ? '#46b450' : '#ddd'; ?>;">
                             <p style="margin: 0 0 5px 0;">
                                 <strong>
-                                    <?php printf(esc_html__('Refund #%s', 'b2brouter-for-woocommerce'), (int) $refund->get_id()); ?>
+                                    <?php
+                                    /* translators: %s: WooCommerce refund ID */
+                                    printf(esc_html__('Refund #%s', 'b2brouter-for-woocommerce'), (int) $refund->get_id());
+                                    ?>
                                 </strong>
                                 <span style="color: #666; font-size: 0.9em;">
                                     (<?php echo wp_kses_post( wc_price($refund->get_amount(), array('currency' => $order->get_currency())) ); ?>)
@@ -686,7 +691,7 @@ class Order_Handler {
         $result = $this->invoice_generator->generate_invoice((int) $order_id);
         if (empty($result['success'])) {
             throw new \RuntimeException(
-                isset($result['message']) ? $result['message'] : 'Invoice generation failed'
+                esc_html(isset($result['message']) ? $result['message'] : 'Invoice generation failed')
             );
         }
     }
@@ -719,6 +724,7 @@ class Order_Handler {
 
             echo '<div class="notice notice-info is-dismissible"><p>';
             echo wp_kses_post( sprintf(
+                /* translators: 1: number of invoices queued, 2: URL to the Action Scheduler UI filtered to our hook */
                 _n(
                     '%1$d invoice queued for background processing. <a href="%2$s">View Scheduled Actions</a>.',
                     '%1$d invoices queued for background processing. <a href="%2$s">View Scheduled Actions</a>.',
@@ -734,6 +740,7 @@ class Order_Handler {
         if ($skipped_count > 0) {
             echo '<div class="notice notice-warning is-dismissible"><p>';
             echo esc_html( sprintf(
+                /* translators: %d: number of orders skipped during bulk invoice generation */
                 _n(
                     '%d order was skipped because it is not completed or already has an invoice.',
                     '%d orders were skipped because they are not completed or already have invoices.',

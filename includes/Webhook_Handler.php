@@ -276,7 +276,8 @@ class Webhook_Handler {
 
         // Add order note
         $order->add_order_note(sprintf(
-            __('Status updated via webhook: %s → %s', 'b2brouter-for-woocommerce'),
+            /* translators: 1: previous invoice status, 2: new invoice status */
+            __('Status updated via webhook: %1$s → %2$s', 'b2brouter-for-woocommerce'),
             $old_status ?: 'pending',
             $new_status
         ));
