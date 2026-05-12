@@ -12,9 +12,9 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
-$autoloader = __DIR__ . '/vendor/autoload.php';
-if (file_exists($autoloader)) {
-    require_once $autoloader;
+$b2brouter_autoloader = __DIR__ . '/vendor/autoload.php';
+if (file_exists($b2brouter_autoloader)) {
+    require_once $b2brouter_autoloader;
 }
 
 if (class_exists('\\B2Brouter\\WooCommerce\\Uninstaller')) {
