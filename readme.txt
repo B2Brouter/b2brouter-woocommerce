@@ -119,7 +119,7 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 * Invoice numbering: removed sequential and custom numbering modes. Remaining modes are WooCommerce order number and automatic B2Brouter numbering.
 * Status sync: finalized invoices are no longer re-polled; stale non-final invoices use exponential backoff.
 * Service loading: admin services instantiated only in admin context and customer services only on the frontend.
-* Logging: replaced `error_log()` with `wc_get_logger()`. Plugin messages now appear under WooCommerce → Status → Logs (source `b2brouter-woocommerce`).
+* Logging: replaced `error_log()` with `wc_get_logger()`. Plugin messages now appear under WooCommerce → Status → Logs (source `b2brouter-for-woocommerce`).
 * Filesystem operations: PDF reads, writes, deletions and directory operations now use the WP Filesystem API.
 * Welcome page redesigned; admin menu cleaned up (Welcome is the default landing page).
 
