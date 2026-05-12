@@ -1301,14 +1301,18 @@ class Invoice_Generator {
      * @return void
      */
     private function cleanup_order_metadata_for_file($file_path) {
-        global $wpdb;
-
-        // Find orders with this PDF path in metadata
-        $meta_key = '_b2brouter_invoice_pdf_path';
-        $order_ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT post_id FROM {$wpdb->prefix}postmeta WHERE meta_key = %s AND meta_value = %s",
-            $meta_key,
-            $file_path
+        // Find orders that point at this PDF file via meta. wc_get_orders()
+        // is HPOS-aware; the previous direct postmeta SELECT silently missed
+        // orders stored only in the HPOS tables.
+        $order_ids = wc_get_orders(array(
+            'limit'  => -1,
+            'return' => 'ids',
+            'status' => 'any',
+            'type'   => array('shop_order', 'shop_order_refund'),
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- runs only when cleanup_old_pdfs deletes an orphan file; no indexed alternative.
+            'meta_key'   => '_b2brouter_invoice_pdf_path',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- paired with meta_key above.
+            'meta_value' => $file_path,
         ));
 
         foreach ($order_ids as $order_id) {
