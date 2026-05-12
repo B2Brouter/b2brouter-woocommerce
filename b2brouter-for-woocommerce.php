@@ -142,7 +142,7 @@ class B2Brouter_WooCommerce {
      * @return bool True if WooCommerce is active
      */
     private function is_woocommerce_active() {
-        return class_exists('WooCommerce') || in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')));
+        return class_exists('WooCommerce');
     }
 
     /**
