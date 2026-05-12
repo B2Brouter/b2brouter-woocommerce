@@ -154,33 +154,53 @@ class UninstallerTest extends TestCase {
         $this->assertTrue(true); // no exception
     }
 
-    public function test_remove_directory_logs_warning_when_unlink_fails(): void {
-        if (DIRECTORY_SEPARATOR === '\\' || (function_exists('posix_geteuid') && posix_geteuid() === 0)) {
-            $this->markTestSkipped('Filesystem permission test requires non-root POSIX');
-        }
-
+    public function test_delete_pdf_directory_logs_warning_when_wp_filesystem_delete_fails(): void {
         mkdir($this->tmp_pdf_dir, 0777, true);
-        $blocked_file = $this->tmp_pdf_dir . '/blocked.pdf';
-        file_put_contents($blocked_file, 'cannot delete me');
-        chmod($this->tmp_pdf_dir, 0555); // r-x: prevents unlink/rmdir inside
+        file_put_contents($this->tmp_pdf_dir . '/invoice.pdf', 'fake pdf');
 
         update_option('b2brouter_pdf_storage_path', $this->tmp_pdf_dir);
         $GLOBALS['wc_logger_calls'] = array();
+        $GLOBALS['wp_filesystem_fail_methods'] = array('delete');
 
         try {
             $this->uninstaller->delete_pdf_directory();
         } finally {
-            chmod($this->tmp_pdf_dir, 0777);
-            @unlink($blocked_file);
-            @rmdir($this->tmp_pdf_dir);
+            unset($GLOBALS['wp_filesystem_fail_methods']);
         }
 
         $this->assertArrayHasKey('warning', $GLOBALS['wc_logger_calls']);
         $messages = array_column($GLOBALS['wc_logger_calls']['warning'], 'message');
-        $matched = array_filter($messages, function ($m) use ($blocked_file) {
-            return strpos($m, $blocked_file) !== false;
+        $matched = array_filter($messages, function ($m) {
+            return strpos($m, $this->tmp_pdf_dir) !== false
+                && strpos($m, 'failed to remove') !== false;
         });
-        $this->assertNotEmpty($matched, 'expected a warning mentioning the blocked file');
+        $this->assertNotEmpty($matched, 'expected a warning naming the directory whose delete failed');
+    }
+
+    public function test_delete_pdf_directory_logs_warning_when_wp_filesystem_init_fails(): void {
+        mkdir($this->tmp_pdf_dir, 0777, true);
+        file_put_contents($this->tmp_pdf_dir . '/invoice.pdf', 'fake pdf');
+
+        update_option('b2brouter_pdf_storage_path', $this->tmp_pdf_dir);
+        $GLOBALS['wc_logger_calls'] = array();
+        $GLOBALS['wp_filesystem_init_failure'] = true;
+
+        try {
+            $this->uninstaller->delete_pdf_directory();
+        } finally {
+            unset($GLOBALS['wp_filesystem_init_failure']);
+        }
+
+        $this->assertArrayHasKey('warning', $GLOBALS['wc_logger_calls']);
+        $messages = array_column($GLOBALS['wc_logger_calls']['warning'], 'message');
+        $matched = array_filter($messages, function ($m) {
+            return strpos($m, 'WP_Filesystem API unavailable') !== false;
+        });
+        $this->assertNotEmpty($matched, 'expected a warning when WP_Filesystem fails to initialize');
+
+        // PDFs should still exist on disk — uninstall is best-effort, FTP-only
+        // hosts will simply leak the cached PDFs rather than crash the deletion.
+        $this->assertTrue(is_dir($this->tmp_pdf_dir));
     }
 
     public function test_delete_options_and_transients_clears_plugin_options(): void {
