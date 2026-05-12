@@ -125,7 +125,7 @@ class Order_Handler {
         // Add for regular orders
         add_meta_box(
             'b2brouter_invoice',
-            __('B2Brouter Invoice', 'b2brouter-woocommerce'),
+            __('B2Brouter Invoice', 'b2brouter-for-woocommerce'),
             array($this, 'render_invoice_meta_box'),
             'shop_order',
             'side',
@@ -135,7 +135,7 @@ class Order_Handler {
         // Add for refunds
         add_meta_box(
             'b2brouter_invoice',
-            __('B2Brouter Credit Note', 'b2brouter-woocommerce'),
+            __('B2Brouter Credit Note', 'b2brouter-for-woocommerce'),
             array($this, 'render_invoice_meta_box'),
             'shop_order_refund',
             'side',
@@ -147,7 +147,7 @@ class Order_Handler {
             \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()) {
             add_meta_box(
                 'b2brouter_invoice',
-                __('B2Brouter Invoice', 'b2brouter-woocommerce'),
+                __('B2Brouter Invoice', 'b2brouter-for-woocommerce'),
                 array($this, 'render_invoice_meta_box'),
                 'woocommerce_page_wc-orders',
                 'side',
@@ -185,7 +185,7 @@ class Order_Handler {
             <?php if ($is_refund && $parent_order): ?>
                 <!-- Parent Order Invoice Info -->
                 <p>
-                    <strong><?php esc_html_e('Parent Order:', 'b2brouter-woocommerce'); ?></strong>
+                    <strong><?php esc_html_e('Parent Order:', 'b2brouter-for-woocommerce'); ?></strong>
                     <br>
                     <a href="<?php echo esc_url(admin_url('post.php?post=' . $parent_order->get_id() . '&action=edit')); ?>">
                         #<?php echo esc_html($parent_order->get_order_number()); ?>
@@ -195,19 +195,19 @@ class Order_Handler {
                 <?php if ($parent_has_invoice): ?>
                     <p>
                         <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
-                        <?php esc_html_e('Parent has invoice', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('Parent has invoice', 'b2brouter-for-woocommerce'); ?>
                     </p>
                     <p class="description" style="font-size: 11px;">
-                        <strong><?php esc_html_e('Parent Invoice:', 'b2brouter-woocommerce'); ?></strong>
+                        <strong><?php esc_html_e('Parent Invoice:', 'b2brouter-for-woocommerce'); ?></strong>
                         <?php echo esc_html(Invoice_Generator::get_formatted_invoice_number($parent_order)); ?>
                     </p>
                 <?php else: ?>
                     <p>
                         <span class="dashicons dashicons-warning" style="color: #f0b849;"></span>
-                        <?php esc_html_e('Parent has no invoice', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('Parent has no invoice', 'b2brouter-for-woocommerce'); ?>
                     </p>
                     <p class="description">
-                        <?php esc_html_e('Generate invoice for parent order first.', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('Generate invoice for parent order first.', 'b2brouter-for-woocommerce'); ?>
                     </p>
                 <?php endif; ?>
 
@@ -219,9 +219,9 @@ class Order_Handler {
                     <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
                     <?php
                     if ($is_refund) {
-                        esc_html_e('Credit Note Generated', 'b2brouter-woocommerce');
+                        esc_html_e('Credit Note Generated', 'b2brouter-for-woocommerce');
                     } else {
-                        esc_html_e('Invoice Generated', 'b2brouter-woocommerce');
+                        esc_html_e('Invoice Generated', 'b2brouter-for-woocommerce');
                     }
                     ?>
                 </p>
@@ -229,9 +229,9 @@ class Order_Handler {
                     <strong>
                         <?php
                         if ($is_refund) {
-                            esc_html_e('Credit Note ID:', 'b2brouter-woocommerce');
+                            esc_html_e('Credit Note ID:', 'b2brouter-for-woocommerce');
                         } else {
-                            esc_html_e('Invoice ID:', 'b2brouter-woocommerce');
+                            esc_html_e('Invoice ID:', 'b2brouter-for-woocommerce');
                         }
                         ?>
                     </strong>
@@ -241,16 +241,16 @@ class Order_Handler {
                     <strong>
                         <?php
                         if ($is_refund) {
-                            esc_html_e('Credit Note Number:', 'b2brouter-woocommerce');
+                            esc_html_e('Credit Note Number:', 'b2brouter-for-woocommerce');
                         } else {
-                            esc_html_e('Invoice Number:', 'b2brouter-woocommerce');
+                            esc_html_e('Invoice Number:', 'b2brouter-for-woocommerce');
                         }
                         ?>
                     </strong>
                     <br><?php echo esc_html(Invoice_Generator::get_formatted_invoice_number($order)); ?>
                 </p>
                 <p>
-                    <strong><?php esc_html_e('Generated Date:', 'b2brouter-woocommerce'); ?></strong>
+                    <strong><?php esc_html_e('Generated Date:', 'b2brouter-for-woocommerce'); ?></strong>
                     <br><?php echo esc_html($order->get_meta('_b2brouter_invoice_date')); ?>
                 </p>
 
@@ -262,7 +262,7 @@ class Order_Handler {
                 if (!empty($status)):
                 ?>
                 <p>
-                    <strong><?php esc_html_e('Status:', 'b2brouter-woocommerce'); ?></strong>
+                    <strong><?php esc_html_e('Status:', 'b2brouter-for-woocommerce'); ?></strong>
                     <br>
                     <span class="b2brouter-status-badge status-<?php echo esc_attr($status); ?>">
                         <?php echo esc_html(ucfirst($status)); ?>
@@ -272,8 +272,8 @@ class Order_Handler {
                         <small style="color: #666;">
                             <?php
                             printf(
-                                esc_html__('Last checked: %s', 'b2brouter-woocommerce'),
-                                esc_html(human_time_diff($status_updated, current_time('timestamp'))) . ' ' . esc_html__('ago', 'b2brouter-woocommerce')
+                                esc_html__('Last checked: %s', 'b2brouter-for-woocommerce'),
+                                esc_html(human_time_diff($status_updated, current_time('timestamp'))) . ' ' . esc_html__('ago', 'b2brouter-for-woocommerce')
                             );
                             ?>
                         </small>
@@ -288,7 +288,7 @@ class Order_Handler {
                 ?>
                 <div class="notice notice-error inline" style="margin: 10px 0; padding: 8px 12px;">
                     <p style="margin: 0;">
-                        <strong><?php esc_html_e('Error:', 'b2brouter-woocommerce'); ?></strong>
+                        <strong><?php esc_html_e('Error:', 'b2brouter-for-woocommerce'); ?></strong>
                         <?php echo esc_html($status_error); ?>
                     </p>
                 </div>
@@ -308,7 +308,7 @@ class Order_Handler {
                             data-download="view"
                             style="width: 100%; margin-bottom: 5px;">
                         <span class="dashicons dashicons-pdf"></span>
-                        <?php esc_html_e('View PDF', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('View PDF', 'b2brouter-for-woocommerce'); ?>
                     </button>
                 </p>
                 <p>
@@ -318,7 +318,7 @@ class Order_Handler {
                             data-download="download"
                             style="width: 100%;">
                         <span class="dashicons dashicons-download"></span>
-                        <?php esc_html_e('Download PDF', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('Download PDF', 'b2brouter-for-woocommerce'); ?>
                     </button>
                 </p>
 
@@ -333,9 +333,9 @@ class Order_Handler {
                     <span class="dashicons dashicons-yes-alt" style="color: #46b450; font-size: 14px;"></span>
                     <?php
                     printf(
-                        esc_html__('PDF cached (%s, %s)', 'b2brouter-woocommerce'),
+                        esc_html__('PDF cached (%s, %s)', 'b2brouter-for-woocommerce'),
                         esc_html(size_format($pdf_size, 2)),
-                        esc_html(human_time_diff(strtotime($pdf_date), current_time('timestamp'))) . ' ' . esc_html__('ago', 'b2brouter-woocommerce')
+                        esc_html(human_time_diff(strtotime($pdf_date), current_time('timestamp'))) . ' ' . esc_html__('ago', 'b2brouter-for-woocommerce')
                     );
                     ?>
                 </p>
@@ -345,23 +345,23 @@ class Order_Handler {
                     <span class="dashicons dashicons-warning" style="color: #f0b849;"></span>
                     <?php
                     if ($is_refund) {
-                        esc_html_e('Credit Note Not Generated', 'b2brouter-woocommerce');
+                        esc_html_e('Credit Note Not Generated', 'b2brouter-for-woocommerce');
                     } else {
-                        esc_html_e('Invoice Not Generated', 'b2brouter-woocommerce');
+                        esc_html_e('Invoice Not Generated', 'b2brouter-for-woocommerce');
                     }
                     ?>
                 </p>
 
                 <?php if (!$this->settings->is_api_key_configured()): ?>
                     <p class="description">
-                        <?php esc_html_e('API key not configured.', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('API key not configured.', 'b2brouter-for-woocommerce'); ?>
                         <a href="<?php echo esc_url(admin_url('admin.php?page=b2brouter-settings')); ?>">
-                            <?php esc_html_e('Configure now', 'b2brouter-woocommerce'); ?>
+                            <?php esc_html_e('Configure now', 'b2brouter-for-woocommerce'); ?>
                         </a>
                     </p>
                 <?php elseif ($is_refund && !$parent_has_invoice): ?>
                     <p class="description">
-                        <?php esc_html_e('Cannot generate credit note: parent order has no invoice.', 'b2brouter-woocommerce'); ?>
+                        <?php esc_html_e('Cannot generate credit note: parent order has no invoice.', 'b2brouter-for-woocommerce'); ?>
                     </p>
                 <?php else: ?>
                     <p>
@@ -370,9 +370,9 @@ class Order_Handler {
                                 data-order-id="<?php echo esc_attr($order_id); ?>">
                             <?php
                             if ($is_refund) {
-                                esc_html_e('Generate Credit Note', 'b2brouter-woocommerce');
+                                esc_html_e('Generate Credit Note', 'b2brouter-for-woocommerce');
                             } else {
-                                esc_html_e('Generate Invoice', 'b2brouter-woocommerce');
+                                esc_html_e('Generate Invoice', 'b2brouter-for-woocommerce');
                             }
                             ?>
                         </button>
@@ -380,9 +380,9 @@ class Order_Handler {
                     <p class="description">
                         <?php
                         if ($is_refund) {
-                            esc_html_e('Click to manually generate a credit note for this refund.', 'b2brouter-woocommerce');
+                            esc_html_e('Click to manually generate a credit note for this refund.', 'b2brouter-for-woocommerce');
                         } else {
-                            esc_html_e('Click to manually generate an invoice for this order.', 'b2brouter-woocommerce');
+                            esc_html_e('Click to manually generate an invoice for this order.', 'b2brouter-for-woocommerce');
                         }
                         ?>
                     </p>
@@ -396,7 +396,7 @@ class Order_Handler {
                 if (!empty($refunds)) {
                     ?>
                     <hr style="margin: 15px 0;">
-                    <h4 style="margin-top: 0;"><?php esc_html_e('Refund Invoices', 'b2brouter-woocommerce'); ?></h4>
+                    <h4 style="margin-top: 0;"><?php esc_html_e('Refund Invoices', 'b2brouter-for-woocommerce'); ?></h4>
                     <?php
                     foreach ($refunds as $refund) {
                         $refund_has_invoice = $this->invoice_generator->has_invoice($refund->get_id());
@@ -405,10 +405,10 @@ class Order_Handler {
                         <div style="padding: 8px; background: #f9f9f9; margin-bottom: 8px; border-left: 3px solid <?php echo $refund_has_invoice ? '#46b450' : '#ddd'; ?>;">
                             <p style="margin: 0 0 5px 0;">
                                 <strong>
-                                    <?php printf(esc_html__('Refund #%s', 'b2brouter-woocommerce'), $refund->get_id()); ?>
+                                    <?php printf(esc_html__('Refund #%s', 'b2brouter-for-woocommerce'), (int) $refund->get_id()); ?>
                                 </strong>
                                 <span style="color: #666; font-size: 0.9em;">
-                                    (<?php echo wc_price($refund->get_amount(), array('currency' => $order->get_currency())); ?>)
+                                    (<?php echo wp_kses_post( wc_price($refund->get_amount(), array('currency' => $order->get_currency())) ); ?>)
                                 </span>
                             </p>
                             <?php if ($refund_has_invoice): ?>
@@ -423,7 +423,7 @@ class Order_Handler {
                                             data-download="view"
                                             style="margin-right: 5px; padding: 0 8px; height: 24px; line-height: 22px; font-size: 11px;">
                                         <span class="dashicons dashicons-pdf" style="font-size: 13px; width: 13px; height: 13px;"></span>
-                                        <?php esc_html_e('View', 'b2brouter-woocommerce'); ?>
+                                        <?php esc_html_e('View', 'b2brouter-for-woocommerce'); ?>
                                     </button>
                                     <button type="button"
                                             class="button button-small b2brouter-download-pdf"
@@ -431,13 +431,13 @@ class Order_Handler {
                                             data-download="download"
                                             style="padding: 0 8px; height: 24px; line-height: 22px; font-size: 11px;">
                                         <span class="dashicons dashicons-download" style="font-size: 13px; width: 13px; height: 13px;"></span>
-                                        <?php esc_html_e('Download', 'b2brouter-woocommerce'); ?>
+                                        <?php esc_html_e('Download', 'b2brouter-for-woocommerce'); ?>
                                     </button>
                                 </p>
                             <?php else: ?>
                                 <p style="margin: 0; font-size: 0.9em; color: #999;">
                                     <span class="dashicons dashicons-minus" style="font-size: 14px;"></span>
-                                    <?php esc_html_e('No credit note', 'b2brouter-woocommerce'); ?>
+                                    <?php esc_html_e('No credit note', 'b2brouter-for-woocommerce'); ?>
                                 </p>
                             <?php endif; ?>
                         </div>
@@ -461,8 +461,8 @@ class Order_Handler {
                 // Get status to determine button text
                 $invoice_status = $order->get_meta('_b2brouter_invoice_status');
                 $button_text = ($invoice_status === 'error')
-                    ? __('Manage from B2Brouter', 'b2brouter-woocommerce')
-                    : __('View in B2Brouter', 'b2brouter-woocommerce');
+                    ? __('Manage from B2Brouter', 'b2brouter-for-woocommerce')
+                    : __('View in B2Brouter', 'b2brouter-for-woocommerce');
                 ?>
                 <a href="<?php echo esc_url($dashboard_url); ?>" target="_blank" class="button button-secondary">
                     <?php echo esc_html($button_text); ?>
@@ -487,7 +487,7 @@ class Order_Handler {
 
             // Add invoice column after order number
             if ($key === 'order_number') {
-                $new_columns['b2brouter_invoice'] = __('Invoice', 'b2brouter-woocommerce');
+                $new_columns['b2brouter_invoice'] = __('Invoice', 'b2brouter-for-woocommerce');
             }
         }
 
@@ -611,7 +611,7 @@ class Order_Handler {
      * @return array Modified bulk actions
      */
     public function add_bulk_action($actions) {
-        $actions['b2brouter_generate_invoices'] = __('Generate B2Brouter Invoices', 'b2brouter-woocommerce');
+        $actions['b2brouter_generate_invoices'] = __('Generate B2Brouter Invoices', 'b2brouter-for-woocommerce');
         return $actions;
     }
 
@@ -718,30 +718,30 @@ class Order_Handler {
             $scheduled_actions_url = admin_url('admin.php?page=wc-status&tab=action-scheduler&s=b2brouter_bulk_generate_invoice');
 
             echo '<div class="notice notice-info is-dismissible"><p>';
-            echo sprintf(
+            echo wp_kses_post( sprintf(
                 _n(
                     '%1$d invoice queued for background processing. <a href="%2$s">View Scheduled Actions</a>.',
                     '%1$d invoices queued for background processing. <a href="%2$s">View Scheduled Actions</a>.',
                     $queued_count,
-                    'b2brouter-woocommerce'
+                    'b2brouter-for-woocommerce'
                 ),
-                $queued_count,
+                (int) $queued_count,
                 esc_url($scheduled_actions_url)
-            );
+            ) );
             echo '</p></div>';
         }
 
         if ($skipped_count > 0) {
             echo '<div class="notice notice-warning is-dismissible"><p>';
-            echo sprintf(
+            echo esc_html( sprintf(
                 _n(
                     '%d order was skipped because it is not completed or already has an invoice.',
                     '%d orders were skipped because they are not completed or already have invoices.',
                     $skipped_count,
-                    'b2brouter-woocommerce'
+                    'b2brouter-for-woocommerce'
                 ),
-                $skipped_count
-            );
+                (int) $skipped_count
+            ) );
             echo '</p></div>';
         }
     }

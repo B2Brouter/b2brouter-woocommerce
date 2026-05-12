@@ -57,7 +57,7 @@ class Customer_Fields {
      */
     private function init_hooks() {
         // === BLOCK CHECKOUT SUPPORT (WooCommerce 8.6+) ===
-        // Block checkout field registration is handled in b2brouter-woocommerce.php
+        // Block checkout field registration is handled in b2brouter-for-woocommerce.php
         // due to timing requirements (must register during woocommerce_blocks_loaded)
 
         // === CLASSIC CHECKOUT SUPPORT ===
@@ -103,13 +103,13 @@ class Customer_Fields {
     public function add_tin_to_checkout_fields($fields) {
         // Define TIN field
         $tin_field = array(
-            'label'       => __('Tax ID / VAT Number', 'b2brouter-woocommerce'),
-            'placeholder' => __('Tax Identification Number', 'b2brouter-woocommerce'),
+            'label'       => __('Tax ID / VAT Number', 'b2brouter-for-woocommerce'),
+            'placeholder' => __('Tax Identification Number', 'b2brouter-for-woocommerce'),
             'required'    => false,
             'class'       => array('form-row-wide'),
             'clear'       => true,
             'priority'    => 35,
-            'description' => __('Enter your business Tax ID or VAT number for invoicing (optional)', 'b2brouter-woocommerce'),
+            'description' => __('Enter your business Tax ID or VAT number for invoicing (optional)', 'b2brouter-for-woocommerce'),
         );
 
         // Add to billing fields group
@@ -130,13 +130,13 @@ class Customer_Fields {
     public function add_tin_to_billing_fields($fields) {
         // Define TIN field
         $tin_field = array(
-            'label'       => __('Tax ID / VAT Number', 'b2brouter-woocommerce'),
-            'placeholder' => __('Tax Identification Number', 'b2brouter-woocommerce'),
+            'label'       => __('Tax ID / VAT Number', 'b2brouter-for-woocommerce'),
+            'placeholder' => __('Tax Identification Number', 'b2brouter-for-woocommerce'),
             'required'    => false,
             'class'       => array('form-row-wide'),
             'clear'       => true,
             'priority'    => 35,
-            'description' => __('Enter your business Tax ID or VAT number for invoicing (optional)', 'b2brouter-woocommerce'),
+            'description' => __('Enter your business Tax ID or VAT number for invoicing (optional)', 'b2brouter-for-woocommerce'),
         );
 
         // If company field exists, insert TIN after it
@@ -167,7 +167,7 @@ class Customer_Fields {
     public function add_tin_to_admin_billing_fields($fields) {
         // Add TIN field to admin order form
         $fields['tin'] = array(
-            'label' => __('Tax ID / VAT Number', 'b2brouter-woocommerce'),
+            'label' => __('Tax ID / VAT Number', 'b2brouter-for-woocommerce'),
             'show'  => true,
         );
 
@@ -256,8 +256,8 @@ class Customer_Fields {
     public function add_tin_to_customer_meta($fields) {
         // Add TIN to billing fields section
         $fields['billing']['fields'][self::TIN_FIELD_KEY] = array(
-            'label'       => __('Tax ID / VAT Number', 'b2brouter-woocommerce'),
-            'description' => __('Customer Tax Identification Number or VAT number', 'b2brouter-woocommerce'),
+            'label'       => __('Tax ID / VAT Number', 'b2brouter-for-woocommerce'),
+            'description' => __('Customer Tax Identification Number or VAT number', 'b2brouter-for-woocommerce'),
         );
 
         return $fields;

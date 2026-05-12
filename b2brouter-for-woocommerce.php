@@ -8,7 +8,7 @@
  * Author URI: https://b2brouter.net
  * License: MIT
  * License URI: https://opensource.org/license/mit
- * Text Domain: b2brouter-woocommerce
+ * Text Domain: b2brouter-for-woocommerce
  * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4
@@ -155,7 +155,7 @@ class B2Brouter_WooCommerce {
      */
     public function woocommerce_missing_notice() {
         echo '<div class="notice notice-error"><p>';
-        echo esc_html__('B2Brouter for WooCommerce requires WooCommerce to be installed and active.', 'b2brouter-woocommerce');
+        echo esc_html__('B2Brouter for WooCommerce requires WooCommerce to be installed and active.', 'b2brouter-for-woocommerce');
         echo '</p></div>';
     }
 
@@ -313,7 +313,7 @@ class B2Brouter_WooCommerce {
      */
     public function load_textdomain() {
         load_plugin_textdomain(
-            'b2brouter-woocommerce',
+            'b2brouter-for-woocommerce',
             false,
             dirname(B2BROUTER_WC_PLUGIN_BASENAME) . '/languages'
         );

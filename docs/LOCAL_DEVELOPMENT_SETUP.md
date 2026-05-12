@@ -164,11 +164,11 @@ Then link or copy the plugin to WordPress:
 ```bash
 # Create symbolic link to your development plugin (recommended)
 cd ~/local-wordpress/wordpress/wp-content/plugins/
-ln -s ~/projects/ingent/b2b-woocommerce b2brouter-woocommerce
+ln -s ~/projects/ingent/b2b-woocommerce b2brouter-for-woocommerce
 
 # Or copy the plugin (alternative)
-# cp -r ~/projects/ingent/b2b-woocommerce ~/local-wordpress/wordpress/wp-content/plugins/b2brouter-woocommerce
-# cd ~/local-wordpress/wordpress/wp-content/plugins/b2brouter-woocommerce
+# cp -r ~/projects/ingent/b2b-woocommerce ~/local-wordpress/wordpress/wp-content/plugins/b2brouter-for-woocommerce
+# cd ~/local-wordpress/wordpress/wp-content/plugins/b2brouter-for-woocommerce
 # composer install --no-dev
 ```
 
@@ -711,10 +711,10 @@ sudo chmod -R 755 ~/local-wordpress/wordpress
 ls -la ~/local-wordpress/wordpress/wp-content/plugins/
 
 # Check symbolic link is valid
-ls -la ~/local-wordpress/wordpress/wp-content/plugins/b2brouter-woocommerce
+ls -la ~/local-wordpress/wordpress/wp-content/plugins/b2brouter-for-woocommerce
 
 # Check plugin main file exists
-cat ~/local-wordpress/wordpress/wp-content/plugins/b2brouter-woocommerce/b2brouter-woocommerce.php
+cat ~/local-wordpress/wordpress/wp-content/plugins/b2brouter-for-woocommerce/b2brouter-for-woocommerce.php
 ```
 
 **Problem**: Fatal error when activating plugin

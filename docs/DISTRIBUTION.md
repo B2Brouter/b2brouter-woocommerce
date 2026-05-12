@@ -8,7 +8,7 @@ This document outlines the automated release process for B2Brouter for WooCommer
 - Clean working directory (`git status` shows no uncommitted changes)
 - All tests passing (`composer test`)
 - Version numbers updated in:
-  - `b2brouter-woocommerce.php` (header `Version:` and constant `B2BROUTER_WC_VERSION`)
+  - `b2brouter-for-woocommerce.php` (header `Version:` and constant `B2BROUTER_WC_VERSION`)
   - `README.md` (version badge)
   - `readme.txt` (`Stable tag`, plus new `= X.Y.Z =` blocks under `== Changelog ==` and `== Upgrade Notice ==`)
   - `CHANGELOG.md` (new version entry and link reference at the bottom)
@@ -19,7 +19,7 @@ This document outlines the automated release process for B2Brouter for WooCommer
 
 ```bash
 # Example: Releasing v1.2.3
-vim b2brouter-woocommerce.php  # Update Version: 1.2.3 and B2BROUTER_WC_VERSION
+vim b2brouter-for-woocommerce.php  # Update Version: 1.2.3 and B2BROUTER_WC_VERSION
 vim README.md                   # Update version badge
 vim readme.txt                  # Update Stable tag; add = 1.2.3 = blocks under Changelog and Upgrade Notice
 vim CHANGELOG.md               # Add new version section and link reference
@@ -44,7 +44,7 @@ git pull --ff-only
 git checkout -b release_v1.2.3
 
 # Commit the version bumps (files updated in step 1)
-git add b2brouter-woocommerce.php README.md readme.txt CHANGELOG.md
+git add b2brouter-for-woocommerce.php README.md readme.txt CHANGELOG.md
 git commit -m "Bump version to 1.2.3"
 
 # Push the branch and open a PR
@@ -119,8 +119,8 @@ This prevents version mismatches in releases.
 
 ### Build Output
 
-- **ZIP File**: `b2brouter-woocommerce-{VERSION}.zip`
-- **Checksum**: `b2brouter-woocommerce-{VERSION}.zip.sha256`
+- **ZIP File**: `b2brouter-for-woocommerce-{VERSION}.zip`
+- **Checksum**: `b2brouter-for-woocommerce-{VERSION}.zip.sha256`
 - **Location**: GitHub Release assets
 
 ### Release Notes
@@ -153,10 +153,10 @@ The `build-release.sh` script provides local build capabilities for:
 ### Output
 
 ```
-dist/b2brouter-woocommerce-{VERSION}.zip
+dist/b2brouter-for-woocommerce-{VERSION}.zip
 ```
 
-The script automatically extracts the version from `b2brouter-woocommerce.php`.
+The script automatically extracts the version from `b2brouter-for-woocommerce.php`.
 
 ### Build Process
 
@@ -175,10 +175,10 @@ After running the build script:
 
 ```bash
 # Check ZIP contents
-unzip -l dist/b2brouter-woocommerce-{VERSION}.zip
+unzip -l dist/b2brouter-for-woocommerce-{VERSION}.zip
 
 # Verify B2Brouter SDK
-unzip -l dist/b2brouter-woocommerce-{VERSION}.zip | grep "vendor/b2brouter/b2brouter-php"
+unzip -l dist/b2brouter-for-woocommerce-{VERSION}.zip | grep "vendor/b2brouter/b2brouter-php"
 
 # Test installation on local WordPress
 # Upload ZIP via WordPress Admin → Plugins → Add New → Upload Plugin
@@ -187,8 +187,8 @@ unzip -l dist/b2brouter-woocommerce-{VERSION}.zip | grep "vendor/b2brouter/b2bro
 Expected ZIP structure:
 
 ```
-b2brouter-woocommerce/
-├── b2brouter-woocommerce.php
+b2brouter-for-woocommerce/
+├── b2brouter-for-woocommerce.php
 ├── includes/
 ├── assets/
 ├── vendor/
