@@ -106,11 +106,11 @@ class Invoice_Generator {
         $api_key = $this->settings->get_api_key();
 
         if (empty($api_key)) {
-            throw new \Exception(__('API key not configured', 'b2brouter-woocommerce'));
+            throw new \Exception(__('API key not configured', 'b2brouter-for-woocommerce'));
         }
 
         if (!class_exists('B2BRouter\B2BRouterClient')) {
-            throw new \Exception(__('B2Brouter PHP SDK not found', 'b2brouter-woocommerce'));
+            throw new \Exception(__('B2Brouter PHP SDK not found', 'b2brouter-for-woocommerce'));
         }
 
         // Create client with environment setting
@@ -133,7 +133,7 @@ class Invoice_Generator {
             $order = wc_get_order($order_id);
 
             if (!$order) {
-                throw new \Exception(__('Order not found', 'b2brouter-woocommerce'));
+                throw new \Exception(__('Order not found', 'b2brouter-for-woocommerce'));
             }
 
             $is_refund = $this->is_refund($order);
@@ -141,8 +141,8 @@ class Invoice_Generator {
             // Check if invoice already generated
             if ($order->get_meta('_b2brouter_invoice_id')) {
                 $message = $is_refund
-                    ? __('Credit note already generated for this refund', 'b2brouter-woocommerce')
-                    : __('Invoice already generated for this order', 'b2brouter-woocommerce');
+                    ? __('Credit note already generated for this refund', 'b2brouter-for-woocommerce')
+                    : __('Invoice already generated for this order', 'b2brouter-for-woocommerce');
                 throw new \Exception($message);
             }
 
@@ -150,7 +150,7 @@ class Invoice_Generator {
             if ($is_refund) {
                 $parent_invoice_info = $this->get_parent_invoice_info($order);
                 if (!$parent_invoice_info) {
-                    throw new \Exception(__('Cannot generate credit note: parent order has no invoice', 'b2brouter-woocommerce'));
+                    throw new \Exception(__('Cannot generate credit note: parent order has no invoice', 'b2brouter-for-woocommerce'));
                 }
             }
 
@@ -161,7 +161,7 @@ class Invoice_Generator {
             $account_id = $this->settings->get_account_id();
 
             if (empty($account_id)) {
-                throw new \Exception(__('Account ID not configured. Please validate your API key.', 'b2brouter-woocommerce'));
+                throw new \Exception(__('Account ID not configured. Please validate your API key.', 'b2brouter-for-woocommerce'));
             }
 
             // Prepare invoice data (handles both regular invoices and refunds)
@@ -210,12 +210,12 @@ class Invoice_Generator {
 
             $note_message = $is_refund
                 ? sprintf(
-                    __('B2Brouter credit note generated successfully. Invoice: %s (ID: %s)', 'b2brouter-woocommerce'),
+                    __('B2Brouter credit note generated successfully. Invoice: %s (ID: %s)', 'b2brouter-for-woocommerce'),
                     $formatted_number,
                     $invoice['id']
                   )
                 : sprintf(
-                    __('B2Brouter invoice generated successfully. Invoice: %s (ID: %s)', 'b2brouter-woocommerce'),
+                    __('B2Brouter invoice generated successfully. Invoice: %s (ID: %s)', 'b2brouter-for-woocommerce'),
                     $formatted_number,
                     $invoice['id']
                   );
@@ -242,8 +242,8 @@ class Invoice_Generator {
 
                     if ($pdf_result['success']) {
                         $pdf_note = $is_refund
-                            ? __('Credit note PDF automatically downloaded and cached locally', 'b2brouter-woocommerce')
-                            : __('Invoice PDF automatically downloaded and cached locally', 'b2brouter-woocommerce');
+                            ? __('Credit note PDF automatically downloaded and cached locally', 'b2brouter-for-woocommerce')
+                            : __('Invoice PDF automatically downloaded and cached locally', 'b2brouter-for-woocommerce');
                         $note_target->add_order_note($pdf_note);
                     }
                 } catch (\Exception $e) {
@@ -254,8 +254,8 @@ class Invoice_Generator {
             }
 
             $success_message = $is_refund
-                ? __('Credit note generated successfully', 'b2brouter-woocommerce')
-                : __('Invoice generated successfully', 'b2brouter-woocommerce');
+                ? __('Credit note generated successfully', 'b2brouter-for-woocommerce')
+                : __('Invoice generated successfully', 'b2brouter-for-woocommerce');
 
             return array(
                 'success' => true,
@@ -279,11 +279,11 @@ class Invoice_Generator {
 
                 $error_message = isset($is_refund) && $is_refund
                     ? sprintf(
-                        __('B2Brouter credit note generation failed: %s', 'b2brouter-woocommerce'),
+                        __('B2Brouter credit note generation failed: %s', 'b2brouter-for-woocommerce'),
                         $e->getMessage()
                       )
                     : sprintf(
-                        __('B2Brouter invoice generation failed: %s', 'b2brouter-woocommerce'),
+                        __('B2Brouter invoice generation failed: %s', 'b2brouter-for-woocommerce'),
                         $e->getMessage()
                       );
 
@@ -313,7 +313,7 @@ class Invoice_Generator {
         if ($is_refund) {
             $parent_invoice_info = $this->get_parent_invoice_info($order);
             if (!$parent_invoice_info) {
-                throw new \Exception(__('Parent order has no invoice. Cannot create refund invoice.', 'b2brouter-woocommerce'));
+                throw new \Exception(__('Parent order has no invoice. Cannot create refund invoice.', 'b2brouter-for-woocommerce'));
             }
             $parent_order = $parent_invoice_info['parent_order'];
         }
@@ -426,7 +426,7 @@ class Invoice_Generator {
             }
 
             $shipping_line = array(
-                'description' => __('Shipping', 'b2brouter-woocommerce'),
+                'description' => __('Shipping', 'b2brouter-for-woocommerce'),
                 'quantity' => 1,
                 'price' => $shipping_price,
             );
@@ -486,7 +486,7 @@ class Invoice_Generator {
             'contact_email_override' => $contact['email'], // Override email to enable sending for IssuedSimplifiedInvoice
             'invoice_lines_attributes' => $invoice_lines,
             'extra_info' => sprintf(
-                __('WooCommerce Order #%s', 'b2brouter-woocommerce'),
+                __('WooCommerce Order #%s', 'b2brouter-for-woocommerce'),
                 $is_refund ? $order->get_id() : $order->get_order_number()
             ),
         );
@@ -690,7 +690,7 @@ class Invoice_Generator {
     public function download_invoice_pdf($invoice_id) {
         try {
             if (empty($invoice_id)) {
-                throw new \Exception(__('Invoice ID is required', 'b2brouter-woocommerce'));
+                throw new \Exception(__('Invoice ID is required', 'b2brouter-for-woocommerce'));
             }
 
             // Get B2Brouter client
@@ -701,7 +701,7 @@ class Invoice_Generator {
 
             // Validate PDF data
             if (empty($pdf_data)) {
-                throw new \Exception(__('PDF data is empty', 'b2brouter-woocommerce'));
+                throw new \Exception(__('PDF data is empty', 'b2brouter-for-woocommerce'));
             }
 
             // Generate filename
@@ -711,28 +711,28 @@ class Invoice_Generator {
                 'success' => true,
                 'pdf_data' => $pdf_data,
                 'filename' => $filename,
-                'message' => __('PDF downloaded successfully', 'b2brouter-woocommerce')
+                'message' => __('PDF downloaded successfully', 'b2brouter-for-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\ResourceNotFoundException $e) {
             Logger::error('B2Brouter PDF Download - Invoice not found: ' . $invoice_id);
             return array(
                 'success' => false,
-                'message' => __('Invoice not found', 'b2brouter-woocommerce')
+                'message' => __('Invoice not found', 'b2brouter-for-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\AuthenticationException $e) {
             Logger::error('B2Brouter PDF Download - Authentication failed: ' . $e->getMessage());
             return array(
                 'success' => false,
-                'message' => __('API authentication failed. Please check your API key.', 'b2brouter-woocommerce')
+                'message' => __('API authentication failed. Please check your API key.', 'b2brouter-for-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\PermissionException $e) {
             Logger::error('B2Brouter PDF Download - Permission denied: ' . $e->getMessage());
             return array(
                 'success' => false,
-                'message' => __('You do not have permission to download this invoice.', 'b2brouter-woocommerce')
+                'message' => __('You do not have permission to download this invoice.', 'b2brouter-for-woocommerce')
             );
 
         } catch (\B2BRouter\Exception\ApiErrorException $e) {
@@ -740,7 +740,7 @@ class Invoice_Generator {
             return array(
                 'success' => false,
                 'message' => sprintf(
-                    __('API error: %s', 'b2brouter-woocommerce'),
+                    __('API error: %s', 'b2brouter-for-woocommerce'),
                     $e->getMessage()
                 )
             );
@@ -768,14 +768,14 @@ class Invoice_Generator {
             $order = wc_get_order($order_id);
 
             if (!$order) {
-                throw new \Exception(__('Order not found', 'b2brouter-woocommerce'));
+                throw new \Exception(__('Order not found', 'b2brouter-for-woocommerce'));
             }
 
             // Get invoice ID
             $invoice_id = $order->get_meta('_b2brouter_invoice_id');
 
             if (empty($invoice_id)) {
-                throw new \Exception(__('No invoice found for this order', 'b2brouter-woocommerce'));
+                throw new \Exception(__('No invoice found for this order', 'b2brouter-for-woocommerce'));
             }
 
             // Check if PDF already exists and we're not forcing download
@@ -789,7 +789,7 @@ class Invoice_Generator {
                     'success' => true,
                     'file_path' => $existing_path,
                     'file_url' => $file_url,
-                    'message' => __('Using existing PDF file', 'b2brouter-woocommerce'),
+                    'message' => __('Using existing PDF file', 'b2brouter-for-woocommerce'),
                     'cached' => true
                 );
             }
@@ -810,7 +810,7 @@ class Invoice_Generator {
             global $wp_filesystem;
 
             if (!WP_Filesystem()) {
-                throw new \Exception(__('WordPress Filesystem API is not available. On FTP-only hosts, please define FTP_USER, FTP_PASS, and FTP_HOST in wp-config.php.', 'b2brouter-woocommerce'));
+                throw new \Exception(__('WordPress Filesystem API is not available. On FTP-only hosts, please define FTP_USER, FTP_PASS, and FTP_HOST in wp-config.php.', 'b2brouter-for-woocommerce'));
             }
 
             // Create storage directory
@@ -818,7 +818,7 @@ class Invoice_Generator {
 
             if (!file_exists($storage_path)) {
                 if (!wp_mkdir_p($storage_path)) {
-                    throw new \Exception(__('Failed to create PDF storage directory', 'b2brouter-woocommerce'));
+                    throw new \Exception(__('Failed to create PDF storage directory', 'b2brouter-for-woocommerce'));
                 }
 
                 // Add security files
@@ -831,7 +831,7 @@ class Invoice_Generator {
 
             // Save PDF file
             if (!$wp_filesystem->put_contents($file_path, $result['pdf_data'], FS_CHMOD_FILE)) {
-                throw new \Exception(__('Failed to save PDF file', 'b2brouter-woocommerce'));
+                throw new \Exception(__('Failed to save PDF file', 'b2brouter-for-woocommerce'));
             }
 
             $bytes_written = strlen($result['pdf_data']);
@@ -852,7 +852,7 @@ class Invoice_Generator {
                 'file_path' => $file_path,
                 'file_url' => $file_url,
                 'file_size' => $bytes_written,
-                'message' => __('PDF saved successfully', 'b2brouter-woocommerce')
+                'message' => __('PDF saved successfully', 'b2brouter-for-woocommerce')
             );
 
         } catch (\Exception $e) {
@@ -903,8 +903,8 @@ class Invoice_Generator {
 
             if (!$order) {
                 wp_die(
-                    esc_html__('Order not found', 'b2brouter-woocommerce'),
-                    esc_html__('Error', 'b2brouter-woocommerce'),
+                    esc_html__('Order not found', 'b2brouter-for-woocommerce'),
+                    esc_html__('Error', 'b2brouter-for-woocommerce'),
                     array('response' => 404)
                 );
             }
@@ -912,8 +912,8 @@ class Invoice_Generator {
             // Check permissions
             if (!$this->can_access_invoice($order)) {
                 wp_die(
-                    esc_html__('You do not have permission to access this invoice.', 'b2brouter-woocommerce'),
-                    esc_html__('Permission Denied', 'b2brouter-woocommerce'),
+                    esc_html__('You do not have permission to access this invoice.', 'b2brouter-for-woocommerce'),
+                    esc_html__('Permission Denied', 'b2brouter-for-woocommerce'),
                     array('response' => 403)
                 );
             }
@@ -937,8 +937,8 @@ class Invoice_Generator {
 
             if (empty($invoice_id)) {
                 wp_die(
-                    esc_html__('No invoice found for this order', 'b2brouter-woocommerce'),
-                    esc_html__('Error', 'b2brouter-woocommerce'),
+                    esc_html__('No invoice found for this order', 'b2brouter-for-woocommerce'),
+                    esc_html__('Error', 'b2brouter-for-woocommerce'),
                     array('response' => 404)
                 );
             }
@@ -951,8 +951,8 @@ class Invoice_Generator {
 
             if (!WP_Filesystem()) {
                 wp_die(
-                    esc_html__('Filesystem unavailable. Please try again later.', 'b2brouter-woocommerce'),
-                    esc_html__('Error', 'b2brouter-woocommerce'),
+                    esc_html__('Filesystem unavailable. Please try again later.', 'b2brouter-for-woocommerce'),
+                    esc_html__('Error', 'b2brouter-for-woocommerce'),
                     array('response' => 500)
                 );
             }
@@ -971,7 +971,7 @@ class Invoice_Generator {
                 if (!$save_result['success']) {
                     wp_die(
                         esc_html($save_result['message']),
-                        esc_html__('Error', 'b2brouter-woocommerce'),
+                        esc_html__('Error', 'b2brouter-for-woocommerce'),
                         array('response' => 500)
                     );
                 }
@@ -983,8 +983,8 @@ class Invoice_Generator {
 
             if ($pdf_data === false) {
                 wp_die(
-                    esc_html__('Failed to read invoice PDF.', 'b2brouter-woocommerce'),
-                    esc_html__('Error', 'b2brouter-woocommerce'),
+                    esc_html__('Failed to read invoice PDF.', 'b2brouter-for-woocommerce'),
+                    esc_html__('Error', 'b2brouter-for-woocommerce'),
                     array('response' => 500)
                 );
             }
@@ -1017,7 +1017,7 @@ class Invoice_Generator {
             Logger::error('B2Brouter Stream PDF Error: ' . $e->getMessage());
             wp_die(
                 esc_html($e->getMessage()),
-                esc_html__('Error', 'b2brouter-woocommerce'),
+                esc_html__('Error', 'b2brouter-for-woocommerce'),
                 array('response' => 500)
             );
         }

@@ -868,12 +868,12 @@ if (!defined('DAY_IN_SECONDS')) {
 
 // Define B2BROUTER_WC_PLUGIN_BASENAME constant for plugin action links
 if (!defined('B2BROUTER_WC_PLUGIN_BASENAME')) {
-    define('B2BROUTER_WC_PLUGIN_BASENAME', 'b2brouter-woocommerce/b2brouter-woocommerce.php');
+    define('B2BROUTER_WC_PLUGIN_BASENAME', 'b2brouter-for-woocommerce/b2brouter-for-woocommerce.php');
 }
 
 // Define B2BROUTER_WC_PLUGIN_URL constant for asset URLs
 if (!defined('B2BROUTER_WC_PLUGIN_URL')) {
-    define('B2BROUTER_WC_PLUGIN_URL', 'https://example.com/wp-content/plugins/b2brouter-woocommerce/');
+    define('B2BROUTER_WC_PLUGIN_URL', 'https://example.com/wp-content/plugins/b2brouter-for-woocommerce/');
 }
 
 if (!defined('B2BROUTER_WC_VERSION')) {
