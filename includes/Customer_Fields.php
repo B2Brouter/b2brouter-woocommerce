@@ -185,10 +185,13 @@ class Customer_Fields {
      * @return void
      */
     public function save_tin_to_order_meta($order_id) {
+        // Nonce verified upstream by WooCommerce checkout (woocommerce-process-checkout-nonce).
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if (isset($_POST[self::TIN_FIELD_KEY]) && !empty($_POST[self::TIN_FIELD_KEY])) {
             $order = wc_get_order($order_id);
             if ($order) {
-                $tin = sanitize_text_field($_POST[self::TIN_FIELD_KEY]);
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing
+                $tin = sanitize_text_field(wp_unslash($_POST[self::TIN_FIELD_KEY]));
                 $order->update_meta_data(self::TIN_META_KEY, $tin);
                 $order->save();
             }
@@ -230,10 +233,13 @@ class Customer_Fields {
      * @return void
      */
     public function save_tin_from_admin_order($order_id, $post) {
+        // Nonce verified upstream by WordPress/WooCommerce admin order save (update-order_{$id}).
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if (isset($_POST['_billing_tin'])) {
             $order = wc_get_order($order_id);
             if ($order) {
-                $tin = sanitize_text_field($_POST['_billing_tin']);
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing
+                $tin = sanitize_text_field(wp_unslash($_POST['_billing_tin']));
                 $order->update_meta_data(self::TIN_META_KEY, $tin);
                 $order->save();
             }

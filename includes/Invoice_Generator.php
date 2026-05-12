@@ -1055,9 +1055,15 @@ class Invoice_Generator {
             return true;
         }
 
-        // Check for guest access with order key
-        if (isset($_GET['key']) && $check_order->get_order_key() === $_GET['key']) {
-            return true;
+        // Check for guest access with order key. Nonce is verified by the AJAX
+        // entry points (check_ajax_referer) before this method is reached.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if (isset($_GET['key'])) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $order_key = sanitize_text_field(wp_unslash($_GET['key']));
+            if ($check_order->get_order_key() === $order_key) {
+                return true;
+            }
         }
 
         return false;

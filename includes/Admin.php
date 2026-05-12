@@ -304,7 +304,7 @@ class Admin {
             wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-for-woocommerce')));
         }
 
-        $api_key = isset($_POST['api_key']) ? sanitize_text_field($_POST['api_key']) : '';
+        $api_key = isset($_POST['api_key']) ? sanitize_text_field(wp_unslash($_POST['api_key'])) : '';
 
         $result = $this->settings->validate_api_key($api_key);
 
@@ -328,7 +328,7 @@ class Admin {
             wp_send_json_error(array('message' => __('Permission denied', 'b2brouter-for-woocommerce')));
         }
 
-        $account_id = isset($_POST['account_id']) ? sanitize_text_field($_POST['account_id']) : '';
+        $account_id = isset($_POST['account_id']) ? sanitize_text_field(wp_unslash($_POST['account_id'])) : '';
 
         if (empty($account_id)) {
             wp_send_json_error(array('message' => __('No account selected', 'b2brouter-for-woocommerce')));
@@ -551,14 +551,14 @@ class Admin {
         if (isset($_POST['b2brouter_save_settings']) && check_admin_referer('b2brouter_settings')) {
             // Save API key
             if (isset($_POST['b2brouter_api_key'])) {
-                $new_api_key = sanitize_text_field($_POST['b2brouter_api_key']);
+                $new_api_key = sanitize_text_field(wp_unslash($_POST['b2brouter_api_key']));
                 $this->settings->set_api_key($new_api_key);
                 $api_key = $new_api_key;
             }
 
             // Save invoice mode
             if (isset($_POST['b2brouter_invoice_mode'])) {
-                $this->settings->set_invoice_mode(sanitize_text_field($_POST['b2brouter_invoice_mode']));
+                $this->settings->set_invoice_mode(sanitize_text_field(wp_unslash($_POST['b2brouter_invoice_mode'])));
                 $invoice_mode = $this->settings->get_invoice_mode();
             }
 
@@ -568,7 +568,7 @@ class Admin {
             $this->settings->set_webhook_enabled($webhook_enabled);
 
             if (isset($_POST['b2brouter_webhook_secret'])) {
-                $webhook_secret = sanitize_text_field($_POST['b2brouter_webhook_secret']);
+                $webhook_secret = sanitize_text_field(wp_unslash($_POST['b2brouter_webhook_secret']));
 
                 // Validate webhook secret if webhooks are enabled
                 if ($webhook_enabled && empty($webhook_secret)) {
@@ -626,7 +626,7 @@ class Admin {
 
             // Save invoice series code (required, non-empty)
             if (isset($_POST['b2brouter_invoice_series_code'])) {
-                $submitted = sanitize_text_field($_POST['b2brouter_invoice_series_code']);
+                $submitted = sanitize_text_field(wp_unslash($_POST['b2brouter_invoice_series_code']));
                 if (trim($submitted) === '') {
                     add_settings_error(
                         'b2brouter_invoice_series_code',
@@ -642,7 +642,7 @@ class Admin {
 
             // Save credit note series code (required, non-empty)
             if (isset($_POST['b2brouter_credit_note_series_code'])) {
-                $submitted = sanitize_text_field($_POST['b2brouter_credit_note_series_code']);
+                $submitted = sanitize_text_field(wp_unslash($_POST['b2brouter_credit_note_series_code']));
                 if (trim($submitted) === '') {
                     add_settings_error(
                         'b2brouter_credit_note_series_code',
@@ -658,7 +658,7 @@ class Admin {
 
             // Save numbering pattern
             if (isset($_POST['b2brouter_invoice_numbering_pattern'])) {
-                $this->settings->set_invoice_numbering_pattern(sanitize_text_field($_POST['b2brouter_invoice_numbering_pattern']));
+                $this->settings->set_invoice_numbering_pattern(sanitize_text_field(wp_unslash($_POST['b2brouter_invoice_numbering_pattern'])));
                 $numbering_pattern = $this->settings->get_invoice_numbering_pattern();
             }
 

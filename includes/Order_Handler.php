@@ -698,13 +698,17 @@ class Order_Handler {
      * @return void
      */
     public function bulk_action_notices() {
-        if (!isset($_GET['b2brouter_bulk_queued'])
-            && !isset($_GET['b2brouter_bulk_skipped'])) {
+        // Read-only notice display from query params set after the bulk-action redirect.
+        // The bulk action itself is gated by WordPress's bulk-action nonce in handle_bulk_action().
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if (!isset($_GET['b2brouter_bulk_queued']) && !isset($_GET['b2brouter_bulk_skipped'])) {
             return;
         }
 
-        $queued_count = isset($_GET['b2brouter_bulk_queued']) ? intval($_GET['b2brouter_bulk_queued']) : 0;
-        $skipped_count = isset($_GET['b2brouter_bulk_skipped']) ? intval($_GET['b2brouter_bulk_skipped']) : 0;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $queued_count = isset($_GET['b2brouter_bulk_queued']) ? intval(wp_unslash($_GET['b2brouter_bulk_queued'])) : 0;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $skipped_count = isset($_GET['b2brouter_bulk_skipped']) ? intval(wp_unslash($_GET['b2brouter_bulk_skipped'])) : 0;
 
         if ($queued_count > 0) {
             // Deep link to the Action Scheduler UI, filtered to our hook so

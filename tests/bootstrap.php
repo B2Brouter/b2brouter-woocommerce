@@ -92,6 +92,22 @@ if (!function_exists('sanitize_text_field')) {
     }
 }
 
+if (!function_exists('wp_unslash')) {
+    /**
+     * Mock wp_unslash function — reverses the slashes that WordPress's
+     * magic-quotes layer (wp_magic_quotes()) applies to superglobals.
+     *
+     * @param mixed $value Value to unslash
+     * @return mixed Unslashed value
+     */
+    function wp_unslash($value) {
+        if (is_array($value)) {
+            return array_map('wp_unslash', $value);
+        }
+        return is_string($value) ? stripslashes($value) : $value;
+    }
+}
+
 if (!function_exists('__')) {
     /**
      * Mock translation function
