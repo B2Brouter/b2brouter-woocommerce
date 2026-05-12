@@ -289,6 +289,7 @@ class Settings {
                 return array(
                     'valid' => true,
                     'message' => sprintf(
+                        /* translators: %s: B2Brouter account name */
                         __('API key is valid. Using account: %s', 'b2brouter-for-woocommerce'),
                         $account['name']
                     )
@@ -347,6 +348,7 @@ class Settings {
             return array(
                 'valid' => false,
                 'message' => sprintf(
+                    /* translators: %s: error message returned by the B2Brouter API */
                     __('API key validation failed: %s', 'b2brouter-for-woocommerce'),
                     $e->getMessage()
                 )

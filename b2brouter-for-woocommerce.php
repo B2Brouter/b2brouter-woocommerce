@@ -97,8 +97,6 @@ class B2Brouter_WooCommerce {
         add_action('before_woocommerce_init', array($this, 'declare_hpos_compatibility'));
 
         // Load translations on init (WordPress 6.7+ recommendation)
-        add_action('init', array($this, 'load_textdomain'), 5);
-
         // Check WooCommerce dependency and initialize plugin
         // Use plugins_loaded with priority 20 (after WooCommerce loads at priority 10)
         add_action('plugins_loaded', array($this, 'check_dependencies_and_init'), 20);
@@ -294,7 +292,7 @@ class B2Brouter_WooCommerce {
      */
     private function get($key) {
         if (!isset($this->container[$key])) {
-            throw new \Exception("Service '{$key}' not found in container.");
+            throw new \Exception(esc_html("Service '{$key}' not found in container."));
         }
 
         // If it's a callable, execute it once and cache the result
@@ -303,20 +301,6 @@ class B2Brouter_WooCommerce {
         }
 
         return $this->container[$key];
-    }
-
-    /**
-     * Load plugin textdomain
-     *
-     * @since 1.0.0
-     * @return void
-     */
-    public function load_textdomain() {
-        load_plugin_textdomain(
-            'b2brouter-for-woocommerce',
-            false,
-            dirname(B2BROUTER_WC_PLUGIN_BASENAME) . '/languages'
-        );
     }
 
     /**
