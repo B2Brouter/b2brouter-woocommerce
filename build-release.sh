@@ -61,21 +61,44 @@ echo ""
 # Copy plugin files
 echo -e "${YELLOW}Copying plugin files...${NC}"
 
-# Copy main files
-cp -r includes "${RELEASE_DIR}/"
-cp -r assets "${RELEASE_DIR}/"
-cp -r languages "${RELEASE_DIR}/"
-cp b2brouter-for-woocommerce.php "${RELEASE_DIR}/"
-cp composer.json "${RELEASE_DIR}/"
-cp LICENSE "${RELEASE_DIR}/"
-cp README.md "${RELEASE_DIR}/"
-cp CHANGELOG.md "${RELEASE_DIR}/"
+# Required files/directories that must end up in the release
+REQUIRED_DIRS=(includes assets languages)
+REQUIRED_FILES=(
+    b2brouter-for-woocommerce.php
+    uninstall.php
+    readme.txt
+    composer.json
+    LICENSE
+    README.md
+    CHANGELOG.md
+)
+
+for dir in "${REQUIRED_DIRS[@]}"; do
+    cp -r "${dir}" "${RELEASE_DIR}/"
+done
+for file in "${REQUIRED_FILES[@]}"; do
+    cp "${file}" "${RELEASE_DIR}/"
+done
 
 # Copy documentation
 if [ -d "docs" ]; then
     mkdir -p "${RELEASE_DIR}/docs"
     cp docs/*.md "${RELEASE_DIR}/docs/" 2>/dev/null || true
 fi
+
+# Fail fast if any required file is missing from the staging dir
+for dir in "${REQUIRED_DIRS[@]}"; do
+    if [ ! -d "${RELEASE_DIR}/${dir}" ]; then
+        echo -e "${RED}Error: required directory missing from release: ${dir}${NC}"
+        exit 1
+    fi
+done
+for file in "${REQUIRED_FILES[@]}"; do
+    if [ ! -f "${RELEASE_DIR}/${file}" ]; then
+        echo -e "${RED}Error: required file missing from release: ${file}${NC}"
+        exit 1
+    fi
+done
 
 echo -e "${GREEN}✓ Plugin files copied${NC}"
 echo ""
@@ -146,10 +169,24 @@ echo -e "  - Vendor dependencies (including B2Brouter PHP SDK)"
 echo -e "  - Documentation"
 echo ""
 
-# Verify archive contents
-echo -e "${YELLOW}Archive contents (vendor check):${NC}"
-unzip -l "${DIST_DIR}/${ARCHIVE_NAME}" | grep "vendor/b2brouter/b2brouter-php" | head -3
+# Verify archive contents — hard check that key entries are present
+echo -e "${YELLOW}Verifying archive contents...${NC}"
+ZIP_LIST=$(unzip -l "${DIST_DIR}/${ARCHIVE_NAME}")
 
+ZIP_REQUIRED=(
+    "${PLUGIN_NAME}/b2brouter-for-woocommerce.php"
+    "${PLUGIN_NAME}/uninstall.php"
+    "${PLUGIN_NAME}/readme.txt"
+    "${PLUGIN_NAME}/vendor/b2brouter/b2brouter-php/"
+)
+for entry in "${ZIP_REQUIRED[@]}"; do
+    if ! echo "${ZIP_LIST}" | grep -q "${entry}"; then
+        echo -e "${RED}Error: required entry missing from ZIP: ${entry}${NC}"
+        exit 1
+    fi
+done
+
+echo -e "${GREEN}✓ Archive contents verified${NC}"
 echo ""
 echo -e "${GREEN}Ready for distribution!${NC}"
 echo -e "${YELLOW}Upload ${DIST_DIR}/${ARCHIVE_NAME} to WordPress${NC}"
