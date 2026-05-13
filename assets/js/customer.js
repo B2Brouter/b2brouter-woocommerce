@@ -247,6 +247,18 @@
                 return;
             }
 
+            // Generate fragment: #b2brouter-generate-{order_id}
+            var href = $button.attr('href');
+            if (!orderId && href && href.indexOf('#b2brouter-generate-') === 0) {
+                var genMatch = href.match(/#b2brouter-generate-(\d+)/);
+                if (genMatch && genMatch[1]) {
+                    orderId = genMatch[1];
+                    if (b2brouterCustomer.debug) {
+                        console.log('Extracted order ID from generate fragment:', orderId);
+                    }
+                }
+            }
+
             // Get order ID from My Account table if not set
             if (!orderId) {
                 // Try to extract from aria-label first
