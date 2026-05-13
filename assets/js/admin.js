@@ -85,10 +85,7 @@
         var apiKey = $input.val().trim();
 
         if (!apiKey) {
-            $result
-                .removeClass('success error')
-                .addClass('error')
-                .html('<span class="dashicons dashicons-warning"></span> ' + b2brouterAdmin.strings.error + ': ' + b2brouterAdmin.strings.api_key_required);
+            renderStatus($result, 'error', 'dashicons-warning', b2brouterAdmin.strings.error + ': ' + b2brouterAdmin.strings.api_key_required);
             return;
         }
 
@@ -112,9 +109,7 @@
                 if (response.success) {
                     if (response.data.multiple_accounts && response.data.accounts) {
                         // Multiple accounts: show selector
-                        $result
-                            .addClass('success')
-                            .html('<span class="dashicons dashicons-yes-alt"></span> ' + response.data.message);
+                        renderStatus($result, 'success', 'dashicons-yes-alt', response.data.message);
 
                         var $select = $('#b2brouter_account_select');
                         $select.empty();
@@ -130,20 +125,14 @@
                         $('#b2brouter_account_select_result').removeClass('success error').html('');
                     } else {
                         // Single account: auto-selected
-                        $result
-                            .addClass('success')
-                            .html('<span class="dashicons dashicons-yes-alt"></span> ' + response.data.message);
+                        renderStatus($result, 'success', 'dashicons-yes-alt', response.data.message);
                     }
                 } else {
-                    $result
-                        .addClass('error')
-                        .html('<span class="dashicons dashicons-warning"></span> ' + response.data.message);
+                    renderStatus($result, 'error', 'dashicons-warning', response.data.message);
                 }
             },
             error: function() {
-                $result
-                    .addClass('error')
-                    .html('<span class="dashicons dashicons-warning"></span> ' + b2brouterAdmin.strings.error);
+                renderStatus($result, 'error', 'dashicons-warning', b2brouterAdmin.strings.error);
             },
             complete: function() {
                 $button.prop('disabled', false).text(b2brouterAdmin.strings.validate_key);
@@ -178,24 +167,18 @@
             },
             success: function(response) {
                 if (response.success) {
-                    $result
-                        .addClass('success')
-                        .html('<span class="dashicons dashicons-yes-alt"></span> ' + response.data.message);
+                    renderStatus($result, 'success', 'dashicons-yes-alt', response.data.message);
                     // Update displayed current account
                     var $current = $('#b2brouter_current_account');
                     if ($current.length) {
                         $current.text(b2brouterAdmin.strings.current_account.replace('%1$s', accountName).replace('%2$s', accountId));
                     }
                 } else {
-                    $result
-                        .addClass('error')
-                        .html('<span class="dashicons dashicons-warning"></span> ' + response.data.message);
+                    renderStatus($result, 'error', 'dashicons-warning', response.data.message);
                 }
             },
             error: function() {
-                $result
-                    .addClass('error')
-                    .html('<span class="dashicons dashicons-warning"></span> ' + b2brouterAdmin.strings.error);
+                renderStatus($result, 'error', 'dashicons-warning', b2brouterAdmin.strings.error);
             },
             complete: function() {
                 $button.prop('disabled', false);
@@ -249,11 +232,26 @@
     }
 
     /**
+     * Render an inline status indicator (icon + message) into $el.
+     * Message is inserted as a text node to avoid HTML injection.
+     */
+    function renderStatus($el, statusClass, iconClass, message) {
+        $el
+            .removeClass('success error')
+            .addClass(statusClass)
+            .empty()
+            .append($('<span>').addClass('dashicons ' + iconClass))
+            .append(document.createTextNode(' ' + message));
+    }
+
+    /**
      * Show admin notice
      */
     function showNotice(type, message) {
         var noticeClass = type === 'success' ? 'notice-success' : 'notice-error';
-        var $notice = $('<div class="notice ' + noticeClass + ' is-dismissible"><p>' + message + '</p></div>');
+        var $notice = $('<div>')
+            .addClass('notice ' + noticeClass + ' is-dismissible')
+            .append($('<p>').text(message));
 
         // Add to page
         if ($('.wrap > h1, .wrap > h2').length) {
