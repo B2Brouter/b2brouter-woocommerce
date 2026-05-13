@@ -34,10 +34,12 @@ First stable release. WordPress.org plugin directory submission-ready: Plugin Ch
 - **Exception Message Escaping**: All `throw new \Exception(__(…))` calls now wrap the message with `esc_html__()` (or `esc_html()` for interpolated values), so a consumer that echoes `$e->getMessage()` into an admin notice or order note remains safe (closes #68)
 - **Request Handling Hardening**: All reads of `$_POST`, `$_GET`, and `$_REQUEST` now route through `wp_unslash()` before sanitization, addressing the `ValidatedSanitizedInput.MissingUnslash` rule. Nonce verification on the invoice-download bulk action moved from a manual `wp_verify_nonce + wp_die` pair to the canonical `check_admin_referer()`. Sites where nonce verification happens upstream (WooCommerce checkout, admin order save, AJAX entry points) carry explicit `phpcs:ignore` annotations naming the upstream nonce (closes #65)
 - **Settings API Sanitisation**: Both `register_setting()` calls in `Admin::register_settings()` now declare a `sanitize_callback` — `sanitize_text_field` for `b2brouter_api_key`, and a strict whitelist of `'automatic'` / `'manual'` (with `'manual'` as fallback) for `b2brouter_invoice_mode` (closes #57)
+- **Admin AJAX Notice Escaping**: All admin-side AJAX response renderers (`renderStatus()`, `showNotice()`) now build DOM nodes with `.text()` / `document.createTextNode()` instead of concatenating server-supplied strings into `.html()`. Closes an XSS vector where a malicious API error message could have executed script in the admin context (PR #81)
 
 ### Fixed
 
 - **Orphan PDF Metadata Cleanup on HPOS**: `Invoice_Generator::cleanup_order_metadata_for_file()` previously ran a direct SQL `SELECT … FROM wp_postmeta`, which returned no results on HPOS-only stores (where order meta lives in `wp_wc_orders_meta`) — orphan PDF references stuck around in the order metadata. The lookup now uses `wc_get_orders()`, which works in both legacy and HPOS modes
+- **Customer "Generate Invoice" Button**: The button on My Account → Orders had `url => '#'`, which meant the click handler had no order ID and the AJAX request failed silently. The URL now carries the order ID in the fragment (`#b2brouter-generate-{id}`) and the JS handler extracts it before firing the request (PR #80)
 
 ### Technical
 
