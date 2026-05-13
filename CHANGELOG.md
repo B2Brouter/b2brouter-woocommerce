@@ -5,6 +5,12 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-05-13
+
+### Added
+
+- **`Requires Plugins` Header**: Declare WooCommerce as a plugin dependency via the WordPress 6.5+ `Requires Plugins: woocommerce` header in `b2brouter-for-woocommerce.php`. WordPress 6.5 and later use this to refuse activation when WooCommerce is missing; older WordPress versions ignore the header and fall back to the existing PHP-side dependency check in `check_dependencies_and_init()`
+
 ## [1.0.1] - 2026-05-13
 
 ### Fixed
@@ -386,6 +392,7 @@ We welcome feedback on all aspects of the plugin. Please test in a staging envir
 
 ---
 
+[1.0.2]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.2
 [1.0.1]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.1
 [1.0.0]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.0
 [0.9.4]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.4

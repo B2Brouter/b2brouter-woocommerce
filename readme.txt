@@ -4,7 +4,7 @@ Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: MIT
 License URI: https://opensource.org/license/mit
 
@@ -121,6 +121,12 @@ This plugin connects your WooCommerce store to **B2Brouter**, a third-party e-in
 
 == Changelog ==
 
+= 1.0.2 =
+
+**Added:**
+
+* Declare WooCommerce as a plugin dependency via the `Requires Plugins: woocommerce` header (WordPress 6.5+). Older WordPress versions ignore the header and fall back to the existing PHP-side dependency check.
+
 = 1.0.1 =
 
 **Fixed:**
@@ -216,6 +222,10 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 For the complete history, see `CHANGELOG.md` in the repository.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+
+Declares WooCommerce as a plugin dependency via the `Requires Plugins` header (WordPress 6.5+). No change in behaviour for users on older WordPress versions.
 
 = 1.0.1 =
 
