@@ -139,7 +139,7 @@ class Customer {
         elseif ($this->settings->get_invoice_mode() === 'manual' &&
                 in_array($order->get_status(), array('completed', 'processing'), true)) {
             $actions['b2brouter_generate_invoice'] = array(
-                'url' => '#',
+                'url' => '#b2brouter-generate-' . $order->get_id(),
                 'name' => __('Generate Invoice', 'b2brouter-for-woocommerce'),
             );
         }
