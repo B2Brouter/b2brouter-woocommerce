@@ -5,6 +5,12 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-05-13
+
+### Fixed
+
+- **Plugin Header URIs**: `Plugin URI` and `Author URI` in the main plugin file were both `https://b2brouter.net`. WordPress.org's plugin submission validator rejects identical values for these two headers (they must be distinct, or just one provided). `Plugin URI` now points at the WooCommerce integration documentation (`https://www.b2brouter.net/docs/#/en/integration/woocommerce`) — the same URL the admin UI already advertises as the user guide for this plugin. `Author URI` continues to point at the company homepage
+
 ## [1.0.0] - 2026-05-13
 
 First stable release. WordPress.org plugin directory submission-ready: Plugin Check reports zero errors and zero warnings on the shipped ZIP. HPOS compatibility audited end-to-end; no direct postmeta access remains in the plugin.
@@ -380,6 +386,7 @@ We welcome feedback on all aspects of the plugin. Please test in a staging envir
 
 ---
 
+[1.0.1]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.1
 [1.0.0]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.0
 [0.9.4]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.4
 [0.9.3]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.3

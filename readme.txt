@@ -4,7 +4,7 @@ Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: MIT
 License URI: https://opensource.org/license/mit
 
@@ -121,6 +121,12 @@ This plugin connects your WooCommerce store to **B2Brouter**, a third-party e-in
 
 == Changelog ==
 
+= 1.0.1 =
+
+**Fixed:**
+
+* Plugin header `Plugin URI` and `Author URI` were both set to the same value; `Plugin URI` now points at the WooCommerce integration documentation (`https://www.b2brouter.net/docs/#/en/integration/woocommerce`) so the two URIs are distinct, as required by the WordPress.org submission validator.
+
 = 1.0.0 =
 
 First stable release. Cleared for distribution via the WordPress.org plugin directory and the WooCommerce Marketplace. Plugin Check reports zero errors and zero warnings on the shipped ZIP, and HPOS compatibility was audited end to end (no direct `wp_postmeta` access remains).
@@ -210,6 +216,10 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 For the complete history, see `CHANGELOG.md` in the repository.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+
+Fixes the plugin header so the WordPress.org submission validator accepts it: `Plugin URI` and `Author URI` are now distinct.
 
 = 1.0.0 =
 
