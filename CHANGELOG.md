@@ -5,7 +5,14 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-05-13
+
+First stable release. WordPress.org plugin directory submission-ready: Plugin Check reports zero errors and zero warnings on the shipped ZIP. HPOS compatibility audited end-to-end; no direct postmeta access remains in the plugin.
+
+### Added
+
+- **External Services Disclosure**: New `== External Services ==` section in `readme.txt` documenting the B2Brouter API endpoint (`https://api.b2brouter.net`, overridable via `B2BROUTER_API_BASE`), the data sent (order, billing, refund) and received (status, PDFs), when transmission happens, and links to Terms and Privacy Policy. Required by WordPress.org guideline #6 for SaaS-integration plugins (closes #58)
+- **Release Build Validation**: `build-release.sh` now uses an explicit allow-list and fails the build if any required file or directory is missing from either the staging directory or the produced ZIP. The release workflow delegates to the same script so local and CI builds run identical pipelines. Eliminates a regression that produced ZIPs without `readme.txt` (readme-parser errors at install) or `uninstall.php` (cleanup hook never fired) (closes #70)
 
 ### Changed
 
@@ -16,6 +23,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Bulk Invoice Generation**: The "Generate B2Brouter Invoices" bulk action now enqueues background jobs via Action Scheduler instead of generating invoices synchronously. Eliminates 504 timeouts on large selections (worst case was ~12 minutes for 50 orders with auto-save PDF). Orders that already have an invoice are pre-filtered and counted as skipped. Progress and per-action logs are visible under **WooCommerce → Status → Scheduled Actions** (group `b2brouter`) (closes #37)
 - **B2Brouter PHP SDK**: Upgraded from `^1.0.0` to `^1.2.0`. The SDK now defaults to API version `2026-03-02`. Verified the only plugin-touching change in the new API version is scheme code formatting: `tin_scheme` is now sent as the zero-padded string `'9999'` instead of integer `9999` (`Invoice_Generator.php`). Removed discount/charge fields, the `taxcode` query parameter, and the `type_document` rename — none are used by the plugin (closes #35)
 - **API Key Validation**: `Settings::validate_api_key()` now uses the SDK's new `AccountService` (`$client->accounts->all()`) instead of a hand-rolled HTTP call against `/accounts`, removing duplicated header construction and response parsing
+- **Uninstaller Filesystem Operations**: `Uninstaller::delete_pdf_directory()` now delegates to `$wp_filesystem->delete($path, true, 'd')` instead of a manual `scandir` / `unlink` / `rmdir` recursion. Required for hosts that restrict direct PHP filesystem calls; failures are logged via `Logger::warning` and uninstall remains best-effort if WP_Filesystem initialisation fails (closes #67)
+- **WooCommerce Active Check**: Simplified `is_woocommerce_active()` to `class_exists('WooCommerce')` alone. The previous `apply_filters('active_plugins', …)` fallback was unreachable at the actual call site (`plugins_loaded` priority 20, after WC has loaded) and would return a false positive when WC was listed but its class failed to load — causing the plugin to proceed and crash on subsequent `wc_*` calls
+- **Translator Comments and Placeholders**: All translatable strings with placeholders now carry `// translators:` comments explaining each substitution. Strings with multiple placeholders use positional `%1$s` / `%2$s` form so translators can reorder them per language. Removed the explicit `load_plugin_textdomain()` call — WordPress 4.6+ auto-loads translations for plugins hosted on WordPress.org (closes #66)
+- **Invoice Due Date**: `date()` replaced with `wp_date()` for the invoice due-date field so the value is no longer affected by other plugins changing PHP's default timezone at runtime (closes #69)
+
+### Security
+
+- **Output Escaping**: All output flagged by Plugin Check is now passed through an appropriate escape function — `esc_html__()` for translated text in `wp_die()`, `(int)` casts for numeric IDs, `wp_kses_post()` for `wc_price()` output and translated strings that contain markup, `esc_html()` for plain translated text. The single legitimate raw binary output (the PDF body in `stream_invoice_pdf`) is annotated with a `phpcs:ignore` comment explaining that the `Content-Type` header is set above the echo (closes #56)
+- **Exception Message Escaping**: All `throw new \Exception(__(…))` calls now wrap the message with `esc_html__()` (or `esc_html()` for interpolated values), so a consumer that echoes `$e->getMessage()` into an admin notice or order note remains safe (closes #68)
+- **Request Handling Hardening**: All reads of `$_POST`, `$_GET`, and `$_REQUEST` now route through `wp_unslash()` before sanitization, addressing the `ValidatedSanitizedInput.MissingUnslash` rule. Nonce verification on the invoice-download bulk action moved from a manual `wp_verify_nonce + wp_die` pair to the canonical `check_admin_referer()`. Sites where nonce verification happens upstream (WooCommerce checkout, admin order save, AJAX entry points) carry explicit `phpcs:ignore` annotations naming the upstream nonce (closes #65)
+- **Settings API Sanitisation**: Both `register_setting()` calls in `Admin::register_settings()` now declare a `sanitize_callback` — `sanitize_text_field` for `b2brouter_api_key`, and a strict whitelist of `'automatic'` / `'manual'` (with `'manual'` as fallback) for `b2brouter_invoice_mode` (closes #57)
+
+### Fixed
+
+- **Orphan PDF Metadata Cleanup on HPOS**: `Invoice_Generator::cleanup_order_metadata_for_file()` previously ran a direct SQL `SELECT … FROM wp_postmeta`, which returned no results on HPOS-only stores (where order meta lives in `wp_wc_orders_meta`) — orphan PDF references stuck around in the order metadata. The lookup now uses `wc_get_orders()`, which works in both legacy and HPOS modes
+
+### Technical
+
+- **Translation Regeneration**: `.pot`, `.po`, and `.mo` files regenerated after placeholder reordering and translator-comment additions. Existing translations preserved where the `msgid` is unchanged; fuzzy entries flagged for translator review where placeholders were reordered
 
 ## [0.9.4] - 2026-04-23
 
@@ -352,6 +378,7 @@ We welcome feedback on all aspects of the plugin. Please test in a staging envir
 
 ---
 
+[1.0.0]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.0
 [0.9.4]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.4
 [0.9.3]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.3
 [0.9.2]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v0.9.2

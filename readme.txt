@@ -4,7 +4,7 @@ Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.9.4
+Stable tag: 1.0.0
 License: MIT
 License URI: https://opensource.org/license/mit
 
@@ -121,6 +121,35 @@ This plugin connects your WooCommerce store to **B2Brouter**, a third-party e-in
 
 == Changelog ==
 
+= 1.0.0 =
+
+First stable release. Cleared for distribution via the WordPress.org plugin directory and the WooCommerce Marketplace. Plugin Check reports zero errors and zero warnings on the shipped ZIP, and HPOS compatibility was audited end to end (no direct `wp_postmeta` access remains).
+
+**Added:**
+
+* `== External Services ==` disclosure section listing the B2Brouter API endpoint, data sent/received, transmission triggers, and links to Terms and Privacy Policy.
+* Build-time validation in `build-release.sh`: the release ZIP is rejected if `readme.txt`, `uninstall.php`, or the bundled SDK is missing.
+
+**Changed:**
+
+* Plugin slug renamed from `b2brouter-woocommerce` to `b2brouter-for-woocommerce` for WordPress.org trademark compliance. The user-facing plugin name is unchanged; PHP constants, option keys, and extension hooks are preserved for compatibility.
+* Bulk "Generate B2Brouter Invoices" now runs through Action Scheduler instead of a synchronous loop — no more 504 timeouts on large selections. Progress visible under **WooCommerce → Status → Scheduled Actions**.
+* Staging/production environment selector removed from the settings page. The plugin defaults to production; staging can be reached via the `B2BROUTER_API_BASE` constant.
+* B2Brouter PHP SDK upgraded to v1.2 (API version `2026-03-02`). API-key validation now uses the SDK's new `AccountService`.
+* Uninstaller routes all filesystem operations through the WordPress `WP_Filesystem` API.
+* Invoice due date now uses `wp_date()` for timezone-stable formatting.
+
+**Security:**
+
+* All flagged output paths now run through appropriate escape functions (`esc_html__`, `esc_html`, `wp_kses_post`, `(int)` casts).
+* Exception messages are escaped at throw time so any consumer that echoes them remains safe.
+* All superglobal reads (`$_POST` / `$_GET` / `$_REQUEST`) go through `wp_unslash()` before sanitization; nonce verification uses the canonical `check_admin_referer()` pattern.
+* Settings API options declare `sanitize_callback` (strict whitelist for invoice mode).
+
+**Fixed:**
+
+* Orphan PDF metadata cleanup is now HPOS-aware. The previous implementation queried `wp_postmeta` directly and silently missed orders on HPOS-only stores.
+
 = 0.9.4 =
 
 Final pre-release before 1.0. Focused on stability, operational polish, and preparing the plugin for distribution via the WordPress.org plugin directory and the WooCommerce Marketplace.
@@ -181,6 +210,10 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 For the complete history, see `CHANGELOG.md` in the repository.
 
 == Upgrade Notice ==
+
+= 1.0.0 =
+
+First stable release. Plugin slug renamed to `b2brouter-for-woocommerce` for WordPress.org compliance — existing installs upgrading in place will see the plugin as a new entry under the new directory and must be reactivated. Bulk invoice generation moved to Action Scheduler. SDK upgraded to v1.2.
 
 = 0.9.4 =
 
