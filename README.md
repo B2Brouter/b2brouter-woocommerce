@@ -4,7 +4,7 @@
 
 B2Brouter for WooCommerce connects your store to B2Brouter's platform: structured invoice data, electronic delivery, and country-specific tax authority reporting where required.
 
-[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/B2Brouter/b2brouter-woocommerce/releases)
+[![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)](https://github.com/B2Brouter/b2brouter-woocommerce/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-blue.svg)](https://wordpress.org)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-5.0%2B-purple.svg)](https://woocommerce.com)

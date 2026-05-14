@@ -4,7 +4,7 @@ Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: MIT
 License URI: https://opensource.org/license/mit
 
@@ -121,6 +121,12 @@ This plugin connects your WooCommerce store to **B2Brouter**, a third-party e-in
 
 == Changelog ==
 
+= 1.0.3 =
+
+**Fixed:**
+
+* Release ZIP no longer ships development-only files from the bundled B2Brouter PHP SDK (`.env.example`, the package's own `tests/`, `docs/`, `examples/`, `.github/`, `phpunit.xml.dist`, `CHANGELOG.md`, `README.md`). Surfaced by the WordPress.org Plugin Review Team.
+
 = 1.0.2 =
 
 **Added:**
@@ -222,6 +228,10 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 For the complete history, see `CHANGELOG.md` in the repository.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+
+Strips development-only files from the bundled SDK in the release ZIP (no behaviour change for installed plugins). Resolves the WordPress.org Plugin Review Team's flag on `.env.example` and similar package internals.
 
 = 1.0.2 =
 
