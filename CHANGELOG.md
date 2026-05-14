@@ -5,6 +5,12 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2026-05-14
+
+### Fixed
+
+- **Vendor Cleanup in Release ZIP**: The B2Brouter PHP SDK package shipped in `vendor/` carried 44 development-only files (`.env.example`, `.gitignore`, `.github/`, `phpunit.xml.dist`, the package's own `tests/`, `docs/`, `examples/` directories, `CHANGELOG.md`, and `README.md`). Composer's `--no-dev` flag strips dev *dependencies* but does not strip dev *files within prod packages*. `build-release.sh` now removes these patterns from `${RELEASE_DIR}/vendor` after `composer install`, and a follow-up `find` re-scan fails the build if any known dev pattern remains. The shipped ZIP drops from 75 to 31 vendor files. Surfaced by the WordPress.org Plugin Review Team flagging `.env.example` as a not-permitted file
+
 ## [1.0.2] - 2026-05-13
 
 ### Added
@@ -392,6 +398,7 @@ We welcome feedback on all aspects of the plugin. Please test in a staging envir
 
 ---
 
+[1.0.3]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.3
 [1.0.2]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.2
 [1.0.1]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.1
 [1.0.0]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.0

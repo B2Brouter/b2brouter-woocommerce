@@ -136,6 +136,64 @@ fi
 echo -e "${GREEN}✓ B2Brouter PHP SDK verified${NC}"
 echo ""
 
+# Strip dev-only files that vendor packages ship even with --no-dev.
+# WordPress.org Plugin Review rejects files like .env.example, package
+# tests/, examples/, and CI/editor configs in the distributed ZIP.
+echo -e "${YELLOW}Cleaning dev-only files from vendor/...${NC}"
+
+# Directories: tests, CI, package docs, package examples.
+find "${RELEASE_DIR}/vendor" -depth -type d \( \
+    -name "tests" -o -name "test" -o -name "Tests" \
+    -o -name ".github" -o -name ".circleci" \
+    -o -name "docs" -o -name "documentation" \
+    -o -name "examples" -o -name "example" \
+\) -exec rm -rf {} +
+
+# Files: env, VCS, test configs, static analysis configs, CI configs,
+# editor configs, package metadata that isn't needed at runtime.
+# LICENSE files and composer.json are preserved (legal + autoloader).
+find "${RELEASE_DIR}/vendor" -type f \( \
+    -name ".env" -o -name ".env.*" \
+    -o -name ".gitignore" -o -name ".gitattributes" \
+    -o -name "phpunit.xml" -o -name "phpunit.xml.dist" \
+    -o -name "phpstan.neon" -o -name "phpstan.neon.dist" \
+    -o -name "phpcs.xml" -o -name "phpcs.xml.dist" \
+    -o -name "psalm.xml" -o -name "psalm.xml.dist" \
+    -o -name ".editorconfig" -o -name ".styleci.yml" \
+    -o -name ".scrutinizer.yml" -o -name ".travis.yml" -o -name ".gitlab-ci.yml" \
+    -o -name "Makefile" \
+    -o -name "README" -o -name "README.md" -o -name "README.rst" -o -name "README.txt" \
+    -o -name "CHANGELOG" -o -name "CHANGELOG.md" -o -name "CHANGES" -o -name "CHANGES.md" \
+    -o -name "UPGRADE" -o -name "UPGRADE.md" -o -name "UPGRADING.md" \
+    -o -name "CONTRIBUTING" -o -name "CONTRIBUTING.md" \
+    -o -name "AUTHORS" -o -name "AUTHORS.md" \
+\) -delete
+
+echo -e "${GREEN}✓ Dev-only files cleaned${NC}"
+echo ""
+
+# Strip composer.lock at the plugin root — it's a build artefact from the
+# composer install above, not used at runtime, and trips wp.org's "files
+# not normally found in a plugin" review check.
+rm -f "${RELEASE_DIR}/composer.lock"
+
+# Fail-fast: re-scan to confirm no known dev patterns slipped through.
+# Catches future packages that ship dev files we haven't matched yet.
+DEV_LEFTOVERS=$(find "${RELEASE_DIR}/vendor" \( \
+    -name ".env*" -o -name ".gitignore" -o -name ".gitattributes" \
+    -o -name "phpunit.xml*" -o -name "phpstan.neon*" -o -name "phpcs.xml*" -o -name "psalm.xml*" \
+    -o -name ".editorconfig" -o -name ".styleci.yml" -o -name ".scrutinizer.yml" \
+    -o -name ".travis.yml" -o -name ".gitlab-ci.yml" \
+    -o -path "*/tests/*" -o -path "*/Tests/*" -o -path "*/test/*" \
+    -o -path "*/examples/*" -o -path "*/example/*" \
+    -o -path "*/.github/*" -o -path "*/.circleci/*" \
+\) 2>/dev/null)
+if [ -n "${DEV_LEFTOVERS}" ]; then
+    echo -e "${RED}Error: dev-only files still present in vendor after cleanup:${NC}"
+    echo "${DEV_LEFTOVERS}"
+    exit 1
+fi
+
 # Create ZIP archive
 echo -e "${YELLOW}Creating ZIP archive...${NC}"
 cd "${BUILD_DIR}"
