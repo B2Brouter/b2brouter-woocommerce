@@ -422,6 +422,8 @@ Mocked components:
 
 For comprehensive development documentation including IDE setup, release process, and contribution guidelines, see [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md).
 
+For the plugin's public GitHub Pages website (how it is set up and how to contribute content), see [docs/PUBLIC_WEBSITE.md](docs/PUBLIC_WEBSITE.md).
+
 ---
 
 ## Support
