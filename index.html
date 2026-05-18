@@ -1,18 +1,618 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex">
-    <title>B2BRouter for WooCommerce</title>
-  </head>
-  <body>
-    <h1>B2BRouter for WooCommerce</h1>
-    <p>Placeholder page. The landing page and end-user documentation for the B2BRouter for WooCommerce plugin are in preparation.</p>
-    <p>In the meantime:</p>
-    <ul>
-      <li><a href="https://github.com/B2Brouter/b2brouter-woocommerce">Plugin repository on GitHub</a></li>
-      <li><a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce">B2BRouter user guide for WooCommerce</a></li>
-    </ul>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2Brouter for WooCommerce — Automated e-invoicing</title>
+    <meta name="description" content="WooCommerce plugin that generates PDF invoices and automatically sends them in structured electronic format (UBL, Facturae, Peppol) with country-specific regulatory compliance. Explicit support for Verifactu (Spain), DGFiP (France), and KSeF (Poland).">
+
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp, Slack, etc.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="B2Brouter for WooCommerce">
+    <meta property="og:title" content="B2Brouter for WooCommerce — Automated e-invoicing">
+    <meta property="og:description" content="WooCommerce plugin that generates PDF invoices and automatically sends them in structured electronic format (UBL, Facturae, Peppol) with country-specific regulatory compliance.">
+    <meta property="og:url" content="https://b2brouter.github.io/b2brouter-woocommerce-site/">
+    <meta property="og:image" content="https://b2brouter.github.io/b2brouter-woocommerce-site/assets/img/og-image.png">
+    <meta property="og:image:alt" content="B2Brouter for WooCommerce: automated e-invoicing for your store.">
+
+    <!-- Twitter Cards (X) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="B2Brouter for WooCommerce — Automated e-invoicing">
+    <meta name="twitter:description" content="WooCommerce plugin that generates PDF invoices and automatically sends them in structured electronic format (UBL, Facturae, Peppol) with country-specific regulatory compliance.">
+    <meta name="twitter:image" content="https://b2brouter.github.io/b2brouter-woocommerce-site/assets/img/og-image.png">
+    <meta name="twitter:image:alt" content="B2Brouter for WooCommerce: automated e-invoicing for your store.">
+
+    <!--
+        SEO NOTE: replace every `https://b2brouter.github.io/b2brouter-woocommerce-site/` URL
+        with the final domain when the site is published (canonical, og:url, og:image, twitter:image, JSON-LD @id, screenshots).
+    -->
+    <link rel="canonical" href="https://b2brouter.github.io/b2brouter-woocommerce-site/">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://b2brouter.github.io/b2brouter-woocommerce-site/#software",
+          "name": "B2Brouter for WooCommerce",
+          "alternateName": "B2Brouter per a WooCommerce",
+          "description": "WooCommerce plugin that generates PDF invoices and automatically sends them in structured electronic format (UBL, Facturae, Peppol) with country-specific regulatory compliance. Explicit support for Verifactu (Spain), DGFiP (France), and KSeF (Poland).",
+          "url": "https://b2brouter.github.io/b2brouter-woocommerce-site/",
+          "applicationCategory": "BusinessApplication",
+          "applicationSubCategory": "InvoicingSoftware",
+          "operatingSystem": "WordPress",
+          "softwareVersion": "1.0.2",
+          "downloadUrl": "https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest",
+          "softwareRequirements": "WordPress 5.8+, WooCommerce 5.0+, PHP 7.4+, active B2Brouter eDocExchange account",
+          "license": "https://opensource.org/license/mit",
+          "inLanguage": ["en", "es", "ca", "fr", "de"],
+          "isAccessibleForFree": true,
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR",
+            "availability": "https://schema.org/InStock"
+          },
+          "featureList": [
+            "Automatic PDF invoice generation",
+            "Structured electronic invoice (UBL, Facturae, Peppol BIS) alongside the PDF",
+            "Explicit regulatory compliance: Verifactu (Spain), DGFiP/Chorus Pro (France), KSeF (Poland)",
+            "Automatic credit notes for WooCommerce refunds",
+            "TIN/VAT field on the classic and block checkout (WooCommerce 8.6+)",
+            "Automatic intra-EU reverse-charge detection",
+            "Native HPOS (High-Performance Order Storage) compatibility",
+            "Real-time status updates via HMAC-SHA256 webhooks"
+          ],
+          "screenshot": [
+            "https://b2brouter.github.io/b2brouter-woocommerce-site/assets/img/screenshot-1.png",
+            "https://b2brouter.github.io/b2brouter-woocommerce-site/assets/img/screenshot-2.png",
+            "https://b2brouter.github.io/b2brouter-woocommerce-site/assets/img/screenshot-3.png",
+            "https://b2brouter.github.io/b2brouter-woocommerce-site/assets/img/screenshot-4.png",
+            "https://b2brouter.github.io/b2brouter-woocommerce-site/assets/img/screenshot-5.png",
+            "https://b2brouter.github.io/b2brouter-woocommerce-site/assets/img/screenshot-6.png"
+          ],
+          "author": { "@id": "https://www.b2brouter.net/#organization" },
+          "publisher": { "@id": "https://www.b2brouter.net/#organization" }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://www.b2brouter.net/#organization",
+          "name": "B2Brouter",
+          "url": "https://www.b2brouter.net",
+          "logo": "https://b2brouter.github.io/b2brouter-woocommerce-site/assets/img/b2brouter-logo.svg",
+          "description": "SaaS platform for electronic invoicing and B2B document exchange. Certified Peppol Access Point with regulatory compliance for multiple European regimes."
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://b2brouter.github.io/b2brouter-woocommerce-site/#faq-page",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How does it differ from other PDF invoice plugins?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "PDF invoice plugins generate the document locally from a template and attach it to the customer's email. It's useful when all you need is a PDF receipt for your orders. This plugin goes further: it connects with the B2Brouter platform, which in addition to generating the PDF also issues the invoice in structured electronic format (UBL, Facturae, Peppol), delivers it to the right channel for each country (the relevant tax authority, the Peppol network, etc.), and tracks the status of every invoice. It's what you need if your store must comply with national e-invoicing regulations or sell B2B across Europe."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I need a B2Brouter account?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. The plugin requires an active B2Brouter eDocExchange subscription. You can create your account and get the API key at app.b2brouter.net (under «Developers → API Keys»)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Where do I configure Verifactu, KSeF, or Chorus Pro?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Authority-specific configuration is managed from your B2Brouter webapp, not from the plugin. Once the webapp is configured, the plugin automatically sends invoices through the correct channel."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does it work if my store isn't in Spain, France, or Poland?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Beyond the regimes with explicit compliance (Spain, France, Poland), the plugin generates electronic invoices in standard formats (UBL, Facturae, Peppol) for the rest of the EU, the United Kingdom, and other jurisdictions supported by B2Brouter. If you need explicit compliance for another country, open an issue on the repository."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What electronic invoice formats can I generate?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The plugin sends each order's data to B2Brouter and the platform automatically generates the right format for the recipient. You don't have to choose anything on each order. The main formats issued: PDF (always, for human readability), UBL 2.1 (international standard, the base for Peppol BIS), Facturae (Spain's official format, accepted by FACe and other public sector portals), and country-specific formats when required by national regulations — for example, Factur-X for Chorus Pro in France, or the format required by Verifactu (Spain) and KSeF (Poland)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does it comply with the European EN16931 standard?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. The electronic invoices generated through the plugin follow the EN16931 standard, the European semantic standard that defines the fields and structure an electronic invoice must have to be interoperable across the European Union. EN16931 is the foundation of Directive 2014/55/EU (mandatory e-invoicing in public procurement), the Peppol BIS Billing 3.0 format, and the main national e-invoicing regimes the plugin handles."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I send invoices through the Peppol network?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. B2Brouter is a certified Peppol Access Point, so you can issue and deliver invoices through the Peppol network directly from your store, without having to hire any other provider. The plugin generates the invoice in Peppol BIS Billing 3.0 format and B2Brouter routes it to the correct recipient within the network. Especially useful if you sell to companies, public sector buyers, or large European portals that only accept invoices via Peppol."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is it compatible with HPOS (High-Performance Order Storage)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. The plugin declares full compatibility with the WooCommerce HPOS / Custom Order Tables system."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does the TIN/VAT field work on the block checkout?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. It works on both the classic checkout (shortcode) and the block checkout (WooCommerce 8.6+). The value is saved to the order and to the customer profile for reuse on future orders."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I get real-time status updates?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Enable webhooks under «Invoices → Settings → Webhook Configuration». Copy the generated URL into your B2Brouter webapp («Developers → Webhooks») and paste the secret into WordPress. Updates arrive in under a second."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How much does it cost?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The plugin is free and open source (MIT license). The cost is the B2Brouter subscription, which depends on the volume of invoices issued."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<header class="site-header">
+    <nav class="nav">
+        <a href="#" class="nav-logo">
+            <img src="assets/img/b2brouter-logo.svg" alt="" class="nav-logo-img">
+            <span>B2Brouter for WooCommerce</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#what-it-does">What it does</a></li>
+            <li><a href="#use-cases">Use cases</a></li>
+            <li><a href="#compliance">Compliance</a></li>
+            <li><a href="#more-than-pdf">More than a PDF</a></li>
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest" class="nav-cta">Download</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     SECTION 1 — HERO
+     ============================================================ -->
+<section class="hero" id="hero">
+    <div class="container">
+        <h1>Electronic invoicing for WooCommerce, with automatic regulatory compliance</h1>
+        <p class="hero-subtitle">Connect your store to B2Brouter and generate the invoice as a PDF and in structured electronic format, compliant with your country's regulations. No spreadsheets, no intermediaries, no reconfiguring on every order.</p>
+        <div class="hero-ctas">
+            <a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest" class="cta cta-primary">
+                Download the latest version
+            </a>
+            <a href="#how-it-works" class="cta cta-secondary">
+                How it works
+            </a>
+        </div>
+        <p class="hero-trust">Open source · MIT license · WordPress 5.8+ · WooCommerce 5.0+ · PHP 7.4+</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 2 — WHY YOU NEED IT
+     ============================================================ -->
+<section class="why" id="why">
+    <div class="container">
+        <h2>Electronic invoicing is no longer optional</h2>
+        <p class="section-lead">More and more European Union countries require electronic invoices for transactions. Regulations change often, and complying manually means hours of accounting work, errors, and the risk of penalties.</p>
+        <div class="pain-grid">
+            <div class="pain-item">
+                <h3>Changing legal compliance</h3>
+                <p>Tax authorities introduce new formats, identifiers, and requirements every year. Staying up-to-date takes time you don't have.</p>
+            </div>
+
+            <div class="pain-item">
+                <h3>B2B customers who require structured invoices</h3>
+                <p>More and more companies only accept invoices in formats like UBL, Facturae, or Peppol. A PDF invoice is no longer enough.</p>
+            </div>
+
+            <div class="pain-item">
+                <h3>Manual errors and accountant hours</h3>
+                <p>Generating invoices outside your order system causes duplicates, transcription errors, and extra work month after month.</p>
+            </div>
+        </div>
+
+        <p class="section-closing">B2Brouter plugin saves you all that by automating electronic invoice generation directly from your WooCommerce store.</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 3 — WHAT IT DOES
+     ============================================================ -->
+<section class="features" id="what-it-does">
+    <div class="container">
+        <h2>What it does, exactly.</h2>
+
+        <div class="feature-grid">
+            <article class="feature-card">
+                <h3>Issues invoices automatically</h3>
+                <p>When an order moves to «Completed», the plugin sends the data to B2Brouter and generates the electronic invoice in the right format. You can also issue them manually from the order screen, one by one or in bulk.</p>
+            </article>
+
+            <article class="feature-card">
+                <h3>Complies with your country's regulations</h3>
+                <p>The plugin sends invoices through the correct channel for each country: tax authority reporting, QR verification code, official buyer identifiers… Everything the law requires, without touching a thing.</p>
+            </article>
+
+            <article class="feature-card">
+                <h3>Generates and delivers the PDF to the customer</h3>
+                <p>Every invoice generates its PDF automatically: attached to order completion emails, downloadable from the «My Account» area, and cached locally for fast access.</p>
+            </article>
+
+            <article class="feature-card">
+                <h3>Handles refunds and credit notes</h3>
+                <p>When you create a refund in WooCommerce, the corresponding credit note (rectifying invoice) is generated, linked to the original invoice and in the format the country requires.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 4 — USE CASES
+     ============================================================ -->
+<section class="use-cases" id="use-cases">
+    <div class="container">
+        <h2>Who it's for</h2>
+
+        <div class="use-case">
+            <h3>Stores that must comply with national e-invoicing regulations</h3>
+            <p>If your store sells in a country where electronic invoicing is mandatory (or will be soon), the plugin automatically handles the registration with the relevant tax authority, the QR verification code, and every specific requirement.</p>
+        </div>
+
+        <div class="use-case">
+            <h3>Stores with European customers</h3>
+            <p>If you sell to customers in other EU countries, the plugin automatically detects reverse-charge, collects the VAT number at checkout, and generates invoices in standard formats (UBL, Peppol) accepted by any European buyer.</p>
+        </div>
+
+        <div class="use-case">
+            <h3>High-volume stores: automation and peace of mind</h3>
+            <p>If you issue dozens or hundreds of invoices a month, let the plugin do the work: automatic issuance on order completion, bulk processing, locally cached PDFs, and real-time status sync for every invoice.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 5 — REGULATORY COMPLIANCE (issue #39)
+     ============================================================ -->
+<section class="compliance" id="compliance">
+    <div class="container">
+        <h2>Regulatory compliance</h2>
+        <p class="section-lead">The plugin distinguishes two levels of compliance:</p>
+
+        <h3 class="compliance-subtitle">Explicit compliance</h3>
+        <p>For these national regimes, the plugin handles the full flow required by law, including reporting to the relevant tax authority:</p>
+
+        <div class="compliance-grid">
+            <div class="compliance-item">
+                <h4>Spain: Verifactu</h4>
+                <p>Automatic reporting to the AEAT with a QR verification code on every invoice issued.</p>
+            </div>
+            <div class="compliance-item">
+                <h4>France: DGFiP</h4>
+                <p>Routing through the official PPF / Chorus Pro infrastructure.</p>
+            </div>
+            <div class="compliance-item">
+                <h4>Poland: KSeF</h4>
+                <p>Automatic submission of invoices to the national KSeF system.</p>
+            </div>
+        </div>
+
+        <h3 class="compliance-subtitle">Standard electronic invoicing</h3>
+        <p>For the rest of the European Union, the United Kingdom, and other jurisdictions supported by B2Brouter, the plugin generates electronic invoices in standard formats: <strong>UBL, Facturae, and Peppol</strong>. Compatible with most invoice reception portals and platforms.</p>
+
+        <aside class="callout">
+            <strong>Important:</strong> authority-specific configuration is managed from your B2Brouter account, not from the plugin. The plugin only needs your API key.
+        </aside>
+
+        <p class="compliance-cta">
+            Your country isn't listed?
+            <a href="https://github.com/B2Brouter/b2brouter-woocommerce/issues/new">
+                Open an issue on GitHub →
+            </a>
+        </p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 5.5 — MORE THAN A PDF (positioning)
+     ============================================================ -->
+<section class="more-than-pdf" id="more-than-pdf">
+    <div class="container">
+        <h2>More than just generating a PDF</h2>
+        <p class="section-lead">Attaching a PDF to the customer's email is not enough. True e-invoicing requires three more things:</p>
+
+        <ol class="layers">
+            <li class="layer">
+                <h3>Structured format</h3>
+                <p>The same invoice, also in a format that the customer's systems (and tax authorities) can read automatically: UBL, Facturae, Peppol BIS, Factur-X…</p>
+            </li>
+
+            <li class="layer">
+                <h3>Delivery to the right channel</h3>
+                <p>Each recipient has its channel: the Spanish AEAT, Chorus Pro in France, KSeF in Poland, the Peppol network for the rest of Europe, or the end customer's email. The plugin sends the invoice to the right channel, not just generates it.</p>
+            </li>
+
+            <li class="layer">
+                <h3>Confirmation and tracking</h3>
+                <p>When the tax authority validates the invoice or the buyer receives it, the plugin updates the status in your store in real time (via webhooks). You always know what's happened with every invoice issued.</p>
+            </li>
+        </ol>
+
+        <p class="section-closing">Most invoicing plugins focus only on generating the PDF — perfect if that's all you need. When your store must comply with national e-invoicing regulations or want to accept B2B orders from anywhere in Europe, all four layers are needed. This plugin handles them all.</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 6 — HOW IT WORKS IN 4 STEPS
+     ============================================================ -->
+<section class="how-it-works" id="how-it-works">
+    <div class="container">
+        <h2>How it works, in 4 steps</h2>
+
+        <ol class="steps">
+            <li class="step">
+                <h3>Install the plugin</h3>
+                <p>Download the latest version's ZIP and install it like any WordPress plugin (Plugins → Add New → Upload). Dependencies are already bundled in the ZIP.</p>
+            </li>
+
+            <li class="step">
+                <h3>Connect with B2Brouter</h3>
+                <p>Under «Invoices → Settings», paste your API key and click «Validate». If you don't have an account yet, you can create one at <a href="https://app.b2brouter.net">app.b2brouter.net</a>.</p>
+            </li>
+
+            <li class="step">
+                <h3>Choose the issuance mode</h3>
+                <p>Automatic (issue the invoice when the order moves to «Completed») or manual (issue it on demand from each order). You can switch modes whenever you want.</p>
+            </li>
+
+            <li class="step">
+                <h3>Done</h3>
+                <p>The TIN/VAT field appears automatically at checkout, invoices are issued when they should be, and customers receive the PDF by email. You don't have to touch anything else on each order.</p>
+            </li>
+        </ol>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 7 — FEATURES (GRID)
+     ============================================================ -->
+<section class="all-features" id="features">
+    <div class="container">
+        <h2>Everything it includes</h2>
+
+        <ul class="feature-list">
+            <li>Automatic PDF invoice generation</li>
+            <li>Structured electronic invoice (UBL, Facturae, Peppol) alongside the PDF</li>
+            <li>PDF attached to native WooCommerce emails</li>
+            <li>Invoice downloads from the customer's «My Account» area</li>
+            <li>Local PDF caching with scheduled clean-up</li>
+            <li>Automatic or manual invoice issuance</li>
+            <li>Bulk generation from WooCommerce bulk actions</li>
+            <li>Simplified (B2C) and standard (B2B) invoices detected automatically</li>
+            <li>Credit notes (rectifying invoices) for refunds</li>
+            <li>TIN/VAT field on the classic and block checkout (WooCommerce 8.6+)</li>
+            <li>Automatic intra-EU reverse-charge detection</li>
+            <li>Automatic Peppol VAT categories (S, E, Z, NS, AE)</li>
+            <li>Real-time invoice status via webhooks (HMAC-SHA256)</li>
+            <li>Native HPOS (High-Performance Order Storage) compatibility</li>
+            <li>Multi-currency support per order</li>
+            <li>Configurable series for invoices and credit notes</li>
+            <li>Admin page with a full list of issued invoices</li>
+            <li>Open source under MIT license</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 8 — SCREENSHOTS
+     ============================================================ -->
+<section class="screenshots" id="screenshots">
+    <div class="container">
+        <h2>Inside the plugin</h2>
+
+        <figure class="screenshot">
+            <img src="assets/img/screenshot-1.png" alt="Plugin settings screen">
+            <figcaption>Settings screen with API key validation and account information.</figcaption>
+        </figure>
+
+        <figure class="screenshot">
+            <img src="assets/img/screenshot-2.png" alt="Meta box on the order edit screen">
+            <figcaption>Meta box on the order edit screen: status and PDF download.</figcaption>
+        </figure>
+
+        <figure class="screenshot">
+            <img src="assets/img/screenshot-3.png" alt="Order list with the invoice status column">
+            <figcaption>Order list with the invoice status column.</figcaption>
+        </figure>
+
+        <figure class="screenshot">
+            <img src="assets/img/screenshot-4.png" alt="Invoice listing page with bulk download">
+            <figcaption>«Invoice list» page with bulk PDF download.</figcaption>
+        </figure>
+
+        <figure class="screenshot">
+            <img src="assets/img/screenshot-5.png" alt="Webhook configuration">
+            <figcaption>Webhook configuration for real-time updates.</figcaption>
+        </figure>
+
+        <figure class="screenshot">
+            <img src="assets/img/screenshot-6.png" alt="Customer 'My Account' view">
+            <figcaption>Customer «My Account» view with invoice download.</figcaption>
+        </figure>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 9 — REQUIREMENTS
+     ============================================================ -->
+<section class="requirements" id="requirements">
+    <div class="container">
+        <h2>Requirements</h2>
+        <ul class="requirements-list">
+            <li>WordPress 5.8 or higher</li>
+            <li>WooCommerce 5.0 or higher</li>
+            <li>PHP 7.4 or higher</li>
+            <li>
+                Active B2Brouter eDocExchange account
+                (<a href="https://app.b2brouter.net">create one here</a>)
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 10 — FAQ
+     ============================================================ -->
+<section class="faq" id="faq">
+    <div class="container">
+        <h2>Frequently asked questions</h2>
+
+        <details class="faq-item">
+            <summary>How does it differ from other PDF invoice plugins?</summary>
+            <p>PDF invoice plugins generate the document locally from a template and attach it to the customer's email. It's useful when all you need is a PDF receipt for your orders.</p>
+            <p>This plugin goes further: it connects with the B2Brouter platform, which in addition to generating the PDF also issues the invoice in structured electronic format (UBL, Facturae, Peppol), delivers it to the right channel for each country (the relevant tax authority, the Peppol network, etc.), and tracks the status of every invoice. It's what you need if your store must comply with national e-invoicing regulations or sell B2B across Europe.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Do I need a B2Brouter account?</summary>
+            <p>Yes. The plugin requires an active B2Brouter eDocExchange subscription. You can create your account and get the API key at <a href="https://app.b2brouter.net">app.b2brouter.net</a> (under «Developers → API Keys»).</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Where do I configure Verifactu, KSeF, or Chorus Pro?</summary>
+            <p>Authority-specific configuration is managed from your B2Brouter webapp, not from the plugin. Once the webapp is configured, the plugin automatically sends invoices through the correct channel.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Does it work if my store isn't in Spain, France, or Poland?</summary>
+            <p>Yes. Beyond the regimes with explicit compliance (Spain, France, Poland), the plugin generates electronic invoices in standard formats (UBL, Facturae, Peppol) for the rest of the EU, the United Kingdom, and other jurisdictions supported by B2Brouter. If you need explicit compliance for another country, open an issue on the repository.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>What electronic invoice formats can I generate?</summary>
+            <p>The plugin sends each order's data to B2Brouter and the platform automatically generates the right format for the recipient. You don't have to choose anything on each order.</p>
+            <p>The main formats issued: <strong>PDF</strong> (always, for human readability), <strong>UBL 2.1</strong> (international standard, the base for Peppol BIS), <strong>Facturae</strong> (Spain's official format, accepted by FACe and other public sector portals), and <strong>country-specific formats</strong> when required by national regulations — for example, Factur-X for Chorus Pro in France, or the format required by Verifactu (Spain) and KSeF (Poland).</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Does it comply with the European EN16931 standard?</summary>
+            <p>Yes. The electronic invoices generated through the plugin follow the <strong>EN16931</strong> standard, the European semantic standard that defines the fields and structure an electronic invoice must have to be interoperable across the European Union.</p>
+            <p>EN16931 is the foundation of Directive 2014/55/EU (mandatory e-invoicing in public procurement), the Peppol BIS Billing 3.0 format, and the main national e-invoicing regimes the plugin handles.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Can I send invoices through the Peppol network?</summary>
+            <p>Yes. B2Brouter is a certified <strong>Peppol Access Point</strong>, so you can issue and deliver invoices through the Peppol network directly from your store, without having to hire any other provider.</p>
+            <p>The plugin generates the invoice in Peppol BIS Billing 3.0 format and B2Brouter routes it to the correct recipient within the network. Especially useful if you sell to companies, public sector buyers, or large European portals that only accept invoices via Peppol.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Is it compatible with HPOS (High-Performance Order Storage)?</summary>
+            <p>Yes. The plugin declares full compatibility with the WooCommerce HPOS / Custom Order Tables system.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Does the TIN/VAT field work on the block checkout?</summary>
+            <p>Yes. It works on both the classic checkout (shortcode) and the block checkout (WooCommerce 8.6+). The value is saved to the order and to the customer profile for reuse on future orders.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>How do I get real-time status updates?</summary>
+            <p>Enable webhooks under «Invoices → Settings → Webhook Configuration». Copy the generated URL into your B2Brouter webapp («Developers → Webhooks») and paste the secret into WordPress. Updates arrive in under a second.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>How much does it cost?</summary>
+            <p>The plugin is free and open source (MIT license). The cost is the B2Brouter subscription, which depends on the volume of invoices issued.</p>
+        </details>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 11 — FINAL CTA
+     ============================================================ -->
+<section class="final-cta">
+    <div class="container">
+        <h2>Ready to automate your invoicing?</h2>
+        <p>Download the plugin and have your first electronic invoices issued today.</p>
+        <a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest" class="cta cta-primary">
+            Download the latest version
+        </a>
+    </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-cols">
+            <div class="footer-col">
+                <h4>B2Brouter for WooCommerce</h4>
+                <p>Automated electronic invoicing for your WooCommerce store.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://github.com/B2Brouter/b2brouter-woocommerce">Source code (GitHub)</a></li>
+                    <li><a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases">All releases</a></li>
+                    <li><a href="https://www.b2brouter.net/docs/#/en/integration/woocommerce">Official documentation</a></li>
+                    <li><a href="https://github.com/B2Brouter/b2brouter-woocommerce/issues">Report an issue</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>B2Brouter</h4>
+                <ul>
+                    <li><a href="https://www.b2brouter.net">B2Brouter.net</a></li>
+                    <li><a href="https://app.b2brouter.net">Access B2Brouter webapp</a></li>
+                    <li><a href="https://www.b2brouter.net/global/terms-and-conditions/">Terms and conditions</a></li>
+                    <li><a href="https://www.b2brouter.net/global/privacy-policy/">Privacy policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Plugin distributed under the MIT license.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
 </html>
