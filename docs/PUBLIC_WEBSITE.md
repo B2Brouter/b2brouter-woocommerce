@@ -1,6 +1,6 @@
 # Public Website (GitHub Pages)
 
-This document explains how the plugin's public website is hosted and how to add or update content. The site is served at <https://b2brouter.github.io/b2brouter-woocommerce/>.
+This document explains how the plugin's public website is hosted and how to add or update content. The site is served at <https://woocommerce.b2brouter.net/>.
 
 The original infrastructure discussion is in [issue #85](https://github.com/B2Brouter/b2brouter-woocommerce/issues/85).
 
@@ -29,7 +29,7 @@ Pushing to `gh-pages` triggers a Pages build that publishes within about one min
 
 ### Branch protection
 
-`gh-pages` has a protection rule requiring pull request review before merging. The site is public; typos should not reach production without a second pair of eyes. No status checks are required (there is no CI on this branch).
+`gh-pages` matches `main`'s policy: changes must go through a pull request, but approval is not required to merge. No status checks are required (there is no CI on this branch).
 
 ## Adding or updating content
 
@@ -84,7 +84,7 @@ git commit -m "Add: short description of the change"
 git push -u origin my-feature
 ```
 
-This pushes `my-feature` to **your fork** (`origin`). The upstream repository's `gh-pages` is protected and only accepts changes through reviewed pull requests.
+This pushes `my-feature` to **your fork** (`origin`). The upstream repository's `gh-pages` is protected and only accepts changes through pull requests.
 
 ### 5. Open the PR — verify base repo AND base branch
 
@@ -101,7 +101,7 @@ The explicit `--repo` flag protects against the rare case where `gh` has lost tr
 
 ### 6. Review and merge
 
-Once approved, a maintainer merges the PR. Pages rebuilds and the change is live at <https://b2brouter.github.io/b2brouter-woocommerce/> within about a minute.
+A maintainer reviews and merges the PR. Pages rebuilds and the change is live at <https://woocommerce.b2brouter.net/> within about a minute.
 
 ## Common pitfalls
 
