@@ -1,0 +1,60 @@
+/* =============================================================
+   Design tokens — B2Brouter for WooCommerce
+   Source of truth for all CSS custom properties.
+   ============================================================= */
+:root{
+  --font-sans:    "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Poppins", "Source Sans 3", sans-serif;
+  --font-mono:    ui-monospace, "JetBrains Mono", Menlo, monospace;
+
+  /* Surfaces */
+  --bg:          #ffffff;
+  --bg-soft:     #F8F9FC;
+  --bg-cool:     #EAF1FF;
+  --bg-cream:    #F0F5FF;
+  --bg-darker:   rgb(6,34,45);
+
+  /* Ink */
+  --ink:         #233458;
+  --ink-1:       #233458;
+  --ink-2:       #324B7C;
+  --ink-soft:    #54608A;
+
+  /* Brand */
+  --brand:       #1362FB;
+  --link:        rgb(19,98,251);
+
+  /* Accents */
+  --lila:        #9833FF;
+  --green:       #1F8A5B;
+  --amber:       #D08C00;
+
+  /* Lines */
+  --rule:        #D7E1F7;
+
+  /* Type scale — body */
+  --fs-2xs:   13px;
+  --fs-sm:    15px;
+  --fs-md:    16px;
+  --fs-base:  17px;
+  --fs-lg:    18px;
+  --fs-3xl:   22px;
+  --fs-4xl:   24px;
+
+  /* Type scale — fluid headings */
+  --fs-hero:       clamp(34px, 5.2vw, 60px);
+  --fs-h2-dark:    clamp(32px, 4.5vw, 52px);
+  --fs-fluid-body: clamp(17px, 1.4vw, 20px);
+
+  /* Line height */
+  --lh-l: 1.45;
+  --lh-m: 1.35;
+
+  /* Radius */
+  --r:    12px;
+  --r-lg: 16px;
+
+  /* Layout */
+  --gutter: clamp(20px, 4vw, 64px);
+  --container: 1240px;
+}
