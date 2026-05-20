@@ -29,6 +29,8 @@
     -->
     <link rel="canonical" href="https://b2brouter.github.io/b2brouter-woocommerce-site/">
 
+    <meta name="google-site-verification" content="LMSyohwaExJlUlPEjIu1lzVTvEV9KLVhNnvWM5fsHPY" />
+
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -183,6 +185,7 @@
     </script>
 
     <link rel="stylesheet" href="assets/css/styles.css">
+    <script defer src="assets/js/nav-active.js"></script>
 </head>
 <body>
 
@@ -192,8 +195,17 @@
 <header class="site-header">
     <nav class="nav">
         <a href="#" class="nav-logo">
-            <img src="assets/img/b2brouter-logo.svg" alt="" class="nav-logo-img">
-            <span>B2Brouter for WooCommerce</span>
+        <svg class="nav-logo-img" width="24" height="24" viewBox="0 0 28 28" fill="none">
+            <path d="M13.9897 6.84589L19.809 1.14521C19.9635 0.975851 20.1754 0.975851 20.3214 1.03252C20.4016 1.06314 20.5887 1.16149 20.5887 1.3999V6.80456M13.9897 6.84589L20.1837 12.8201C20.442 13.097 20.6173 13.4287 20.7028 13.7813C20.797 14.1044 20.7518 14.6309 20.7631 14.9632C20.7637 18.1026 20.7612 23.5627 20.7631 26.7187C20.7455 27.0061 20.3797 27.0862 20.2006 26.8932C19.8493 26.5184 14.1895 20.2735 13.9897 20.0626M13.9897 6.84589V20.0626M13.9897 6.84589L8.19097 1.14521C8.03647 0.975851 7.82459 0.975851 7.67856 1.03252C7.59837 1.06314 7.41127 1.16149 7.41127 1.3999V7.17098M13.9897 6.84589L7.81633 12.8201C7.55804 13.097 7.3827 13.4287 7.29723 13.7813C7.20296 14.1044 7.24821 14.6309 7.2369 14.9632C7.23627 18.1026 7.23879 23.5627 7.2369 26.7187C7.2545 27.0061 7.62025 27.0862 7.79936 26.8932C8.15067 26.5184 13.7898 20.2735 13.9897 20.0626M13.6338 6.80456H25.7929C26.4571 6.80456 26.9974 7.45931 26.9974 8.03805L27 19.4942C27 20.0735 26.4597 20.545 25.7955 20.545H20.9055M14.3662 6.80456H2.20709C1.5429 6.80456 1.00259 7.45931 1.00259 8.03805L1 19.4942C1 20.0735 1.54031 20.545 2.2045 20.545H7.09447" stroke="url(#paint0_linear_29619_2)" stroke-miterlimit="2" stroke-linejoin="round"/>
+            <defs>
+                <linearGradient id="paint0_linear_29619_2" x1="1.68421" y1="1.45474" x2="25.8596" y2="25.8582" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#367AFC"/>
+                    <stop offset="0.377484" stop-color="#4665FC"/>
+                    <stop offset="0.852006" stop-color="#8713FB"/>
+                </linearGradient>
+            </defs>
+        </svg>
+            <span><strong>B2Brouter</strong> <strong>for WooCommerce</strong></span>
         </a>
         <ul class="nav-links">
             <li><a href="#what-it-does">What it does</a></li>
@@ -202,8 +214,13 @@
             <li><a href="#more-than-pdf">More than a PDF</a></li>
             <li><a href="#how-it-works">How it works</a></li>
             <li><a href="#faq">FAQ</a></li>
-            <li><a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest" class="nav-cta">Download</a></li>
         </ul>
+        <button class="nav-hamburger" aria-label="Menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest" target="_blank" rel="noopener" class="nav-cta">Download</a>
     </nav>
 </header>
 
@@ -212,10 +229,10 @@
      ============================================================ -->
 <section class="hero" id="hero">
     <div class="container">
-        <h1>Electronic invoicing for WooCommerce, with automatic regulatory compliance</h1>
+        <h1><span class="grad-em grad-em--bold">Electronic invoicing for</span><br><span class="grad-em grad-em--bold">WooCommerce,</span> with automatic<br>regulatory compliance.</h1>
         <p class="hero-subtitle">Connect your store to B2Brouter and generate the invoice as a PDF and in structured electronic format, compliant with your country's regulations. No spreadsheets, no intermediaries, no reconfiguring on every order.</p>
         <div class="hero-ctas">
-            <a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest" class="cta cta-primary">
+            <a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest" target="_blank" rel="noopener" class="cta cta-primary">
                 Download the latest version
             </a>
             <a href="#how-it-works" class="cta cta-secondary">
@@ -223,6 +240,58 @@
             </a>
         </div>
         <p class="hero-trust">Open source · MIT license · WordPress 5.8+ · WooCommerce 5.0+ · PHP 7.4+</p>
+
+        <!-- ADDED — live network panel (sample data, not original copy) -->
+        <div class="hero-panel added" aria-hidden="true">
+            <header>
+                <span class="dot"></span>
+                <span class="t">LIVE · last 60 seconds</span>
+                <span class="r">B2Brouter network</span>
+            </header>
+            <div class="rows">
+                <div class="row">
+                    <span class="cc"><i style="background:linear-gradient(180deg,#C60B1E 0 33%,#FFC400 33% 67%,#C60B1E 67%)"></i>ES</span>
+                    <span class="id">F-2026-0418</span>
+                    <span class="meta">Studio Vela · €261.36</span>
+                    <span class="ch">Verifactu</span>
+                    <span class="status status--ok"><i></i> sent</span>
+                </div>
+                <div class="row">
+                    <span class="cc"><i style="background:linear-gradient(90deg,#0055A4 0 33%,#fff 33% 67%,#EF4135 67%)"></i>FR</span>
+                    <span class="id">FC-26-1021</span>
+                    <span class="meta">Atelier Mauve · €1 240.00</span>
+                    <span class="ch">Chorus Pro</span>
+                    <span class="status status--ok"><i></i> sent</span>
+                </div>
+                <div class="row">
+                    <span class="cc"><i style="background:linear-gradient(180deg,#fff 0 50%,#DC143C 50%)"></i>PL</span>
+                    <span class="id">KS-26-0078</span>
+                    <span class="meta">Roślina sp. z o.o. · zł 488</span>
+                    <span class="ch">KSeF</span>
+                    <span class="status status--pend"><i></i> queued</span>
+                </div>
+                <div class="row">
+                    <span class="cc"><i class="globe">⌬</i>EU</span>
+                    <span class="id">PB-26-3340</span>
+                    <span class="meta">Loomr Oy · €92.50</span>
+                    <span class="ch">Peppol BIS 3.0</span>
+                    <span class="status status--ok"><i></i> sent</span>
+                </div>
+                <div class="row">
+                    <span class="cc"><i style="background:linear-gradient(180deg,#000 0 33%,#DD0000 33% 67%,#FFCE00 67%)"></i>DE</span>
+                    <span class="id">XR-26-0915</span>
+                    <span class="meta">Holzwerk GmbH · €3 480.00</span>
+                    <span class="ch">XRechnung</span>
+                    <span class="status status--ok"><i></i> sent</span>
+                </div>
+            </div>
+            <footer>
+                <div><strong>4 218</strong><small>invoices today</small></div>
+                <div><strong>99.97 %</strong><small>delivered</small></div>
+                <div><strong>0.5 s</strong><small>median routing</small></div>
+                <div><strong>22</strong><small>countries</small></div>
+            </footer>
+        </div>
     </div>
 </section>
 
@@ -231,7 +300,7 @@
      ============================================================ -->
 <section class="why" id="why">
     <div class="container">
-        <h2>Electronic invoicing is no longer optional</h2>
+        <h2>Electronic invoicing, <em class="grad-em">no longer optional.</em></h2>
         <p class="section-lead">More and more European Union countries require electronic invoices for transactions. Regulations change often, and complying manually means hours of accounting work, errors, and the risk of penalties.</p>
         <div class="pain-grid">
             <div class="pain-item">
@@ -259,7 +328,7 @@
      ============================================================ -->
 <section class="features" id="what-it-does">
     <div class="container">
-        <h2>What it does, exactly.</h2>
+        <h2>What it does, <em class="grad-em">exactly.</em></h2>
 
         <div class="feature-grid">
             <article class="feature-card">
@@ -290,7 +359,7 @@
      ============================================================ -->
 <section class="use-cases" id="use-cases">
     <div class="container">
-        <h2>Who it's for</h2>
+        <h2>Who it's for <em class="grad-em"> &mdash; stores like yours.</em></h2>
 
         <div class="use-case">
             <h3>Stores that must comply with national e-invoicing regulations</h3>
@@ -314,7 +383,7 @@
      ============================================================ -->
 <section class="compliance" id="compliance">
     <div class="container">
-        <h2>Regulatory compliance</h2>
+        <h2>Regulatory compliance, <em class="grad-em">handled for you.</em></h2>
         <p class="section-lead">The plugin distinguishes two levels of compliance:</p>
 
         <h3 class="compliance-subtitle">Explicit compliance</h3>
@@ -335,19 +404,26 @@
             </div>
         </div>
 
-        <h3 class="compliance-subtitle">Standard electronic invoicing</h3>
-        <p>For the rest of the European Union, the United Kingdom, and other jurisdictions supported by B2Brouter, the plugin generates electronic invoices in standard formats: <strong>UBL, Facturae, and Peppol</strong>. Compatible with most invoice reception portals and platforms.</p>
+        <div class="standard-invoicing">
+            <div class="standard-invoicing-content">
+                <h3 class="compliance-subtitle">Standard electronic invoicing</h3>
+                <p>For the rest of the European Union, the United Kingdom, and other jurisdictions supported by B2Brouter, the plugin generates electronic invoices in standard formats such as <strong>UBL</strong> (deliverable through the <strong>Peppol network</strong>), <strong>Facturae</strong>, or <strong>Factur-X</strong>. Compatible with most invoice reception portals and platforms.</p>
 
-        <aside class="callout">
-            <strong>Important:</strong> authority-specific configuration is managed from your B2Brouter account, not from the plugin. The plugin only needs your API key.
-        </aside>
+                <aside class="callout">
+                    <strong>Important</strong><p>Authority-specific configuration is managed from your B2Brouter account, not from the plugin. The plugin only needs your API key.</p>
+                </aside>
 
-        <p class="compliance-cta">
-            Your country isn't listed?
-            <a href="https://github.com/B2Brouter/b2brouter-woocommerce/issues/new">
-                Open an issue on GitHub →
-            </a>
-        </p>
+                <p class="compliance-cta">
+                    Your country isn't listed?
+                    <a href="https://github.com/B2Brouter/b2brouter-woocommerce/issues/new">
+                        Open an issue on GitHub →
+                    </a>
+                </p>
+            </div>
+            <figure class="standard-invoicing-figure">
+                <img src="assets/img/woo-graphic.svg" alt="Standard electronic invoice formats: UBL, Facturae, Peppol">
+            </figure>
+        </div>
     </div>
 </section>
 
@@ -356,7 +432,7 @@
      ============================================================ -->
 <section class="more-than-pdf" id="more-than-pdf">
     <div class="container">
-        <h2>More than just generating a PDF</h2>
+        <h2><em class="grad-em">More</em> than just generating a PDF.</h2>
         <p class="section-lead">Attaching a PDF to the customer's email is not enough. True e-invoicing requires three more things:</p>
 
         <ol class="layers">
@@ -372,7 +448,7 @@
 
             <li class="layer">
                 <h3>Confirmation and tracking</h3>
-                <p>When the tax authority validates the invoice or the buyer receives it, the plugin updates the status in your store in real time (via webhooks). You always know what's happened with every invoice issued.</p>
+                <p>When the tax authority validates the invoice or the buyer receives it, the plugin updates the status in your store in real time via webhooks. You always know what's happened with every invoice issued.</p>
             </li>
         </ol>
 
@@ -385,7 +461,7 @@
      ============================================================ -->
 <section class="how-it-works" id="how-it-works">
     <div class="container">
-        <h2>How it works, in 4 steps</h2>
+        <h2>How it works, <em class="grad-em">in 4 steps.</em></h2>
 
         <ol class="steps">
             <li class="step">
@@ -416,27 +492,27 @@
      ============================================================ -->
 <section class="all-features" id="features">
     <div class="container">
-        <h2>Everything it includes</h2>
+        <h2>Everything the plugin <em class="grad-em">includes.</em></h2>
 
         <ul class="feature-list">
-            <li>Automatic PDF invoice generation</li>
-            <li>Structured electronic invoice (UBL, Facturae, Peppol) alongside the PDF</li>
-            <li>PDF attached to native WooCommerce emails</li>
-            <li>Invoice downloads from the customer's «My Account» area</li>
-            <li>Local PDF caching with scheduled clean-up</li>
-            <li>Automatic or manual invoice issuance</li>
-            <li>Bulk generation from WooCommerce bulk actions</li>
-            <li>Simplified (B2C) and standard (B2B) invoices detected automatically</li>
-            <li>Credit notes (rectifying invoices) for refunds</li>
-            <li>TIN/VAT field on the classic and block checkout (WooCommerce 8.6+)</li>
-            <li>Automatic intra-EU reverse-charge detection</li>
-            <li>Automatic Peppol VAT categories (S, E, Z, NS, AE)</li>
-            <li>Real-time invoice status via webhooks (HMAC-SHA256)</li>
-            <li>Native HPOS (High-Performance Order Storage) compatibility</li>
-            <li>Multi-currency support per order</li>
-            <li>Configurable series for invoices and credit notes</li>
-            <li>Admin page with a full list of issued invoices</li>
-            <li>Open source under MIT license</li>
+            <li>Automatic PDF invoice generation.</li>
+            <li>Structured electronic invoice (UBL, Facturae, Peppol) alongside the PDF.</li>
+            <li>PDF attached to native WooCommerce emails.</li>
+            <li>Invoice downloads from the customer's «My Account» area.</li>
+            <li>Local PDF caching with scheduled clean-up.</li>
+            <li>Automatic or manual invoice issuance.</li>
+            <li>Bulk generation from WooCommerce bulk actions.</li>
+            <li>Simplified (B2C) and standard (B2B) invoices detected automatically.</li>
+            <li>Credit notes (rectifying invoices) for refunds.</li>
+            <li>TIN/VAT field on the classic and block checkout (WooCommerce 8.6+).</li>
+            <li>Automatic intra-EU reverse-charge detection.</li>
+            <li>Automatic Peppol VAT categories (S, E, Z, NS, AE).</li>
+            <li>Real-time invoice status via webhooks (HMAC-SHA256).</li>
+            <li>Native HPOS (High-Performance Order Storage) compatibility.</li>
+            <li>Multi-currency support per order.</li>
+            <li>Configurable series for invoices and credit notes.</li>
+            <li>Admin page with a full list of issued invoices.</li>
+            <li>Open source under MIT license.</li>
         </ul>
     </div>
 </section>
@@ -444,41 +520,7 @@
 <!-- ============================================================
      SECTION 8 — SCREENSHOTS
      ============================================================ -->
-<section class="screenshots" id="screenshots">
-    <div class="container">
-        <h2>Inside the plugin</h2>
 
-        <figure class="screenshot">
-            <img src="assets/img/screenshot-1.png" alt="Plugin settings screen">
-            <figcaption>Settings screen with API key validation and account information.</figcaption>
-        </figure>
-
-        <figure class="screenshot">
-            <img src="assets/img/screenshot-2.png" alt="Meta box on the order edit screen">
-            <figcaption>Meta box on the order edit screen: status and PDF download.</figcaption>
-        </figure>
-
-        <figure class="screenshot">
-            <img src="assets/img/screenshot-3.png" alt="Order list with the invoice status column">
-            <figcaption>Order list with the invoice status column.</figcaption>
-        </figure>
-
-        <figure class="screenshot">
-            <img src="assets/img/screenshot-4.png" alt="Invoice listing page with bulk download">
-            <figcaption>«Invoice list» page with bulk PDF download.</figcaption>
-        </figure>
-
-        <figure class="screenshot">
-            <img src="assets/img/screenshot-5.png" alt="Webhook configuration">
-            <figcaption>Webhook configuration for real-time updates.</figcaption>
-        </figure>
-
-        <figure class="screenshot">
-            <img src="assets/img/screenshot-6.png" alt="Customer 'My Account' view">
-            <figcaption>Customer «My Account» view with invoice download.</figcaption>
-        </figure>
-    </div>
-</section>
 
 <!-- ============================================================
      SECTION 9 — REQUIREMENTS
@@ -487,12 +529,16 @@
     <div class="container">
         <h2>Requirements</h2>
         <ul class="requirements-list">
-            <li>WordPress 5.8 or higher</li>
-            <li>WooCommerce 5.0 or higher</li>
-            <li>PHP 7.4 or higher</li>
-            <li>
+            <li class="req-stack">
+                <span>WordPress 5.8 or higher</span>
+                <span>WooCommerce 5.0 or higher</span>
+                <span>PHP 7.4 or higher</span>
+            </li>
+            <li class="req-account">
+                <span class="req-account-label">External service</span>
                 Active B2Brouter eDocExchange account
-                (<a href="https://app.b2brouter.net">create one here</a>)
+                <span class="tag-free">First month for free!</span>
+                <a href="https://app.b2brouter.net">Create one here →</a>
             </li>
         </ul>
     </div>
@@ -573,7 +619,7 @@
     <div class="container">
         <h2>Ready to automate your invoicing?</h2>
         <p>Download the plugin and have your first electronic invoices issued today.</p>
-        <a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest" class="cta cta-primary">
+        <a href="https://github.com/B2Brouter/b2brouter-woocommerce/releases/latest" target="_blank" rel="noopener" class="cta cta-primary">
             Download the latest version
         </a>
     </div>
@@ -588,6 +634,11 @@
             <div class="footer-col">
                 <h4>B2Brouter for WooCommerce</h4>
                 <p>Automated electronic invoicing for your WooCommerce store.</p>
+                <div class="footer-lockup">
+                    <img src="assets/img/woo-isotip-linear-degradate.svg" alt="B2Brouter">
+                    <span aria-hidden="true">&amp;</span>
+                    <img src="assets/img/woo-logo-color.svg" alt="WooCommerce">
+                </div>
             </div>
             <div class="footer-col">
                 <h4>Resources</h4>
@@ -603,13 +654,16 @@
                 <ul>
                     <li><a href="https://www.b2brouter.net">B2Brouter.net</a></li>
                     <li><a href="https://app.b2brouter.net">Access B2Brouter webapp</a></li>
-                    <li><a href="https://www.b2brouter.net/global/terms-and-conditions/">Terms and conditions</a></li>
-                    <li><a href="https://www.b2brouter.net/global/privacy-policy/">Privacy policy</a></li>
+                    <li><a href="https://www.b2brouter.net/global/terms-and-conditions/" target="_blank">Terms and conditions</a></li>
+                    <li><a href="https://www.b2brouter.net/global/privacy-policy/" target="_blank">Privacy policy</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>Plugin distributed under the MIT license.</p>
+            <p>&copy; Copyright B2Brouter Global S.L.
+            <div class="footer-right">
+                <p>Plugin distributed under the MIT license.</p>
+            </div>
         </div>
     </div>
 </footer>

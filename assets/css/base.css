@@ -1,0 +1,37 @@
+/* =============================================================
+   Reset / Base
+   ============================================================= */
+*,*::before,*::after{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body{
+  margin:0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: 1.55;
+  color: var(--ink-2);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, svg{ display:block; max-width:100%; }
+a{ color: var(--link); text-decoration: none; }
+a:hover{ text-decoration: underline; }
+h1, h2, h3, h4{
+  color: var(--ink-1);
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+p{ margin: 0; text-wrap: pretty; }
+ul, ol{ margin:0; padding:0; }
+
+.container{
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Default vertical rhythm */
+section{ padding-block: clamp(64px, 8vw, 112px); }
