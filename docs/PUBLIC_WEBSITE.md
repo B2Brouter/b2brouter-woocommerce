@@ -22,7 +22,7 @@ In repo **Settings → Pages**:
 
 - Source: *Deploy from a branch*
 - Branch: `gh-pages` / `/` (root)
-- Custom domain: none — launch URL is the default `*.github.io`
+- Custom domain: `woocommerce.b2brouter.net` (set via the `CNAME` file at the branch root)
 - HTTPS: enforced
 
 Pushing to `gh-pages` triggers a Pages build that publishes within about one minute.
@@ -63,30 +63,50 @@ git checkout -b my-feature upstream/gh-pages
 
 Branching from `upstream/gh-pages` (rather than from your fork's `gh-pages`, which may be stale) ensures you start from the current state of the published site. You will see only the website files; `main`'s plugin code is not present on this branch. This is expected.
 
-### 2. Make your changes
+### 2. Install build dependencies (one time per clone)
 
-Edit HTML, CSS and images in place. Add new files as needed.
-
-### 3. Preview locally
-
-For a quick check, open `index.html` directly in your browser. If your pages link to each other with relative URLs, start a small local server so paths resolve correctly:
+The site is authored in `src/` and built into a single inlined+minified `index.html` at the branch root. The build runs locally before each commit; there is no CI build on `gh-pages`.
 
 ```bash
-python3 -m http.server 8000
-# then visit http://localhost:8000/
+npm install
 ```
 
-### 4. Commit and push to your fork
+Requires Node.js 18 or newer. See the `README.md` on `gh-pages` for what the build does.
+
+### 3. Make your changes
+
+Edit files in `src/`:
+
+- `src/index.html` — markup
+- `src/assets/css/*.css` — styles (use `@import url('…')` for local CSS deps; remote `@import`s like Google Fonts are left external by the build)
+- `src/assets/js/*.js` — scripts
+- `src/assets/img/*` — images (referenced as `assets/img/…` in the HTML — the path resolves the same way before and after build)
+
+Add new files as needed.
+
+### 4. Preview locally
 
 ```bash
-git add .
+npm run dev
+# serves src/ at http://localhost:8000/ — sources are live, no rebuild needed
+```
+
+For a production-like preview, run `npm run build` first and serve the branch root instead.
+
+### 5. Build, commit, and push to your fork
+
+The built artifacts are tracked alongside the sources — Pages serves the built `index.html` directly.
+
+```bash
+npm run build
+git add src/ index.html assets/img/
 git commit -m "Add: short description of the change"
 git push -u origin my-feature
 ```
 
 This pushes `my-feature` to **your fork** (`origin`). The upstream repository's `gh-pages` is protected and only accepts changes through pull requests.
 
-### 5. Open the PR — verify base repo AND base branch
+### 6. Open the PR — verify base repo AND base branch
 
 From the command line, `gh` resolves the upstream automatically:
 
@@ -99,7 +119,7 @@ The explicit `--repo` flag protects against the rare case where `gh` has lost tr
 - **Base repository**: `B2Brouter/b2brouter-woocommerce` (not `<your-user>/b2brouter-woocommerce`).
 - **Base branch**: `gh-pages` (not `main`).
 
-### 6. Review and merge
+### 7. Review and merge
 
 A maintainer reviews and merges the PR. Pages rebuilds and the change is live at <https://woocommerce.b2brouter.net/> within about a minute.
 
@@ -108,6 +128,8 @@ A maintainer reviews and merges the PR. Pages rebuilds and the change is live at
 - **PR opened against your own fork.** The base repository must be `B2Brouter/b2brouter-woocommerce`, not `<your-user>/...`. Close the PR and reopen with the correct base repository.
 - **PR opened against `main`.** Close and reopen with base `gh-pages`.
 - **Branched off `main` by accident.** If your branch contains plugin code (PHP files, `composer.json`, …) alongside your HTML changes, you branched from the wrong starting point. Start over from step 1.
+- **Forgot to run `npm run build` before committing.** The PR will contain edits in `src/` but a stale built `index.html`. Run the build and amend or add a second commit.
+- **Edited the built `index.html` at the root by hand.** Changes get overwritten on the next `npm run build`. Always edit `src/index.html` instead.
 - **Site does not update after merge.** Check the Pages build status at Settings → Pages; a failed build surfaces there.
 - **Browser shows stale content.** GitHub Pages sets `cache-control: max-age=600`. Hard-refresh with `Ctrl+Shift+R`.
 
@@ -117,9 +139,20 @@ A maintainer reviews and merges the PR. Pages rebuilds and the change is live at
 
 ```
 gh-pages/
-├── index.html          # Landing page (currently a placeholder)
-└── …                   # Other pages, assets/, etc., added by the product team
+├── src/                    # editable sources
+│   ├── index.html
+│   └── assets/{css,js,img}/
+├── build.mjs               # build script (inline + minify)
+├── package.json            # dev deps: html-minifier-terser
+├── README.md               # contributor-facing build flow
+├── index.html              # generated — what Pages serves
+├── assets/img/             # generated — copied from src/assets/img/
+├── CNAME                   # custom domain
+├── robots.txt
+└── sitemap.xml
 ```
+
+`index.html` and `assets/img/` at the root are build artifacts but are tracked in git — Pages serves them directly. Do not edit them by hand.
 
 ### How `gh-pages` was originally created
 
