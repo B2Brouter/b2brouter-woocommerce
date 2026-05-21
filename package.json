@@ -1,0 +1,17 @@
+{
+  "name": "b2brouter-woocommerce-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build pipeline for the B2Brouter for WooCommerce public website. Inlines CSS/JS into a single minified index.html for faster loads.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "cd src && python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "html-minifier-terser": "^7.2.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
