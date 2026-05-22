@@ -4,7 +4,7 @@ Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: MIT
 License URI: https://opensource.org/license/mit
 
@@ -121,6 +121,12 @@ This plugin connects your WooCommerce store to **B2Brouter**, a third-party e-in
 
 == Changelog ==
 
+= 1.0.4 =
+
+**Security:**
+
+* Hardened invoice PDF cache path validation so privileged users can no longer coax the plugin into reading, deleting, or email-attaching files outside the configured PDF storage directory. The WooCommerce REST API can no longer write keys in the `_b2brouter_*` namespace on orders or refunds. Reported privately and coordinated with [Really Simple Plugins](https://really-simple-ssl.com/); huge thanks to their team.
+
 = 1.0.3 =
 
 **Fixed:**
@@ -228,6 +234,10 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 For the complete history, see `CHANGELOG.md` in the repository.
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+
+Security release. Hardens invoice PDF cache path validation and stops the WooCommerce REST API from writing internal `_b2brouter_*` order meta. All sites should upgrade.
 
 = 1.0.3 =
 
