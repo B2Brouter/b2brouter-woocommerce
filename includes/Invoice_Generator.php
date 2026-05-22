@@ -761,6 +761,54 @@ class Invoice_Generator {
     }
 
     /**
+     * Resolve the cached invoice PDF path for an order, refusing anything
+     * that does not live inside the configured PDF storage directory.
+     *
+     * The cached path is stored in the `_b2brouter_invoice_pdf_path` order
+     * meta. That meta is writable through the WooCommerce REST API by
+     * users with `edit_shop_orders` (Shop Manager and above), so callers
+     * must treat it as untrusted: a poisoned value pointed at e.g.
+     * `wp-config.php` would otherwise be read, deleted, or attached to an
+     * outgoing email by downstream consumers. This is the single gate they
+     * all route through.
+     *
+     * @since 1.0.4
+     * @param \WC_Order $order
+     * @return string|null Absolute, realpath-resolved file path on success; null when no usable cached PDF is available.
+     */
+    public function resolve_safe_pdf_path($order) {
+        $candidate = $order->get_meta('_b2brouter_invoice_pdf_path');
+        if (empty($candidate) || !is_string($candidate)) {
+            return null;
+        }
+
+        // Only `.pdf` files are ever legitimate cache entries. Refusing
+        // other extensions defangs misconfigured storage dirs that happen
+        // to contain readable non-PDF files (e.g. a stray .htaccess).
+        if (strtolower(pathinfo($candidate, PATHINFO_EXTENSION)) !== 'pdf') {
+            return null;
+        }
+
+        $storage = $this->settings->get_pdf_storage_path();
+        $storage_real = realpath($storage);
+        $candidate_real = realpath($candidate);
+
+        if ($storage_real === false || $candidate_real === false) {
+            return null;
+        }
+
+        // Strict-prefix containment check on the realpath-resolved paths,
+        // anchored with the directory separator so `/storage` does not
+        // accidentally match `/storage-other/...`.
+        $prefix = rtrim($storage_real, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if (strncmp($candidate_real, $prefix, strlen($prefix)) !== 0) {
+            return null;
+        }
+
+        return $candidate_real;
+    }
+
+    /**
      * Save invoice PDF to local storage
      *
      * @since 1.0.0
@@ -785,8 +833,8 @@ class Invoice_Generator {
             }
 
             // Check if PDF already exists and we're not forcing download
-            $existing_path = $order->get_meta('_b2brouter_invoice_pdf_path');
-            if (!$force_download && !empty($existing_path) && file_exists($existing_path)) {
+            $existing_path = $this->resolve_safe_pdf_path($order);
+            if (!$force_download && $existing_path !== null) {
                 $upload_dir = wp_upload_dir();
                 $filename = basename($existing_path);
                 $file_url = $upload_dir['baseurl'] . '/b2brouter-invoices/' . $filename;
@@ -963,10 +1011,13 @@ class Invoice_Generator {
                 );
             }
 
-            // Check if PDF exists locally
-            $pdf_path = $order->get_meta('_b2brouter_invoice_pdf_path');
+            // Check if PDF exists locally. resolve_safe_pdf_path() rejects
+            // any cached path that escapes the configured storage dir, so a
+            // poisoned `_b2brouter_invoice_pdf_path` meta cannot turn this
+            // endpoint into an arbitrary-file-read primitive.
+            $pdf_path = $this->resolve_safe_pdf_path($order);
 
-            if (!empty($pdf_path) && file_exists($pdf_path)) {
+            if ($pdf_path !== null) {
                 // Use cached PDF
                 $pdf_data = $wp_filesystem->get_contents($pdf_path);
                 $filename = basename($pdf_path);
@@ -1089,9 +1140,12 @@ class Invoice_Generator {
             return false;
         }
 
-        $pdf_path = $order->get_meta('_b2brouter_invoice_pdf_path');
+        // Containment check: refuse to delete anything that does not live
+        // inside the configured PDF storage dir, regardless of what the
+        // order meta claims.
+        $pdf_path = $this->resolve_safe_pdf_path($order);
 
-        if (empty($pdf_path) || !file_exists($pdf_path)) {
+        if ($pdf_path === null) {
             return false;
         }
 
@@ -1191,18 +1245,21 @@ class Invoice_Generator {
                 }
 
                 if (!empty($refund_invoice_id)) {
-                    $refund_pdf_path = $refund->get_meta('_b2brouter_invoice_pdf_path');
+                    $refund_pdf_path = $this->resolve_safe_pdf_path($refund);
 
-                    // If no cached PDF, try to download it
-                    if (empty($refund_pdf_path) || !file_exists($refund_pdf_path)) {
+                    // If no usable cached PDF, try to (re-)download it.
+                    if ($refund_pdf_path === null) {
                         $save_result = $this->save_invoice_pdf($refund->get_id(), false);
                         if ($save_result['success']) {
-                            $refund_pdf_path = $save_result['file_path'];
+                            // Re-resolve from meta to keep the containment
+                            // check authoritative; save_invoice_pdf has
+                            // written a fresh, trusted path back to meta.
+                            $refund = wc_get_order($refund->get_id());
+                            $refund_pdf_path = $this->resolve_safe_pdf_path($refund);
                         }
                     }
 
-                    // Add refund PDF to attachments
-                    if (!empty($refund_pdf_path) && file_exists($refund_pdf_path)) {
+                    if ($refund_pdf_path !== null) {
                         $attachments[] = $refund_pdf_path;
                     }
                 }
@@ -1212,22 +1269,24 @@ class Invoice_Generator {
         }
 
         // For other emails, attach the order's invoice PDF
-        $pdf_path = $order->get_meta('_b2brouter_invoice_pdf_path');
+        $pdf_path = $this->resolve_safe_pdf_path($order);
 
-        // If no cached PDF, try to download it temporarily
-        if (empty($pdf_path) || !file_exists($pdf_path)) {
+        // If no usable cached PDF, try to (re-)download it temporarily.
+        if ($pdf_path === null) {
             $save_result = $this->save_invoice_pdf($order->get_id(), false);
 
             if ($save_result['success']) {
-                $pdf_path = $save_result['file_path'];
+                // Re-resolve via the containment helper instead of trusting
+                // the returned file_path directly.
+                $order = wc_get_order($order->get_id());
+                $pdf_path = $this->resolve_safe_pdf_path($order);
             } else {
                 Logger::warning('B2Brouter Email Attachment: Failed to get PDF for order ' . $order->get_id());
                 return $attachments;
             }
         }
 
-        // Add PDF to attachments if it exists
-        if (!empty($pdf_path) && file_exists($pdf_path)) {
+        if ($pdf_path !== null) {
             $attachments[] = $pdf_path;
         }
 
