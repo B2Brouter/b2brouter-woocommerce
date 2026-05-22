@@ -5,6 +5,12 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- **Hardened PDF cache path validation**: The invoice PDF cache path stored in order meta is now validated against the configured storage directory before any read, delete, or email-attach operation, preventing privileged users from coaxing the plugin into touching files outside that directory. As a defense-in-depth measure, the WooCommerce REST API can no longer write keys in the `_b2brouter_*` namespace on orders or refunds. Reported privately and coordinated with [Really Simple Plugins](https://really-simple-ssl.com/); huge thanks to their team for their assistance in making this plugin more secure, they rock.
+
 ## [1.0.3] - 2026-05-14
 
 ### Fixed

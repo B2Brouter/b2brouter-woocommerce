@@ -324,9 +324,11 @@ class Order_Handler {
                 </p>
 
                 <?php
-                // Show PDF cache status if available
-                $pdf_path = $order->get_meta('_b2brouter_invoice_pdf_path');
-                if (!empty($pdf_path) && file_exists($pdf_path)):
+                // Show PDF cache status only when the meta-stored path
+                // resolves inside the configured storage dir; otherwise we
+                // would leak filesystem existence for attacker-supplied paths.
+                $safe_pdf_path = $this->invoice_generator->resolve_safe_pdf_path($order);
+                if ($safe_pdf_path !== null):
                     $pdf_size = $order->get_meta('_b2brouter_invoice_pdf_size');
                     $pdf_date = $order->get_meta('_b2brouter_invoice_pdf_date');
                 ?>

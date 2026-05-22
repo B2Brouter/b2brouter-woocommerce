@@ -211,9 +211,11 @@ class Customer {
                 </p>
 
                 <?php
-                // Show cache status if PDF is cached
-                $pdf_path = $order->get_meta('_b2brouter_invoice_pdf_path');
-                if (!empty($pdf_path) && file_exists($pdf_path)):
+                // Show cache status only when the meta-stored path resolves
+                // inside the configured storage dir; otherwise we would leak
+                // filesystem existence for attacker-supplied paths.
+                $safe_pdf_path = $this->invoice_generator->resolve_safe_pdf_path($order);
+                if ($safe_pdf_path !== null):
                     $pdf_size = $order->get_meta('_b2brouter_invoice_pdf_size');
                 ?>
                     <p class="b2brouter-pdf-info">

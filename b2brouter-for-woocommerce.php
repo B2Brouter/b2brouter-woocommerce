@@ -174,6 +174,11 @@ class B2Brouter_WooCommerce {
         $this->get('status_sync');
         $this->get('webhook_handler');
 
+        // Defense-in-depth: drop any `_b2brouter_*` keys from inbound WC REST
+        // writes so privileged users (Shop Manager+) cannot poison internal
+        // order meta — notably the cached invoice PDF path.
+        $this->get('rest_meta_guard')->register();
+
         // Admin registers only admin_*, wp_ajax_*, and admin_bar hooks — skip on frontend
         if (is_admin()) {
             $this->get('admin');
@@ -281,6 +286,11 @@ class B2Brouter_WooCommerce {
                 $this->get('settings'),
                 $this->get('status_sync')
             );
+        };
+
+        // Register REST_Meta_Guard (no dependencies)
+        $this->container['rest_meta_guard'] = function() {
+            return new \B2Brouter\WooCommerce\REST_Meta_Guard();
         };
     }
 

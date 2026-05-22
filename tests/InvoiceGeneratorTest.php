@@ -1703,4 +1703,227 @@ class InvoiceGeneratorTest extends TestCase {
         unset($wc_mock_orders[516]);
         delete_option('woocommerce_default_country');
     }
+
+    // ========== Path Containment Tests (PDF cache LFI hardening) ==========
+    //
+    // The plugin stores the absolute PDF cache path in order meta
+    // `_b2brouter_invoice_pdf_path`. Shop Manager users can poison that
+    // meta through the WooCommerce REST API (PUT /wc/v3/orders/{id} with
+    // meta_data). resolve_safe_pdf_path() is the single gate that all
+    // file-touching consumers route through so a poisoned value can never
+    // be read, deleted, or attached.
+
+    /**
+     * Helper to invoke the private resolve_safe_pdf_path method.
+     *
+     * @param WC_Order $order
+     * @return string|null
+     */
+    private function invokeResolveSafePdfPath($order) {
+        $reflection = new \ReflectionClass($this->generator);
+        $method = $reflection->getMethod('resolve_safe_pdf_path');
+        $method->setAccessible(true);
+        return $method->invoke($this->generator, $order);
+    }
+
+    /**
+     * Create an isolated PDF storage dir for a test and return its
+     * absolute, realpath-resolved path.
+     */
+    private function makeIsolatedStorage() {
+        $dir = sys_get_temp_dir() . '/b2brouter-sec-' . uniqid('', true);
+        mkdir($dir, 0700, true);
+        return realpath($dir);
+    }
+
+    /**
+     * Recursively remove a directory and its contents.
+     */
+    private function rmrf($path) {
+        if (!is_string($path) || $path === '' || !file_exists($path)) {
+            return;
+        }
+        if (is_link($path) || !is_dir($path)) {
+            @unlink($path);
+            return;
+        }
+        foreach (scandir($path) as $entry) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+            $this->rmrf($path . '/' . $entry);
+        }
+        @rmdir($path);
+    }
+
+    public function test_resolve_safe_pdf_path_returns_null_when_meta_empty() {
+        $storage = $this->makeIsolatedStorage();
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($storage);
+
+        $order = new WC_Order(9001);
+
+        $this->assertNull($this->invokeResolveSafePdfPath($order));
+
+        $this->rmrf($storage);
+    }
+
+    public function test_resolve_safe_pdf_path_returns_null_for_path_outside_storage() {
+        $storage = $this->makeIsolatedStorage();
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($storage);
+
+        // A real, readable file that exists outside the storage dir.
+        $outside = tempnam(sys_get_temp_dir(), 'b2b-outside-') . '.pdf';
+        file_put_contents($outside, "%PDF-1.5\n%fake\n%%EOF");
+
+        $order = new WC_Order(9002);
+        $order->update_meta_data('_b2brouter_invoice_pdf_path', $outside);
+
+        $this->assertNull($this->invokeResolveSafePdfPath($order));
+
+        @unlink($outside);
+        $this->rmrf($storage);
+    }
+
+    public function test_resolve_safe_pdf_path_returns_null_for_traversal_path() {
+        $storage = $this->makeIsolatedStorage();
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($storage);
+
+        $outside = tempnam(sys_get_temp_dir(), 'b2b-traverse-') . '.pdf';
+        file_put_contents($outside, "%PDF-1.5\n%fake\n%%EOF");
+
+        // Build a traversal path that lexically starts under $storage but
+        // resolves outside it via `..`.
+        $traversal = $storage . '/../' . basename($outside);
+
+        $order = new WC_Order(9003);
+        $order->update_meta_data('_b2brouter_invoice_pdf_path', $traversal);
+
+        $this->assertNull($this->invokeResolveSafePdfPath($order));
+
+        @unlink($outside);
+        $this->rmrf($storage);
+    }
+
+    public function test_resolve_safe_pdf_path_returns_null_for_nonexistent_path() {
+        $storage = $this->makeIsolatedStorage();
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($storage);
+
+        $order = new WC_Order(9004);
+        $order->update_meta_data('_b2brouter_invoice_pdf_path', $storage . '/does-not-exist.pdf');
+
+        $this->assertNull($this->invokeResolveSafePdfPath($order));
+
+        $this->rmrf($storage);
+    }
+
+    public function test_resolve_safe_pdf_path_returns_null_for_non_pdf_extension() {
+        $storage = $this->makeIsolatedStorage();
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($storage);
+
+        // A non-PDF file living inside the storage dir (e.g. a stray .txt or
+        // a config file the host left behind). We still refuse to stream it.
+        $non_pdf = $storage . '/not-a-pdf.txt';
+        file_put_contents($non_pdf, 'secret');
+
+        $order = new WC_Order(9005);
+        $order->update_meta_data('_b2brouter_invoice_pdf_path', $non_pdf);
+
+        $this->assertNull($this->invokeResolveSafePdfPath($order));
+
+        $this->rmrf($storage);
+    }
+
+    public function test_resolve_safe_pdf_path_returns_absolute_path_for_legit_pdf_in_storage() {
+        $storage = $this->makeIsolatedStorage();
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($storage);
+
+        $pdf = $storage . '/invoice-order-1-1.pdf';
+        file_put_contents($pdf, "%PDF-1.5\n%legit\n%%EOF");
+
+        $order = new WC_Order(9006);
+        $order->update_meta_data('_b2brouter_invoice_pdf_path', $pdf);
+
+        $resolved = $this->invokeResolveSafePdfPath($order);
+        $this->assertSame(realpath($pdf), $resolved);
+
+        $this->rmrf($storage);
+    }
+
+    public function test_resolve_safe_pdf_path_returns_null_for_symlink_pointing_outside_storage() {
+        $storage = $this->makeIsolatedStorage();
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($storage);
+
+        $outside = tempnam(sys_get_temp_dir(), 'b2b-symlink-target-') . '.pdf';
+        file_put_contents($outside, "%PDF-1.5\n%target\n%%EOF");
+
+        $link = $storage . '/looks-inside.pdf';
+        if (!@symlink($outside, $link)) {
+            $this->markTestSkipped('symlink() unavailable on this platform.');
+        }
+
+        $order = new WC_Order(9007);
+        $order->update_meta_data('_b2brouter_invoice_pdf_path', $link);
+
+        $this->assertNull($this->invokeResolveSafePdfPath($order));
+
+        @unlink($link);
+        @unlink($outside);
+        $this->rmrf($storage);
+    }
+
+    // ========== Regression: file-touching consumers refuse poisoned paths ==========
+
+    public function test_delete_invoice_pdf_refuses_to_delete_file_outside_storage() {
+        global $wc_mock_orders;
+
+        $storage = $this->makeIsolatedStorage();
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($storage);
+
+        $outside = tempnam(sys_get_temp_dir(), 'b2b-delete-target-') . '.pdf';
+        file_put_contents($outside, "should not be deleted");
+
+        $order = new WC_Order(9100);
+        $order->update_meta_data('_b2brouter_invoice_pdf_path', $outside);
+        $wc_mock_orders[9100] = $order;
+
+        $result = $this->generator->delete_invoice_pdf(9100);
+
+        $this->assertFalse($result, 'delete_invoice_pdf must refuse to act on poisoned meta path');
+        $this->assertFileExists($outside, 'file outside storage must not be deleted');
+
+        unset($wc_mock_orders[9100]);
+        @unlink($outside);
+        $this->rmrf($storage);
+    }
+
+    public function test_attach_pdf_to_email_skips_attachment_when_meta_path_is_poisoned() {
+        global $wc_mock_orders;
+
+        $storage = $this->makeIsolatedStorage();
+        $this->mock_settings->method('get_pdf_storage_path')->willReturn($storage);
+        $this->mock_settings->method('get_attach_to_order_completed')->willReturn(true);
+
+        $outside = tempnam(sys_get_temp_dir(), 'b2b-attach-target-') . '.pdf';
+        file_put_contents($outside, "%PDF-1.5\n%secret\n%%EOF");
+
+        $order = new WC_Order(9101);
+        $order->add_meta_data('_b2brouter_invoice_id', 'inv-test', true);
+        $order->update_meta_data('_b2brouter_invoice_pdf_path', $outside);
+        $wc_mock_orders[9101] = $order;
+
+        // Inject mock client so the fallback save path can be exercised
+        // without trying a real HTTP call. With no API key configured,
+        // save_invoice_pdf will fail and the attachment must remain absent.
+        $attachments = $this->generator->attach_pdf_to_email(array(), 'customer_completed_order', $order);
+
+        $this->assertNotContains(
+            $outside,
+            $attachments,
+            'attach_pdf_to_email must not attach a file outside the storage dir'
+        );
+
+        unset($wc_mock_orders[9101]);
+        @unlink($outside);
+        $this->rmrf($storage);
+    }
 }
