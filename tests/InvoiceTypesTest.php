@@ -221,13 +221,20 @@ class InvoiceTypesTest extends TestCase {
         $prepare_method->setAccessible(true);
         $invoice_data = $prepare_method->invoke($this->invoice_generator, $mock_refund);
 
-        // Assert amended fields are set
-        $this->assertArrayHasKey('amended_number', $invoice_data);
-        $this->assertEquals('INV-ES-2025-00100', $invoice_data['amended_number']);
-        $this->assertArrayHasKey('amended_date', $invoice_data);
-        $this->assertEquals('2025-11-20', $invoice_data['amended_date']);
-        $this->assertArrayHasKey('amended_reason', $invoice_data);
-        $this->assertEquals('Customer requested refund', $invoice_data['amended_reason']);
+        // Assert legacy top-level amend fields are absent (API 2026-04-20)
+        $this->assertArrayNotHasKey('amended_number', $invoice_data);
+        $this->assertArrayNotHasKey('amended_date', $invoice_data);
+        $this->assertArrayNotHasKey('amended_reason', $invoice_data);
+        $this->assertArrayNotHasKey('amend_reason', $invoice_data);
+
+        // Assert structured invoice_references[] entry
+        $this->assertArrayHasKey('invoice_references', $invoice_data);
+        $this->assertCount(1, $invoice_data['invoice_references']);
+        $reference = $invoice_data['invoice_references'][0];
+        $this->assertEquals('amend', $reference['reference_type']);
+        $this->assertEquals('INV-ES-2025-00100', $reference['number']);
+        $this->assertEquals('2025-11-20', $reference['date']);
+        $this->assertEquals('Customer requested refund', $reference['reason']);
 
         // Assert is_credit_note is NOT set (Spain uses rectificative)
         $this->assertArrayNotHasKey('is_credit_note', $invoice_data);
@@ -286,11 +293,20 @@ class InvoiceTypesTest extends TestCase {
         $prepare_method->setAccessible(true);
         $invoice_data = $prepare_method->invoke($this->invoice_generator, $mock_refund);
 
-        // Assert amended fields are set
-        $this->assertArrayHasKey('amended_number', $invoice_data);
-        $this->assertEquals('INV-US-2025-00200', $invoice_data['amended_number']);
-        $this->assertArrayHasKey('amended_date', $invoice_data);
-        $this->assertArrayHasKey('amended_reason', $invoice_data);
+        // Assert legacy top-level amend fields are absent (API 2026-04-20)
+        $this->assertArrayNotHasKey('amended_number', $invoice_data);
+        $this->assertArrayNotHasKey('amended_date', $invoice_data);
+        $this->assertArrayNotHasKey('amended_reason', $invoice_data);
+        $this->assertArrayNotHasKey('amend_reason', $invoice_data);
+
+        // Assert structured invoice_references[] entry
+        $this->assertArrayHasKey('invoice_references', $invoice_data);
+        $this->assertCount(1, $invoice_data['invoice_references']);
+        $reference = $invoice_data['invoice_references'][0];
+        $this->assertEquals('amend', $reference['reference_type']);
+        $this->assertEquals('INV-US-2025-00200', $reference['number']);
+        $this->assertArrayHasKey('date', $reference);
+        $this->assertEquals('Defective product', $reference['reason']);
 
         // Assert is_credit_note IS set (non-Spain)
         $this->assertArrayHasKey('is_credit_note', $invoice_data);
