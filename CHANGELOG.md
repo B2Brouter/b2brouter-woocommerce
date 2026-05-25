@@ -5,6 +5,14 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2026-05-25
+
+### Changed
+
+- **B2Brouter PHP SDK**: Upgraded from `^1.2.0` to `^1.3.0`. The SDK now defaults to API version `2026-04-20`; the plugin lets the new default flow through. The refund / credit-note path migrates from the flat top-level amend fields (`amended_number`, `amended_date`, `amend_reason`) — removed from `POST /invoices` in API 2026-04-20 — to the structured `invoice_references[]` array with `reference_type: 'amend'`. Resolves a long-standing latent bug along the way: the plugin had been emitting the refund reason as `amended_reason` (extra `d`), which no API version has ever accepted — Rails strong-params had been silently dropping the key on every release to date. The new payload places the reason inside the reference object, so the refund reason now actually reaches the backend (closes #98)
+- **Plugin Identification in API Requests**: Every `B2BRouterClient` construction in the plugin now routes through a new `Sdk_Client_Factory` that injects an `app_info` descriptor (`name=B2BRouter-WooCommerce`, `version=B2BROUTER_WC_VERSION`, `url=home_url()`). The SDK appends this to the outbound `User-Agent` header so requests originating from this plugin are distinguishable from raw SDK calls in B2Brouter's server logs and support cases. Example header: `B2BRouter-PHP/1.3.0 (PHP/8.4.21; curl/8.14.1) B2BRouter-WooCommerce/1.0.5 (https://shop.example.com)` (closes #97)
+- **WordPress 7.0 Compatibility**: `Tested up to` bumped from `6.9` to `7.0`. Full test pass against WordPress 7.0 "Armstrong" with WooCommerce 10.7.0 and HPOS enabled: orders list, order edit screen meta boxes, settings page, invoice list table, B2B + B2C invoice generation, refund payload migration, status sync cron, and PDF retrieval all verified clean. The DataViews migration of the WooCommerce orders list (anticipated for 7.0) has not yet shipped in WC 10.7.0; the legacy `manage_woocommerce_page_wc-orders_columns` filter continues to work (closes #100)
+
 ## [1.0.4] - 2026-05-22
 
 ### Security
