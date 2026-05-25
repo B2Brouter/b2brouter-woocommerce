@@ -121,6 +121,14 @@ This plugin connects your WooCommerce store to **B2Brouter**, a third-party e-in
 
 == Changelog ==
 
+= 1.0.5 =
+
+**Changed:**
+
+* B2Brouter PHP SDK upgraded from 1.2 to 1.3. Default API version is now `2026-04-20`. The plugin's refund / credit-note payload migrates from the flat top-level amend fields to the new structured `invoice_references[]` array. Resolves a long-standing latent bug along the way: the refund reason was being emitted as `amended_reason` (extra `d`), which no API version has ever accepted — Rails strong-params had been silently dropping it on every release. The new payload places the reason inside the reference object, so the refund reason now actually reaches the backend.
+* Outbound API requests now identify the plugin in their `User-Agent` header via the SDK's `app_info` option, making plugin-originated calls distinguishable from raw SDK calls in B2Brouter's server logs.
+* Tested against WordPress 7.0 "Armstrong" with WooCommerce 10.7.
+
 = 1.0.4 =
 
 **Security:**
@@ -234,6 +242,10 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 For the complete history, see `CHANGELOG.md` in the repository.
 
 == Upgrade Notice ==
+
+= 1.0.5 =
+
+Bumps the bundled B2Brouter PHP SDK to v1.3 (API version `2026-04-20`) and migrates the refund payload to the new `invoice_references[]` shape. Adds plugin self-identification to the outbound `User-Agent` header. Tested up to WordPress 7.0.
 
 = 1.0.4 =
 
