@@ -508,24 +508,25 @@ class Invoice_Generator {
 
         // Add refund-specific fields
         if ($is_refund && $parent_invoice_info) {
-            // Add amended invoice reference
-            $invoice_data['amended_number'] = $parent_invoice_info['invoice_number'];
+            $reference = [
+                'reference_type' => 'amend',
+                'number'         => $parent_invoice_info['invoice_number'],
+            ];
 
-            // Parse invoice date (format: Y-m-d)
             $invoice_date = $parent_invoice_info['invoice_date'];
             if (!empty($invoice_date)) {
-                // Convert MySQL datetime to Y-m-d format
                 $date_obj = new \DateTime($invoice_date);
-                $invoice_data['amended_date'] = $date_obj->format('Y-m-d');
+                $reference['date'] = $date_obj->format('Y-m-d');
             }
 
-            // Add refund reason if available
             if (method_exists($order, 'get_reason') && !empty($order->get_reason())) {
-                $invoice_data['amended_reason'] = $order->get_reason();
+                $reference['reason'] = $order->get_reason();
             }
 
-            // Add is_credit_note flag for non-rectificative countries
-            // This is an undocumented parameter used by B2Brouter API
+            $invoice_data['invoice_references'] = [$reference];
+
+            // Undocumented parameter signalling that the document is a credit note
+            // (positive amounts) rather than a rectificative invoice (negative amounts).
             if (!$is_rectificative) {
                 $invoice_data['is_credit_note'] = true;
             }
