@@ -366,7 +366,7 @@ class Settings {
      * @return \B2BRouter\B2BRouterClient
      */
     protected function build_b2brouter_client($api_key, array $options) {
-        return new \B2BRouter\B2BRouterClient($api_key, $options);
+        return Sdk_Client_Factory::build($api_key, $options);
     }
 
     /**

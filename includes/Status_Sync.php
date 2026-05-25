@@ -478,7 +478,7 @@ class Status_Sync {
         }
 
         $options = array('api_base' => $this->settings->get_api_base_url());
-        return new \B2BRouter\B2BRouterClient($api_key, $options);
+        return Sdk_Client_Factory::build($api_key, $options);
     }
 
     /**
