@@ -412,6 +412,7 @@ We welcome feedback on all aspects of the plugin. Please test in a staging envir
 
 ---
 
+[1.0.5]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.5
 [1.0.4]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.4
 [1.0.3]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.3
 [1.0.2]: https://github.com/B2Brouter/b2brouter-woocommerce/releases/tag/v1.0.2
