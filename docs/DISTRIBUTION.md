@@ -95,6 +95,10 @@ The `.github/workflows/release.yml` workflow automatically:
 2. Verify the new release is published
 3. Download and test the ZIP file on a WordPress test instance
 
+### 7. Publish to the WordPress.org Plugin Directory
+
+After verifying the GitHub release, push the canonical ZIP to the WordPress.org SVN repository so the new version is available from <https://wordpress.org/plugins/b2brouter-for-woocommerce/>. See [WORDPRESS_ORG_SVN.md](WORDPRESS_ORG_SVN.md) for the SVN workflow (one-time setup, per-release commit + tag, and asset updates).
+
 ## Release Workflow Details
 
 ### Trigger Condition
