@@ -458,6 +458,34 @@ class InvoiceTypesTest extends TestCase {
     }
 
     /**
+     * Generating a credit note for a refund that already has one must fail
+     * gracefully — never fatal. The "already generated" guard throws before the
+     * parent is resolved, and the error note must NOT be written to the refund
+     * (WC_Order_Refund has no add_order_note()); it belongs on the parent order.
+     *
+     * @return void
+     */
+    public function test_generate_invoice_on_already_invoiced_refund_fails_gracefully() {
+        global $wc_mock_orders;
+
+        $parent = new \WC_Order(300);
+        $parent->add_meta_data('_b2brouter_invoice_id', 'inv_parent', true);
+        $parent->add_meta_data('_b2brouter_invoice_number', 'INV-300', true);
+        $wc_mock_orders[300] = $parent;
+
+        $refund = new \WC_Order_Refund(301);
+        $refund->set_parent_id(300);
+        $refund->add_meta_data('_b2brouter_invoice_id', 'cn_existing', true);
+        $wc_mock_orders[301] = $refund;
+
+        // Must not raise a fatal Error on the refund; returns a graceful result.
+        $result = $this->invoice_generator->generate_invoice(301);
+
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsStringIgnoringCase('already', $result['message']);
+    }
+
+    /**
      * Read the single allowance off a prepared line, or null if none.
      *
      * @param array $line Invoice line attributes.

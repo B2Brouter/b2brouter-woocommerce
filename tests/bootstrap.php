@@ -1404,6 +1404,15 @@ if (!class_exists('WC_Order_Refund')) {
             return 'shop_order_refund';
         }
 
+        // Real WooCommerce defines add_order_note() on WC_Order only; a
+        // WC_Order_Refund does NOT have it (it extends WC_Abstract_Order, not
+        // WC_Order). The mock inherits it, which previously masked code that
+        // tried to note a refund directly. Fail the same way real WC would so
+        // such code is caught by tests.
+        public function add_order_note($note) {
+            throw new \Error('Call to undefined method WC_Order_Refund::add_order_note()');
+        }
+
         public function get_parent_id() {
             return $this->parent_id;
         }

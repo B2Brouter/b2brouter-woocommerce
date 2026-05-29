@@ -196,11 +196,10 @@ class Invoice_Generator {
             }
             // Note: When webhooks are enabled, status will be updated in real-time (< 1 second)
 
-            // Add order note with context-aware message
-            // For refunds, add note to parent order instead of refund itself
-            $note_target = $is_refund && isset($parent_invoice_info['parent_order'])
-                ? $parent_invoice_info['parent_order']
-                : $order;
+            // Add order note with context-aware message.
+            // Refunds cannot carry notes (WC_Order_Refund has no
+            // add_order_note()), so notes are routed to the parent order.
+            $note_target = $this->get_note_target($order);
 
             // Format invoice number with series code (use series_code from request data)
             $formatted_number = self::format_invoice_number(
@@ -222,7 +221,7 @@ class Invoice_Generator {
                     $invoice['id']
                   );
 
-            $note_target->add_order_note($note_message);
+            $this->add_note($note_target, $note_message);
 
             // Increment transaction counter
             $this->settings->increment_transaction_count();
@@ -246,7 +245,7 @@ class Invoice_Generator {
                         $pdf_note = $is_refund
                             ? __('Credit note PDF automatically downloaded and cached locally', 'b2brouter-for-woocommerce')
                             : __('Invoice PDF automatically downloaded and cached locally', 'b2brouter-for-woocommerce');
-                        $note_target->add_order_note($pdf_note);
+                        $this->add_note($note_target, $pdf_note);
                     }
                 } catch (\Exception $e) {
                     // PDF download failed after retries, but invoice was created successfully
@@ -271,15 +270,13 @@ class Invoice_Generator {
             // Log error
             Logger::error('B2Brouter Invoice Generation Error: ' . $e->getMessage());
 
-            // Add order note with error
+            // Add order note with error. Route to the parent for refunds, and
+            // guard the call: a refund object has no add_order_note(), and this
+            // runs after almost any failure, so it must never fatal on top of
+            // the original error.
             if (isset($order) && $order) {
-                // For refunds, add error note to parent order if available
-                $error_note_target = $order;
-                if (isset($is_refund) && $is_refund && isset($parent_invoice_info['parent_order'])) {
-                    $error_note_target = $parent_invoice_info['parent_order'];
-                }
-
-                $error_message = isset($is_refund) && $is_refund
+                $is_refund_note = isset($is_refund) ? $is_refund : $this->is_refund($order);
+                $error_message = $is_refund_note
                     ? sprintf(
                         /* translators: %s: error message returned by the B2Brouter API */
                         __('B2Brouter credit note generation failed: %s', 'b2brouter-for-woocommerce'),
@@ -291,13 +288,46 @@ class Invoice_Generator {
                         $e->getMessage()
                       );
 
-                $error_note_target->add_order_note($error_message);
+                $this->add_note($this->get_note_target($order), $error_message);
             }
 
             return array(
                 'success' => false,
                 'message' => $e->getMessage()
             );
+        }
+    }
+
+    /**
+     * Resolve the order that should receive human-readable order notes.
+     *
+     * A WooCommerce refund cannot carry notes (WC_Order_Refund has no
+     * add_order_note()), so notes about a credit note are recorded on its
+     * parent order instead. Returns null when no usable target exists.
+     *
+     * @since 1.0.6
+     * @param \WC_Order|\WC_Order_Refund $order The order or refund.
+     * @return \WC_Order|null
+     */
+    private function get_note_target($order) {
+        if ($this->is_refund($order)) {
+            $parent = wc_get_order($order->get_parent_id());
+            return ($parent && method_exists($parent, 'add_order_note')) ? $parent : null;
+        }
+        return $order;
+    }
+
+    /**
+     * Add an order note, skipping targets that cannot take one.
+     *
+     * @since 1.0.6
+     * @param \WC_Order|null $target  Note target from get_note_target().
+     * @param string         $message The note text.
+     * @return void
+     */
+    private function add_note($target, $message) {
+        if ($target && method_exists($target, 'add_order_note')) {
+            $target->add_order_note($message);
         }
     }
 
