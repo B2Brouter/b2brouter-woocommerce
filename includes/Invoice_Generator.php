@@ -377,6 +377,21 @@ class Invoice_Generator {
         // Determine which order object to use for item calculations
         $item_order = $use_parent_items ? $parent_order : $order;
 
+        // Human-readable label for any per-line discount. Coupons live on the
+        // (parent) order, not on the refund, so source the codes from there.
+        $discount_text = __('Discount', 'b2brouter-for-woocommerce');
+        $coupon_source = ($is_refund && $parent_order) ? $parent_order : $order;
+        if (method_exists($coupon_source, 'get_coupon_codes')) {
+            $coupon_codes = $coupon_source->get_coupon_codes();
+            if (!empty($coupon_codes)) {
+                $discount_text = sprintf(
+                    /* translators: %s: comma-separated list of applied coupon codes */
+                    __('Discount (%s)', 'b2brouter-for-woocommerce'),
+                    implode(', ', $coupon_codes)
+                );
+            }
+        }
+
         foreach ($items as $item) {
             $quantity = $item->get_quantity();
             $price = (float) $item_order->get_item_subtotal($item, false, false);
@@ -398,6 +413,33 @@ class Invoice_Generator {
                 'quantity' => $quantity,
                 'price' => $price,
             );
+
+            // Surface any per-line discount (coupon, gift card, affiliate, …)
+            // explicitly. WooCommerce exposes the pre-discount line net via
+            // get_subtotal() and the post-discount net via get_total(); the gap
+            // is the discount. We keep `price` at the pre-discount value and send
+            // the discount as a line-level AllowanceCharge with apply_taxes=true.
+            // Verified against B2Brouter staging: this representation both renders
+            // the discount line on the customer PDF AND subtracts it from the
+            // taxable base (so VAT is charged on the net), whereas the legacy
+            // discount_amount/discount_percent line fields are silently ignored
+            // by the current backend. Without this the discount was dropped
+            // entirely, over-reporting the taxable base. Magnitude is compared on
+            // absolute values so refunds (negative lines) are handled; the sign
+            // then follows the line's own orientation so the resulting line net
+            // always equals the post-discount amount that was actually charged.
+            $line_discount = abs((float) $item->get_subtotal()) - abs((float) $item->get_total());
+            if ($line_discount > 0.005) {
+                $signed_discount = ($quantity < 0) ? -$line_discount : $line_discount;
+                $line['allowance_charges_attributes'] = array(
+                    array(
+                        'allowance_charge_indicator' => 'allowance',
+                        'amount'      => round($signed_discount, 2),
+                        'description' => $discount_text,
+                        'apply_taxes' => true,
+                    ),
+                );
+            }
 
             // Always add tax information (Peppol compliant)
             $tax_rate = $this->get_item_tax_rate($item, $item_order);

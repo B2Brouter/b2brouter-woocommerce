@@ -5,6 +5,12 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **Order discounts dropped from invoices**: Line discounts (WooCommerce coupons, gift cards, affiliate discounts, etc.) were not represented on the generated invoice. The line was sent at its pre-discount price with no allowance, so the invoice taxable base and total over-reported the amount the customer actually paid — and over-reported the taxable base sent to the tax authority. Each discounted line now carries a per-line allowance charge (`apply_taxes` enabled), so B2Brouter both renders the discount and taxes only the net. Verified end-to-end against staging for standard invoices and Spanish rectificative credit notes (closes #104)
+
 ## [1.0.5] - 2026-05-25
 
 ### Changed

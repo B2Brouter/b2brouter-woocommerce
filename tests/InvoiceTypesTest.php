@@ -397,4 +397,150 @@ class InvoiceTypesTest extends TestCase {
         $mock_order_with_tin->method('get_meta')->willReturn('ES12345678');
         $this->assertEquals('IssuedInvoice', $method->invoke($this->invoice_generator, $mock_order_with_tin));
     }
+
+    /**
+     * Build a single-line order mock for discount tests.
+     *
+     * The line carries a pre-discount subtotal and a (lower) post-discount
+     * total, mirroring how WooCommerce exposes a coupon-discounted item.
+     *
+     * @param float $subtotal Pre-discount line net (e.g. list price * qty).
+     * @param float $total    Post-discount line net (what the customer paid).
+     * @param float $tax      Total tax charged on the line (post-discount base).
+     * @param array $coupons  Coupon codes applied to the order.
+     * @return \WC_Order Mock order.
+     */
+    private function make_single_line_order($subtotal, $total, $tax, array $coupons = array()) {
+        $item = $this->createMock(\WC_Order_Item_Product::class);
+        $item->method('get_name')->willReturn('Discounted Widget');
+        $item->method('get_quantity')->willReturn(1);
+        $item->method('get_subtotal')->willReturn($subtotal);
+        $item->method('get_total')->willReturn($total);
+        $item->method('get_taxes')->willReturn(array('total' => array(1 => $tax)));
+        $item->method('get_product')->willReturn(null);
+
+        $order = $this->createMock(\WC_Order::class);
+        $order->method('get_type')->willReturn('shop_order');
+        $order->method('get_billing_first_name')->willReturn('Pat');
+        $order->method('get_billing_last_name')->willReturn('Buyer');
+        $order->method('get_billing_email')->willReturn('pat@example.com');
+        $order->method('get_billing_country')->willReturn('FR');
+        $order->method('get_billing_address_1')->willReturn('1 rue de Test');
+        $order->method('get_billing_address_2')->willReturn('');
+        $order->method('get_billing_city')->willReturn('Paris');
+        $order->method('get_billing_postcode')->willReturn('75001');
+        $order->method('get_billing_company')->willReturn('');
+        $order->method('get_currency')->willReturn('EUR');
+        $order->method('get_id')->willReturn(900);
+        $order->method('get_order_number')->willReturn('900');
+        $order->method('get_items')->willReturn(array($item));
+        $order->method('get_shipping_total')->willReturn(0);
+        $order->method('get_meta')->willReturn(''); // no TIN
+        // Pre-discount per-unit net price (qty 1).
+        $order->method('get_item_subtotal')->willReturn($subtotal);
+        $order->method('get_coupon_codes')->willReturn($coupons);
+
+        return $order;
+    }
+
+    /**
+     * Invoke prepare_invoice_data() and return the first invoice line.
+     *
+     * @param \WC_Order $order Order mock.
+     * @return array First invoice line attributes.
+     */
+    private function prepare_first_line($order) {
+        $reflection = new \ReflectionClass($this->invoice_generator);
+        $method = $reflection->getMethod('prepare_invoice_data');
+        $method->setAccessible(true);
+        $invoice_data = $method->invoke($this->invoice_generator, $order);
+        return $invoice_data['invoice_lines_attributes'][0];
+    }
+
+    /**
+     * Read the single allowance off a prepared line, or null if none.
+     *
+     * @param array $line Invoice line attributes.
+     * @return array|null
+     */
+    private function line_allowance($line) {
+        if (empty($line['allowance_charges_attributes'][0])) {
+            return null;
+        }
+        return $line['allowance_charges_attributes'][0];
+    }
+
+    /**
+     * A coupon-discounted line must carry the discount as a line-level
+     * AllowanceCharge (indicator=allowance, apply_taxes=true), with the line
+     * price left at the pre-discount value. This is the representation verified
+     * against B2Brouter staging to both render the discount and tax the net.
+     *
+     * @return void
+     */
+    public function test_discounted_line_carries_allowance_charge() {
+        // List €100, customer paid €80 net (€20 coupon), 21% tax on the net.
+        $order = $this->make_single_line_order(100.00, 80.00, 16.80, array('SAVE20'));
+
+        $line = $this->prepare_first_line($order);
+
+        $this->assertEquals(100.00, $line['price'], 'Line price stays at the pre-discount unit price');
+        $this->assertEquals(1, $line['quantity']);
+
+        $allowance = $this->line_allowance($line);
+        $this->assertNotNull($allowance, 'Discounted line must carry an allowance charge');
+        $this->assertSame('allowance', $allowance['allowance_charge_indicator']);
+        $this->assertEquals(20.00, $allowance['amount'], 'Allowance amount is subtotal - total');
+        $this->assertTrue($allowance['apply_taxes'], 'Allowance must reduce the taxable base');
+        $this->assertNotEmpty($allowance['description']);
+    }
+
+    /**
+     * The post-discount net the line resolves to (price*qty - allowance) must
+     * equal what WooCommerce actually charged. Regression guard for the
+     * over-reporting bug.
+     *
+     * @return void
+     */
+    public function test_discounted_line_net_matches_amount_charged() {
+        $order = $this->make_single_line_order(100.00, 80.00, 16.80, array('SAVE20'));
+
+        $line = $this->prepare_first_line($order);
+        $allowance = $this->line_allowance($line);
+
+        $net = ($line['price'] * $line['quantity']) - $allowance['amount'];
+        $this->assertEquals(80.00, $net, 'Invoiced net must equal the amount the customer paid');
+    }
+
+    /**
+     * An un-discounted line (subtotal == total) must NOT carry an allowance,
+     * so we don't emit zero-amount allowances on every invoice.
+     *
+     * @return void
+     */
+    public function test_undiscounted_line_omits_allowance_charge() {
+        $order = $this->make_single_line_order(100.00, 100.00, 21.00, array());
+
+        $line = $this->prepare_first_line($order);
+
+        $this->assertEquals(100.00, $line['price']);
+        $this->assertArrayNotHasKey('allowance_charges_attributes', $line);
+    }
+
+    /**
+     * The allowance description should name the applied coupon(s) so the
+     * customer recognises it on the invoice; it falls back to a generic label.
+     *
+     * @return void
+     */
+    public function test_allowance_description_names_coupons_with_generic_fallback() {
+        $with_coupon = $this->make_single_line_order(100.00, 80.00, 16.80, array('SAVE20', 'VIP'));
+        $allowance = $this->line_allowance($this->prepare_first_line($with_coupon));
+        $this->assertStringContainsString('SAVE20', $allowance['description']);
+        $this->assertStringContainsString('VIP', $allowance['description']);
+
+        $no_coupon = $this->make_single_line_order(100.00, 80.00, 16.80, array());
+        $allowance2 = $this->line_allowance($this->prepare_first_line($no_coupon));
+        $this->assertNotEmpty($allowance2['description']);
+    }
 }
