@@ -1,6 +1,6 @@
 === B2Brouter for WooCommerce ===
 Contributors: b2brouter
-Tags: woocommerce, e-invoicing, peppol, verifactu, ksef, invoice, factura, facture, tax report
+Tags: woocommerce, invoice, peppol, verifactu, ksef
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
