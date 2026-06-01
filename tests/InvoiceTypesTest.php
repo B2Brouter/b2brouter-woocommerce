@@ -397,4 +397,101 @@ class InvoiceTypesTest extends TestCase {
         $mock_order_with_tin->method('get_meta')->willReturn('ES12345678');
         $this->assertEquals('IssuedInvoice', $method->invoke($this->invoice_generator, $mock_order_with_tin));
     }
+
+    /**
+     * Build a single-item order around the given item, for line-description
+     * tests. Uses the real WC_Order_Item_Product mock so its formatted-meta
+     * behaviour is exercised.
+     *
+     * @param \WC_Order_Item_Product $item The order item.
+     * @return \WC_Order Mock order.
+     */
+    private function make_order_with_item($item) {
+        $order = $this->createMock(\WC_Order::class);
+        $order->method('get_type')->willReturn('shop_order');
+        $order->method('get_billing_first_name')->willReturn('Pat');
+        $order->method('get_billing_last_name')->willReturn('Buyer');
+        $order->method('get_billing_email')->willReturn('pat@example.com');
+        $order->method('get_billing_country')->willReturn('ES');
+        $order->method('get_billing_address_1')->willReturn('Carrer de Test 1');
+        $order->method('get_billing_address_2')->willReturn('');
+        $order->method('get_billing_city')->willReturn('Barcelona');
+        $order->method('get_billing_postcode')->willReturn('08001');
+        $order->method('get_billing_company')->willReturn('');
+        $order->method('get_currency')->willReturn('EUR');
+        $order->method('get_id')->willReturn(950);
+        $order->method('get_order_number')->willReturn('950');
+        $order->method('get_items')->willReturn(array($item));
+        $order->method('get_shipping_total')->willReturn(0);
+        $order->method('get_meta')->willReturn('');
+        $order->method('get_item_subtotal')->willReturn(10.00);
+
+        return $order;
+    }
+
+    /**
+     * Read the first invoice line's description for the given order.
+     *
+     * @param \WC_Order $order Mock order.
+     * @return string
+     */
+    private function first_line_description($order) {
+        $reflection = new \ReflectionClass($this->invoice_generator);
+        $method = $reflection->getMethod('prepare_invoice_data');
+        $method->setAccessible(true);
+        $invoice_data = $method->invoke($this->invoice_generator, $order);
+        return $invoice_data['invoice_lines_attributes'][0]['description'];
+    }
+
+    /**
+     * Customer-visible item meta (variation attributes, product add-on /
+     * extra-option selections) must be appended to the line description as
+     * "Label: value" lines, so the invoice shows what the customer ordered —
+     * not just the bare product name (#105).
+     *
+     * @return void
+     */
+    public function test_line_description_appends_item_meta() {
+        $item = new \WC_Order_Item_Product('Engraved Pen');
+        $item->set_formatted_meta(array(
+            array('display_key' => 'Engraving', 'display_value' => 'Happy Birthday'),
+            array('display_key' => 'Color',     'display_value' => 'Blue'),
+        ));
+
+        $description = $this->first_line_description($this->make_order_with_item($item));
+
+        $this->assertSame("Engraved Pen\nEngraving: Happy Birthday\nColor: Blue", $description);
+    }
+
+    /**
+     * An item with no visible meta keeps the bare product name — no trailing
+     * separator or empty lines.
+     *
+     * @return void
+     */
+    public function test_line_description_without_meta_is_product_name() {
+        $item = new \WC_Order_Item_Product('Plain Pen');
+
+        $description = $this->first_line_description($this->make_order_with_item($item));
+
+        $this->assertSame('Plain Pen', $description);
+    }
+
+    /**
+     * Meta values are rendered as plain text: HTML is stripped and embedded
+     * line breaks collapse to single spaces, so a rich display value (e.g. a
+     * linked add-on) doesn't break the description.
+     *
+     * @return void
+     */
+    public function test_line_description_strips_tags_from_meta() {
+        $item = new \WC_Order_Item_Product('Gift Box');
+        $item->set_formatted_meta(array(
+            array('display_key' => 'Message', 'display_value' => "<strong>Hello</strong>\nthere"),
+        ));
+
+        $description = $this->first_line_description($this->make_order_with_item($item));
+
+        $this->assertSame("Gift Box\nMessage: Hello there", $description);
+    }
 }
