@@ -408,9 +408,10 @@ class InvoiceTypesTest extends TestCase {
      * @param float $total    Post-discount line net (what the customer paid).
      * @param float $tax      Total tax charged on the line (post-discount base).
      * @param array $coupons  Coupon codes applied to the order.
+     * @param array $fees     WC_Order_Item_Fee mocks to attach to the order.
      * @return \WC_Order Mock order.
      */
-    private function make_single_line_order($subtotal, $total, $tax, array $coupons = array()) {
+    private function make_single_line_order($subtotal, $total, $tax, array $coupons = array(), array $fees = array()) {
         $item = $this->createMock(\WC_Order_Item_Product::class);
         $item->method('get_name')->willReturn('Discounted Widget');
         $item->method('get_quantity')->willReturn(1);
@@ -439,6 +440,7 @@ class InvoiceTypesTest extends TestCase {
         // Pre-discount per-unit net price (qty 1).
         $order->method('get_item_subtotal')->willReturn($subtotal);
         $order->method('get_coupon_codes')->willReturn($coupons);
+        $order->method('get_fees')->willReturn($fees);
 
         return $order;
     }
@@ -570,5 +572,227 @@ class InvoiceTypesTest extends TestCase {
         $no_coupon = $this->make_single_line_order(100.00, 80.00, 16.80, array());
         $allowance2 = $this->line_allowance($this->prepare_first_line($no_coupon));
         $this->assertNotEmpty($allowance2['description']);
+    }
+
+    /**
+     * Invoke prepare_invoice_data() and return all invoice lines.
+     *
+     * @param \WC_Order|\WC_Order_Refund $order Order mock.
+     * @return array Invoice line attributes.
+     */
+    private function prepare_lines($order) {
+        return $this->prepare_invoice($order)['invoice_lines_attributes'];
+    }
+
+    /**
+     * Invoke prepare_invoice_data() and return the whole invoice data array.
+     *
+     * @param \WC_Order|\WC_Order_Refund $order Order mock.
+     * @return array Invoice data.
+     */
+    private function prepare_invoice($order) {
+        $reflection = new \ReflectionClass($this->invoice_generator);
+        $method = $reflection->getMethod('prepare_invoice_data');
+        $method->setAccessible(true);
+        return $method->invoke($this->invoice_generator, $order);
+    }
+
+    /**
+     * Find the first document-level allowance/charge matching a description.
+     *
+     * @param array  $invoice     Prepared invoice data.
+     * @param string $description Description to match.
+     * @return array|null
+     */
+    private function find_allowance_charge($invoice, $description) {
+        foreach ($invoice['allowance_charges_attributes'] ?? array() as $ac) {
+            if (isset($ac['description']) && $ac['description'] === $description) {
+                return $ac;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * A positive order fee (surcharge) must surface as a document-level
+     * `charge` allowance/charge — not a line — with a positive magnitude and a
+     * tax bucket derived from the fee's own tax total. This is the
+     * standards-aligned representation the B2Brouter API expects for
+     * order-level adjustments (verified against staging).
+     *
+     * @return void
+     */
+    public function test_positive_fee_emitted_as_document_charge() {
+        $fee = new \WC_Order_Item_Fee('Gift wrapping', 15.00, 3.15); // 21% on 15
+        $order = $this->make_single_line_order(100.00, 100.00, 21.00, array(), array($fee));
+
+        $ac = $this->find_allowance_charge($this->prepare_invoice($order), 'Gift wrapping');
+
+        $this->assertNotNull($ac, 'A surcharge fee must surface as an allowance/charge');
+        $this->assertSame('charge', $ac['allowance_charge_indicator']);
+        $this->assertEquals(15.00, $ac['amount'], 'Amount is the positive magnitude');
+        $this->assertTrue($ac['apply_taxes']);
+        $this->assertSame('S', $ac['tax_attributes']['category']);
+        $this->assertEquals(21.0, $ac['tax_attributes']['percent']);
+    }
+
+    /**
+     * A negative order fee — the "order-level discount as a fee" case coupons
+     * don't cover — must surface as a document-level `allowance` (positive
+     * magnitude, indicator carries the sign) so it reduces the taxable base
+     * instead of being dropped. The rate is recovered from the signed ratio.
+     *
+     * @return void
+     */
+    public function test_negative_fee_emitted_as_document_allowance() {
+        $fee = new \WC_Order_Item_Fee('Loyalty discount', -30.00, -6.30); // 21% on -30
+        $order = $this->make_single_line_order(100.00, 100.00, 21.00, array(), array($fee));
+
+        $ac = $this->find_allowance_charge($this->prepare_invoice($order), 'Loyalty discount');
+
+        $this->assertNotNull($ac);
+        $this->assertSame('allowance', $ac['allowance_charge_indicator']);
+        $this->assertEquals(30.00, $ac['amount'], 'Discount magnitude is positive; indicator carries the sign');
+        $this->assertSame('S', $ac['tax_attributes']['category']);
+        $this->assertEquals(21.0, $ac['tax_attributes']['percent'], 'Rate recovered from signed ratio');
+    }
+
+    /**
+     * An untaxed fee is bucketed as tax-exempt (category E, 0%), mirroring the
+     * shipping treatment, rather than defaulting to a standard rate.
+     *
+     * @return void
+     */
+    public function test_untaxed_fee_marked_exempt() {
+        $fee = new \WC_Order_Item_Fee('Handling', 10.00, 0.0);
+        $order = $this->make_single_line_order(100.00, 100.00, 21.00, array(), array($fee));
+
+        $ac = $this->find_allowance_charge($this->prepare_invoice($order), 'Handling');
+
+        $this->assertNotNull($ac);
+        $this->assertSame('charge', $ac['allowance_charge_indicator']);
+        $this->assertSame('E', $ac['tax_attributes']['category']);
+        $this->assertEquals(0.0, $ac['tax_attributes']['percent']);
+    }
+
+    /**
+     * The net the invoice resolves to (lines − allowances + charges) must equal
+     * what the order actually charged. Regression guard for fee-driven
+     * mis-reporting, mirroring the backend's taxable-base formula.
+     *
+     * @return void
+     */
+    public function test_fee_allowance_reconciles_to_order_total() {
+        $fee = new \WC_Order_Item_Fee('Order discount', -20.00, 0.0);
+        $order = $this->make_single_line_order(100.00, 100.00, 21.00, array(), array($fee));
+        $invoice = $this->prepare_invoice($order);
+
+        $net = 0.0;
+        foreach ($invoice['invoice_lines_attributes'] as $line) {
+            $net += $line['price'] * $line['quantity'];
+        }
+        foreach ($invoice['allowance_charges_attributes'] ?? array() as $ac) {
+            $net += ($ac['allowance_charge_indicator'] === 'allowance' ? -1 : 1) * $ac['amount'];
+        }
+
+        $this->assertEquals(80.00, $net, 'Item 100 minus a 20 fee allowance must net to 80');
+    }
+
+    /**
+     * Build a discounted refund and its invoiced parent, registered so
+     * wc_get_order() resolves the parent. The refund carries its own line with
+     * a pre-discount subtotal and a (lower) post-discount total, stored
+     * negative as WooCommerce does for refunds.
+     *
+     * @param string $parent_country Billing country (drives credit-note vs.
+     *                               rectificative treatment).
+     * @return \WC_Order_Refund
+     */
+    private function make_discounted_refund($parent_country) {
+        global $wc_mock_orders;
+
+        $parent = new \WC_Order(700);
+        $parent->set_billing_country($parent_country);
+        $parent->set_coupon_codes(array('SAVE20'));
+        $parent->add_meta_data('_b2brouter_invoice_id', 'inv_parent', true);
+        $parent->add_meta_data('_b2brouter_invoice_number', 'INV-700', true);
+        $wc_mock_orders[700] = $parent;
+
+        // Refund line: list €100, €80 charged (€20 discount), stored negative.
+        $item = new \WC_Order_Item_Product('Discounted Widget');
+        $item->set_quantity(-1);
+        $item->set_subtotal(-100.00);
+        $item->set_total(-80.00);
+        $item->set_taxes(array('total' => array(1 => -16.80)));
+
+        $refund = new \WC_Order_Refund(701);
+        $refund->set_parent_id(700);
+        $refund->set_items(array($item));
+        $wc_mock_orders[701] = $refund;
+
+        return $refund;
+    }
+
+    /**
+     * A discounted refund issued as a CREDIT NOTE (non-rectificative country)
+     * restates amounts as positive: the allowance is positive and the line
+     * nets to the positive amount being credited. Exercises the sign branch
+     * the original discount PR left untested.
+     *
+     * @return void
+     */
+    public function test_discounted_refund_credit_note_carries_positive_allowance() {
+        $refund = $this->make_discounted_refund('US'); // US => credit note
+
+        $line = $this->prepare_lines($refund)[0];
+        $allowance = $this->line_allowance($line);
+
+        $this->assertNotNull($allowance, 'Discounted refund line must carry an allowance');
+        $this->assertEquals(100.00, $line['price'], 'Credit note restates the pre-discount price as positive');
+        $this->assertEquals(1, $line['quantity']);
+        $this->assertEquals(20.00, $allowance['amount'], 'Allowance is positive in a credit note');
+        $this->assertStringContainsString('SAVE20', $allowance['description']);
+
+        $net = ($line['price'] * $line['quantity']) - $allowance['amount'];
+        $this->assertEquals(80.00, $net, 'Credited net equals the discounted amount charged');
+    }
+
+    /**
+     * The same discounted refund issued as a RECTIFICATIVE invoice (Spain)
+     * uses negative amounts: the allowance flips negative so the line nets to
+     * the negative correction. Covers the other sign branch.
+     *
+     * @return void
+     */
+    public function test_discounted_refund_rectificative_carries_negative_allowance() {
+        $refund = $this->make_discounted_refund('ES'); // ES => rectificative
+
+        $line = $this->prepare_lines($refund)[0];
+        $allowance = $this->line_allowance($line);
+
+        $this->assertNotNull($allowance);
+        $this->assertEquals(100.00, $line['price']);
+        $this->assertEquals(-1, $line['quantity'], 'Rectificative keeps the negative quantity');
+        $this->assertEquals(-20.00, $allowance['amount'], 'Allowance is negative in a rectificative invoice');
+
+        $net = ($line['price'] * $line['quantity']) - $allowance['amount'];
+        $this->assertEquals(-80.00, $net, 'Rectificative net is the negative of the amount charged');
+    }
+
+    /**
+     * A refund line must keep the original standard tax rate (S, 21%), not be
+     * mis-categorised as exempt. A refund line's total/tax are negative, and a
+     * `> 0` guard in the rate calc would have returned 0% — leaving the line
+     * VAT unreversed and the credit note / rectificative total wrong.
+     *
+     * @return void
+     */
+    public function test_refund_line_keeps_standard_tax_rate() {
+        $refund = $this->make_discounted_refund('ES');
+
+        $tax = $this->prepare_lines($refund)[0]['taxes_attributes'][0];
+
+        $this->assertSame('S', $tax['category'], 'Refund line stays standard-rated, not exempt');
+        $this->assertEquals(21.0, $tax['percent'], 'Rate resolves from the negative total/tax');
     }
 }

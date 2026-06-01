@@ -924,6 +924,7 @@ if (!class_exists('WC_Order')) {
         private $data = array();
         private $meta_data = array();
         private $items = array();
+        private $fees = array();
         private $notes = array();
 
         public function __construct($order_id = 0) {
@@ -1019,6 +1020,18 @@ if (!class_exists('WC_Order')) {
             $this->items[] = $item;
         }
 
+        public function get_fees() {
+            return $this->fees;
+        }
+
+        public function set_fees($fees) {
+            $this->fees = $fees;
+        }
+
+        public function add_fee($fee) {
+            $this->fees[] = $fee;
+        }
+
         public function get_item_subtotal($item, $inc_tax = false, $round = true) {
             // Real WooCommerce returns the PRE-discount per-unit net price here
             // (derived from $item->get_subtotal()), which is distinct from the
@@ -1092,6 +1105,35 @@ if (!class_exists('WC_Order_Item_Product')) {
         public function set_subtotal($subtotal) { $this->data['subtotal'] = $subtotal; }
         public function set_taxes($taxes) { $this->data['taxes'] = $taxes; }
         public function set_product($product) { $this->product = $product; }
+    }
+}
+
+// Mock WC_Order_Item_Fee class
+if (!class_exists('WC_Order_Item_Fee')) {
+    /**
+     * Mock WC_Order_Item_Fee class.
+     *
+     * A fee carries a signed total (negative = discount, positive = surcharge)
+     * and an optional tax total, mirroring how WooCommerce stores order fees.
+     */
+    class WC_Order_Item_Fee {
+        private $data = array();
+
+        public function __construct($name = 'Fee', $total = 0.0, $tax = 0.0) {
+            $this->data = array(
+                'name'  => $name,
+                'total' => $total,
+                'taxes' => array('total' => $tax != 0.0 ? array(1 => $tax) : array()),
+            );
+        }
+
+        public function get_name() { return $this->data['name']; }
+        public function get_total() { return $this->data['total']; }
+        public function get_taxes() { return $this->data['taxes']; }
+
+        public function set_name($name) { $this->data['name'] = $name; }
+        public function set_total($total) { $this->data['total'] = $total; }
+        public function set_taxes($taxes) { $this->data['taxes'] = $taxes; }
     }
 }
 

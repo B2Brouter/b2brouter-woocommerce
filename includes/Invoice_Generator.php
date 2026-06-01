@@ -544,6 +544,63 @@ class Invoice_Generator {
             $invoice_lines[] = $shipping_line;
         }
 
+        // Surface order-level fees as document-level allowance/charge entries.
+        // WooCommerce models surcharges (positive) and a class of "global" /
+        // order-level discounts (negative) as fees rather than coupons — manual
+        // admin adjustments, store credit, and several gift-card / loyalty
+        // plugins all use fees. A fee never appears in an item's
+        // get_subtotal()/get_total() gap, so without this it was dropped
+        // entirely: positive fees under-reported the taxable base and negative
+        // fees over-reported it.
+        //
+        // Each fee becomes an `allowance_charges_attributes` entry on the
+        // invoice (not a line): a discount is an `allowance`, a surcharge a
+        // `charge`. `amount` is the positive magnitude — the indicator carries
+        // the sign (taxable base = lines − allowances + charges). A nested tax
+        // matching the fee's own rate buckets it correctly when the order mixes
+        // tax rates, and `apply_taxes` includes it in the taxable base.
+        $invoice_allowance_charges = array();
+        $fees = method_exists($item_order, 'get_fees') ? $item_order->get_fees() : array();
+        foreach ((array) $fees as $fee) {
+            $fee_total = (float) $fee->get_total();
+
+            // Orient the fee to the document. WooCommerce stores a refund's own
+            // fee amounts already sign-flipped from the original sale, while a
+            // parent order's fees keep the original sign; credit notes restate
+            // positively and rectificatives negatively. This multiplier lands
+            // the indicator on the side that makes the document reconcile.
+            $orient = $use_parent_items ? -$amount_multiplier : $amount_multiplier;
+            $fee_total *= $orient;
+
+            if (abs($fee_total) < 0.005) {
+                continue;
+            }
+
+            $fee_name = method_exists($fee, 'get_name') ? $fee->get_name() : '';
+            $allowance_charge = array(
+                'allowance_charge_indicator' => ($fee_total < 0) ? 'allowance' : 'charge',
+                'amount'      => round(abs($fee_total), 2),
+                'description' => !empty($fee_name) ? $fee_name : __('Fee', 'b2brouter-for-woocommerce'),
+                'apply_taxes' => true,
+            );
+
+            // Tax bucket mirrors the shipping treatment: reverse charge, exempt,
+            // or standard rate derived from the fee's own recorded tax total.
+            $fee_tax_rate = $this->get_fee_tax_rate($fee);
+            $merchant_country = $this->get_merchant_country();
+            $tax_name = $this->get_tax_name($merchant_country);
+
+            if ($this->is_reverse_charge($item_order)) {
+                $allowance_charge['tax_attributes'] = array('name' => $tax_name, 'category' => 'AE', 'percent' => 0.0);
+            } elseif ($fee_tax_rate == 0) {
+                $allowance_charge['tax_attributes'] = array('name' => $tax_name, 'category' => 'E', 'percent' => 0.0);
+            } else {
+                $allowance_charge['tax_attributes'] = array('name' => $tax_name, 'category' => 'S', 'percent' => abs($fee_tax_rate));
+            }
+
+            $invoice_allowance_charges[] = $allowance_charge;
+        }
+
         // Determine invoice type (IssuedInvoice or IssuedSimplifiedInvoice)
         $invoice_type = $this->get_invoice_type($order);
 
@@ -567,6 +624,11 @@ class Invoice_Generator {
                 $is_refund ? $order->get_id() : $order->get_order_number()
             ),
         );
+
+        // Attach any order-level fees as document-level allowance/charge entries
+        if (!empty($invoice_allowance_charges)) {
+            $invoice_data['allowance_charges_attributes'] = $invoice_allowance_charges;
+        }
 
         // Add series code if configured
         if (!empty($series_code)) {
@@ -625,8 +687,13 @@ class Invoice_Generator {
         $tax_total = array_sum($taxes['total']);
         $item_total = $item->get_total();
 
-        if ($item_total > 0) {
-            return round(($tax_total / $item_total) * 100, 2);
+        // Compare on absolute values: a refund line carries a negative total
+        // (and a negative tax), and the rate must still resolve to the positive
+        // percentage. Guarding on > 0 instead would mis-categorise every refund
+        // line as exempt, so a credit note / rectificative never reversed the
+        // line VAT.
+        if ($item_total != 0) {
+            return round(abs($tax_total / $item_total) * 100, 2);
         }
 
         return 0;
@@ -645,6 +712,35 @@ class Invoice_Generator {
 
         if ($shipping_total > 0 && $shipping_tax > 0) {
             return round(($shipping_tax / $shipping_total) * 100, 2);
+        }
+
+        return 0;
+    }
+
+    /**
+     * Get tax rate for an order fee.
+     *
+     * Derives the rate from the fee's own recorded tax total, mirroring
+     * get_item_tax_rate(). Works for negative (discount) fees too: the tax
+     * total carries the same sign as the fee total, so their ratio is the
+     * positive rate; callers abs() the result before sending.
+     *
+     * @since 1.0.6
+     * @param \WC_Order_Item_Fee $fee The fee line item.
+     * @return float The fee tax rate percentage.
+     */
+    private function get_fee_tax_rate($fee) {
+        $taxes = method_exists($fee, 'get_taxes') ? $fee->get_taxes() : array();
+
+        if (empty($taxes['total'])) {
+            return 0;
+        }
+
+        $tax_total = array_sum($taxes['total']);
+        $fee_total = (float) $fee->get_total();
+
+        if ($fee_total != 0) {
+            return round(($tax_total / $fee_total) * 100, 2);
         }
 
         return 0;
