@@ -944,6 +944,7 @@ if (!class_exists('WC_Order')) {
         private $data = array();
         private $meta_data = array();
         private $items = array();
+        private $fees = array();
         private $notes = array();
 
         public function __construct($order_id = 0) {
@@ -1039,8 +1040,31 @@ if (!class_exists('WC_Order')) {
             $this->items[] = $item;
         }
 
+        public function get_fees() {
+            return $this->fees;
+        }
+
+        public function set_fees($fees) {
+            $this->fees = $fees;
+        }
+
+        public function add_fee($fee) {
+            $this->fees[] = $fee;
+        }
+
         public function get_item_subtotal($item, $inc_tax = false, $round = true) {
-            // Calculate from item total and quantity
+            // Real WooCommerce returns the PRE-discount per-unit net price here
+            // (derived from $item->get_subtotal()), which is distinct from the
+            // post-discount per-unit total. Mirror that when the item carries an
+            // explicit subtotal; otherwise fall back to the total-based value so
+            // item doubles that only stub get_total() keep their old behaviour.
+            if (method_exists($item, 'get_subtotal') && method_exists($item, 'get_quantity')) {
+                $subtotal = $item->get_subtotal();
+                $quantity = $item->get_quantity();
+                if ($quantity != 0 && $subtotal !== null && $subtotal != 0) {
+                    return abs($subtotal / $quantity);
+                }
+            }
             if (method_exists($item, 'get_total') && method_exists($item, 'get_quantity')) {
                 $total = $item->get_total();
                 $quantity = $item->get_quantity();
@@ -1053,6 +1077,14 @@ if (!class_exists('WC_Order')) {
 
         public function get_refunds() {
             return array(); // Return empty array by default
+        }
+
+        public function get_coupon_codes() {
+            return isset($this->data['coupon_codes']) ? $this->data['coupon_codes'] : array();
+        }
+
+        public function set_coupon_codes($codes) {
+            $this->data['coupon_codes'] = $codes;
         }
 
         public function get_edit_order_url() {
@@ -1073,6 +1105,7 @@ if (!class_exists('WC_Order_Item_Product')) {
                 'name' => $name,
                 'quantity' => 1,
                 'total' => 10.00,
+                'subtotal' => null,
                 'taxes' => array('total' => array()),
             );
         }
@@ -1080,11 +1113,17 @@ if (!class_exists('WC_Order_Item_Product')) {
         public function get_name() { return $this->data['name']; }
         public function get_quantity() { return $this->data['quantity']; }
         public function get_total() { return $this->data['total']; }
+        // Pre-discount line total. Defaults to the post-discount total so an
+        // un-discounted item reports subtotal == total, matching real WC.
+        public function get_subtotal() {
+            return $this->data['subtotal'] !== null ? $this->data['subtotal'] : $this->data['total'];
+        }
         public function get_taxes() { return $this->data['taxes']; }
         public function get_product() { return $this->product; }
 
         public function set_quantity($qty) { $this->data['quantity'] = $qty; }
         public function set_total($total) { $this->data['total'] = $total; }
+        public function set_subtotal($subtotal) { $this->data['subtotal'] = $subtotal; }
         public function set_taxes($taxes) { $this->data['taxes'] = $taxes; }
         public function set_product($product) { $this->product = $product; }
 
@@ -1102,6 +1141,35 @@ if (!class_exists('WC_Order_Item_Product')) {
                 );
             }, $meta);
         }
+    }
+}
+
+// Mock WC_Order_Item_Fee class
+if (!class_exists('WC_Order_Item_Fee')) {
+    /**
+     * Mock WC_Order_Item_Fee class.
+     *
+     * A fee carries a signed total (negative = discount, positive = surcharge)
+     * and an optional tax total, mirroring how WooCommerce stores order fees.
+     */
+    class WC_Order_Item_Fee {
+        private $data = array();
+
+        public function __construct($name = 'Fee', $total = 0.0, $tax = 0.0) {
+            $this->data = array(
+                'name'  => $name,
+                'total' => $total,
+                'taxes' => array('total' => $tax != 0.0 ? array(1 => $tax) : array()),
+            );
+        }
+
+        public function get_name() { return $this->data['name']; }
+        public function get_total() { return $this->data['total']; }
+        public function get_taxes() { return $this->data['taxes']; }
+
+        public function set_name($name) { $this->data['name'] = $name; }
+        public function set_total($total) { $this->data['total'] = $total; }
+        public function set_taxes($taxes) { $this->data['taxes'] = $taxes; }
     }
 }
 
@@ -1412,6 +1480,15 @@ if (!class_exists('WC_Order_Refund')) {
 
         public function get_type() {
             return 'shop_order_refund';
+        }
+
+        // Real WooCommerce defines add_order_note() on WC_Order only; a
+        // WC_Order_Refund does NOT have it (it extends WC_Abstract_Order, not
+        // WC_Order). The mock inherits it, which previously masked code that
+        // tried to note a refund directly. Fail the same way real WC would so
+        // such code is caught by tests.
+        public function add_order_note($note) {
+            throw new \Error('Call to undefined method WC_Order_Refund::add_order_note()');
         }
 
         public function get_parent_id() {
