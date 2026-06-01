@@ -439,7 +439,7 @@ class Invoice_Generator {
             }
 
             $line = array(
-                'description' => $item->get_name(),
+                'description' => $this->build_line_description($item),
                 'quantity' => $quantity,
                 'price' => $price,
             );
@@ -667,6 +667,41 @@ class Invoice_Generator {
         }
 
         return $invoice_data;
+    }
+
+    /**
+     * Build the invoice line description for an order item.
+     *
+     * Starts from the product name and appends any customer-visible item meta
+     * — WooCommerce-core variation attributes and the options that add-on /
+     * extra-option plugins store as item meta — using WooCommerce's own
+     * formatter. With $include_all = false, meta whose value is already part of
+     * the product name is skipped (so variations aren't duplicated); private
+     * `_`-prefixed meta is excluded; and the `woocommerce_order_item_display_meta_*`
+     * filters that those plugins hook are honoured. Each entry is rendered on
+     * its own line as "Label: value", tag-stripped for plain-text output.
+     *
+     * @since 1.0.6
+     * @param \WC_Order_Item_Product $item The order item.
+     * @return string The line description.
+     */
+    private function build_line_description($item) {
+        $description = $item->get_name();
+
+        if (!method_exists($item, 'get_formatted_meta_data')) {
+            return $description;
+        }
+
+        foreach ((array) $item->get_formatted_meta_data('_', false) as $meta) {
+            $key   = trim(wp_strip_all_tags($meta->display_key, true));
+            $value = trim(wp_strip_all_tags($meta->display_value, true));
+            if ($key === '' && $value === '') {
+                continue;
+            }
+            $description .= "\n" . $key . ': ' . $value;
+        }
+
+        return $description;
     }
 
     /**

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Item options on invoice lines**: Invoice line descriptions now include the customer-visible item meta — WooCommerce variation attributes and the options added by product add-on / extra-option plugins (Product Add-Ons, YITH, Extra Product Options, etc.) — appended under the product name as `Label: value` lines. Previously the line carried only the product name, so the invoice didn't reflect the variation or options the customer actually paid for. Built on WooCommerce's own `get_formatted_meta_data()` formatter, so private (`_`-prefixed) meta stays hidden, values already in the product name aren't duplicated, and the `woocommerce_order_item_display_meta_*` filters other plugins hook are honoured. Verified end-to-end against staging (closes #105)
+
 ### Fixed
 
 - **Order discounts dropped from invoices**: Line discounts (WooCommerce coupons, gift cards, affiliate discounts, etc.) were not represented on the generated invoice. The line was sent at its pre-discount price with no allowance, so the invoice taxable base and total over-reported the amount the customer actually paid — and over-reported the taxable base sent to the tax authority. Each discounted line now carries a per-line allowance charge (`apply_taxes` enabled), so B2Brouter both renders the discount and taxes only the net. Verified end-to-end against staging for standard invoices and Spanish rectificative credit notes (closes #104)
