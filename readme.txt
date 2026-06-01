@@ -1,10 +1,10 @@
 === B2Brouter for WooCommerce ===
 Contributors: b2brouter
-Tags: woocommerce, e-invoicing, peppol, verifactu, ksef
+Tags: woocommerce, e-invoicing, peppol, verifactu, ksef, invoice, factura, facture, tax report
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: MIT
 License URI: https://opensource.org/license/mit
 
@@ -120,6 +120,19 @@ This plugin connects your WooCommerce store to **B2Brouter**, a third-party e-in
 * [Privacy Policy](https://www.b2brouter.net/global/privacy-policy/)
 
 == Changelog ==
+
+= 1.0.6 =
+
+**Added:**
+
+* Invoice line descriptions now include customer-visible item options — WooCommerce variation attributes and options added by product add-on plugins (Product Add-Ons, YITH, Extra Product Options, etc.) — appended under the product name. Private (`_`-prefixed) meta stays hidden and values already in the product name aren't duplicated.
+
+**Fixed:**
+
+* Line discounts (coupons, gift cards, affiliate discounts) are now represented on the invoice as a per-line allowance, so the taxable base and total match what the customer actually paid.
+* Order-level fees — surcharges (gift wrap, COD/payment fees) and fee-based discounts (store credit, loyalty programs, manual adjustments) — now appear as document-level allowance/charge lines in the correct VAT bucket, so the invoice reconciles with the order.
+* Credit notes / rectificatives no longer under-reverse VAT: refund lines (negative totals) now keep their original tax rate, so an ES rectificative totals the exact negative of the original invoice.
+* Refund-invoice failures no longer trigger a fatal PHP error; order notes route to the parent order and the call is guarded.
 
 = 1.0.5 =
 
@@ -242,6 +255,10 @@ Final pre-release before 1.0. Focused on stability, operational polish, and prep
 For the complete history, see `CHANGELOG.md` in the repository.
 
 == Upgrade Notice ==
+
+= 1.0.6 =
+
+Invoices now reflect item options, line discounts, and order-level fees, so totals and the taxable base reconcile with the WooCommerce order. Fixes VAT under-reversal on credit notes / Spanish rectificatives and a fatal error on failed refund invoices. Recommended for all sites that use coupons, fees, product add-ons, or refunds.
 
 = 1.0.5 =
 
