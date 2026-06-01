@@ -5,6 +5,12 @@ All notable changes to B2Brouter for WooCommerce will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Item options on invoice lines**: Invoice line descriptions now include the customer-visible item meta — WooCommerce variation attributes and the options added by product add-on / extra-option plugins (Product Add-Ons, YITH, Extra Product Options, etc.) — appended under the product name as `Label: value` lines. Previously the line carried only the product name, so the invoice didn't reflect the variation or options the customer actually paid for. Built on WooCommerce's own `get_formatted_meta_data()` formatter, so private (`_`-prefixed) meta stays hidden, values already in the product name aren't duplicated, and the `woocommerce_order_item_display_meta_*` filters other plugins hook are honoured. Verified end-to-end against staging (closes #105)
+
 ## [1.0.5] - 2026-05-25
 
 ### Changed

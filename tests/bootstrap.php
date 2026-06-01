@@ -171,6 +171,26 @@ if (!function_exists('wp_kses_post')) {
     }
 }
 
+if (!function_exists('wp_strip_all_tags')) {
+    /**
+     * Mock wp_strip_all_tags function. Strips tags; when $remove_breaks is
+     * true, collapses runs of whitespace (incl. newlines/tabs) to a single
+     * space, matching WordPress core behaviour.
+     *
+     * @param string $text          Text to strip.
+     * @param bool   $remove_breaks Collapse whitespace runs.
+     * @return string
+     */
+    function wp_strip_all_tags($text, $remove_breaks = false) {
+        $text = preg_replace('@<(script|style)[^>]*?>.*?</\\1>@si', '', (string) $text);
+        $text = strip_tags($text);
+        if ($remove_breaks) {
+            $text = preg_replace('/[\r\n\t ]+/', ' ', $text);
+        }
+        return trim($text);
+    }
+}
+
 if (!function_exists('wp_date')) {
     /**
      * Mock wp_date function. The real function honors the WP-configured
@@ -1046,6 +1066,7 @@ if (!class_exists('WC_Order_Item_Product')) {
     class WC_Order_Item_Product {
         private $data = array();
         private $product = null;
+        private $formatted_meta = array();
 
         public function __construct($name = 'Test Product') {
             $this->data = array(
@@ -1066,6 +1087,21 @@ if (!class_exists('WC_Order_Item_Product')) {
         public function set_total($total) { $this->data['total'] = $total; }
         public function set_taxes($taxes) { $this->data['taxes'] = $taxes; }
         public function set_product($product) { $this->product = $product; }
+
+        // Mirrors WC_Order_Item::get_formatted_meta_data() — tests seed entries
+        // via set_formatted_meta() with display_key / display_value objects.
+        public function get_formatted_meta_data($hideprefix = '_', $include_all = false) {
+            return $this->formatted_meta;
+        }
+
+        public function set_formatted_meta(array $meta) {
+            $this->formatted_meta = array_map(function ($m) {
+                return (object) array(
+                    'display_key'   => $m['display_key'],
+                    'display_value' => $m['display_value'],
+                );
+            }, $meta);
+        }
     }
 }
 
