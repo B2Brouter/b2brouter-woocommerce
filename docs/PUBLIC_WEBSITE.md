@@ -1,6 +1,8 @@
 # Public Website (GitHub Pages)
 
-This document explains how the plugin's public website is hosted and how to add or update content. The site is served at <https://woocommerce.b2brouter.net/>.
+> **Retired.** This GitHub Pages site has been end-of-lifed in favor of the marketing page at <https://www.b2brouter.net/global/woocommerce-peppol-plugin/>. Pages is disabled and `woocommerce.b2brouter.net` now 301-redirects there. The `gh-pages` branch is kept frozen so the site can be revived if needed; the instructions below are retained for that historical reference only.
+
+This document explains how the plugin's public website is hosted and how to add or update content. The site was served at <https://woocommerce.b2brouter.net/>.
 
 The original infrastructure discussion is in [issue #85](https://github.com/B2Brouter/b2brouter-woocommerce/issues/85).
 
